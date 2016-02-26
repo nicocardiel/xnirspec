@@ -60,7 +60,7 @@ C
               WRITE(*,'(A8)'),'100% OK!'
               NEXTINFO=NEXTINFO+1
             ELSE
-              WRITE(*,'(I3,A5,$)')10*NEXTINFO,'%,...'
+              WRITE(*,'(I3,A6,$)')10*NEXTINFO,'%,... '
               ISYSTEM=SYSTEMFUNCTION('date')
               NEXTINFO=NEXTINFO+1
             END IF
