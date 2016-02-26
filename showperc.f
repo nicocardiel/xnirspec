@@ -35,6 +35,9 @@ C------------------------------------------------------------------------------
         IMPLICIT NONE
         INTEGER N1,N2,ISTEP,I,NEXTINFO
 C
+        INTEGER SYSTEMFUNCTION
+C
+        INTEGER ISYSTEM
         REAL FN1,FN2,FISTEP,FNEXTINFO
 C------------------------------------------------------------------------------
         IF(NEXTINFO.GT.10) RETURN
@@ -57,7 +60,8 @@ C
               WRITE(*,'(A8)'),'100% OK!'
               NEXTINFO=NEXTINFO+1
             ELSE
-              WRITE(*,'(I3,A5)')10*NEXTINFO,'%,...'
+              WRITE(*,'(I3,A5,$)')10*NEXTINFO,'%,...'
+              ISYSTEM=SYSTEMFUNCTION('date')
               NEXTINFO=NEXTINFO+1
             END IF
           END IF
