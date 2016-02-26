@@ -13,6 +13,7 @@ C------------------------------------------------------------------------------
         L2=TRUELEN(CLINEA)
         IF((L1.EQ.0).OR.(L2.EQ.0))THEN
           WRITE(*,101) 'ERROR in LEECOLUMN: empty string!'
+          LEECOLUMN=0.0
           RETURN
         END IF
 C Caso trivial

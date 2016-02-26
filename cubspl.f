@@ -67,6 +67,8 @@ C local variables
         REAL SS(0:NMAX,4)
         REAL H
 C------------------------------------------------------------------------------
+C evitamos algun warning de compilacion
+        SS(1,1)=0.0
 C verificamos que al menos tenemos dos puntos
         IF(N.LT.2)THEN
           WRITE(*,100)'FATAL ERROR in subroutine CUBSPL: '

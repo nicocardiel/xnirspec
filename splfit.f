@@ -94,6 +94,7 @@ C------------------------------------------------------------------------------
         NITERT=0
         YINI=0 !evita WARNING de compilacion
         YFIN=0 !evita WARNING de compilacion
+        CREF='X' !evita WARNING de compilacion
         if(lplots)then
           call pgqwin(xminp,xmaxp,yminp,ymaxp)
           call pgqci(ncolor)

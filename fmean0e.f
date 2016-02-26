@@ -55,7 +55,7 @@ C
           DO I=1,N
             SUM=SUM+(X(I)-FMEAN0E)*(X(I)-FMEAN0E)
           END DO
-          SIGMA=SQRT(SUM/REAL(N-1))
+          SIGMA=SQRT(REAL(SUM)/REAL(N-1))
         END IF
 C
         END

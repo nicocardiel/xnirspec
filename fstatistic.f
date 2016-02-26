@@ -229,11 +229,11 @@ C******************************************************************************
       RETURN
       END
 C******************************************************************************
-      real FUNCTION ERF(X)
+      real FUNCTION ERFfunction(X)
       IF(X.LT.0.)THEN
-        ERF=-GAMMP(.5,X**2)
+        ERFfunction=-GAMMP(.5,X**2)
       ELSE
-        ERF=GAMMP(.5,X**2)
+        ERFfunction=GAMMP(.5,X**2)
       ENDIF
       RETURN
       END

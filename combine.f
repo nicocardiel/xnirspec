@@ -103,14 +103,17 @@ ccc     +   512,256/  !9
      +   0,0,  !8
      +   2,1/  !9
 C
-        II2=0.0 !evita un WARNING de compilacion
-        JJ2=0.0 !evita un WARNING de compilacion
+        II2=0   !evita un WARNING de compilacion
+        JJ2=0   !evita un WARNING de compilacion
         FRACCION_PIXEL=0.0 !evita un WARNING de compilacion
         FERRORLIMIT=0.0 !evita un WARNING de compilacion
 C------------------------------------------------------------------------------
         CREJECT='n'
         CWEIGHT='n'
         FPIXELTHRESHOLDCR=1.0
+C
+        CWMODE='X'
+        CMASK='X'
 C------------------------------------------------------------------------------
 C pedimos offsets
         LOGFILE=.FALSE.
@@ -461,6 +464,10 @@ ccc              FPIXUSED(J,I)=0.
                       LZERO=.TRUE.
                     END IF
                   END DO
+                ELSEIF(CMASK.EQ.'y')THEN
+                ELSE
+                  WRITE(*,101) 'FATAL ERROR: unexpected CMASK value'
+                  STOP
                 END IF
                 IF(LZERO)THEN    !si hay algun error nulo, hacemos pesos de los
                                  !datos con error nulo igual a 1, y los pesos 
@@ -485,7 +492,7 @@ ccc              FPIXUSED(J,I)=0.
                         PIXELW(K)=1./(EPIXEL(K)*EPIXEL(K))
                       END IF
                     END DO
-                  ELSE
+                  ELSEIF(CWMODE.EQ.'s')THEN
                     DO K=1,KK !calculamos pesos iniciales
                       IF(CMASK.EQ.'y')THEN
                         IF(EPIXEL(K).LE.FERRORLIMIT)THEN
@@ -499,6 +506,9 @@ ccc              FPIXUSED(J,I)=0.
      +                   (EPIXEL(K)*EPIXEL(K))
                       END IF
                     END DO
+                  ELSE
+                    WRITE(*,101) 'FATAL ERROR: invalid CWMODE'
+                    STOP
                   END IF
                 END IF
               ELSE                                  !suma no pesada con errores

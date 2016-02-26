@@ -179,6 +179,7 @@ C
 C
         II2=0 !evita un WARNING de compilacion
         JJ2=0 !evita un WARNING de compilacion
+        KK=0  !evita un WARNING de compilacion
         FRACCION_PIXEL=0.0 !evita un WARNING de compilacion
 C
         FLATBUFF=0
@@ -194,6 +195,7 @@ C
         CSCALE2OPER='s'
         CNOR2='n'
         CFILL='n'
+        CPAUSE='n'
         GX1=1
         GY1=1
         GX2=1
@@ -2749,7 +2751,6 @@ C
         COMMON/BLKFPIXUSED/FPIXUSED
         COMMON/BLKLECHO/LECHO
 C------------------------------------------------------------------------------
-C------------------------------------------------------------------------------
 C Primer paso: calculamos mascara inicial.
 C------------------------------------------------------------------------------
         DO I=1,NYMAXB9_
@@ -3101,10 +3102,10 @@ C------------------------------------------------------------------------------
         NK3=0
         NK4=0
         DO NI=1,32
-          I1=REAL(NI-1)*8+1
+          I1=(NI-1)*8+1
           I2=I1+7
           DO NJ=1,32
-            J1=REAL(NJ-1)*8+1
+            J1=(NJ-1)*8+1
             J2=J1+7
             IF(NI.LE.16)THEN
               IF(NJ.LE.16)THEN
@@ -3794,6 +3795,7 @@ C limites en pixels de cada cuadrante
      +   001,128,129,256,
      +   129,256,129,256/
 C------------------------------------------------------------------------------
+        KK=0 !evita WARNING de compilacion 
 C calculamos la superficie ajustada
         DO M=I1(NQUAD),I2(NQUAD)
           M_=M-I1(NQUAD)+1
@@ -3965,7 +3967,7 @@ C normalizamos cada cuadrante a uno
                   END DO
                 END DO
                 NSIZE=(J2(NQUAD)-J1(NQUAD)+1)*(I2(NQUAD)-I1(NQUAD)+1)
-                FACTOR=DMEAN/DBLE(NSIZE)
+                FACTOR=REAL(DMEAN/DBLE(NSIZE))
                 IF(FACTOR.GT.0.0)THEN
                   DO I=I1(NQUAD),I2(NQUAD)
                     DO J=J1(NQUAD),J2(NQUAD)
