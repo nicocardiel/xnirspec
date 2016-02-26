@@ -7,8 +7,9 @@ C finalmente utilizados en el ajuste.
         IMPLICIT NONE
         INTEGER N
         REAL X(N),Y(N)
+        REAL TSIGMA
         INTEGER NDEG
-        REAL TSIGMA,A(NDEG+1)
+        REAL A(NDEG+1)
         LOGICAL LFIT2(N)
 C
         INCLUDE 'largest.inc'
@@ -35,14 +36,27 @@ C ajustamos el polinomio
           LFIT2(1)=.TRUE.
           RETURN
         END IF
-C calculamos varianza residual (con los puntos ajustados) y los puntos que se 
-C desvian (de toda la muestra)
+        IF(N.EQ.2)THEN
+          LFIT2(1)=.TRUE.
+          LFIT2(2)=.TRUE.
+          RETURN
+        END IF
+C calculamos desviacion tipica residual (solo con los puntos ajustados)
         RMS=0.
         DO I=1,NFIT
           YDUM=FPOLY(NDEG,A,XFIT(I))
           RMS=RMS+(YFIT(I)-YDUM)*(YFIT(I)-YDUM)
         END DO
         RMS=SQRT(RMS/REAL(NFIT-1))
+C si el valor de RMS es cero, no podemos eliminar mas puntos y salimos
+        IF(RMS.EQ.0.0)THEN
+          DO I=1,N
+            LFIT2(I)=LFIT1(I)
+          END DO
+          RETURN
+        END IF
+C con dicho valor de RMS, recorremos todos los puntos iniciales y determinamos
+C si estan dentro de +/- TSIGMA*RMS
         DO I=1,N
           YDUM=FPOLY(NDEG,A,X(I))
           LFIT2(I)=(ABS(Y(I)-YDUM).LT.TSIGMA*RMS) 
