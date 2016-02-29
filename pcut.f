@@ -20,17 +20,25 @@ C
         REAL XP(NXYMAX*NOVERSAMPMAX),YP(NXYMAX*NOVERSAMPMAX)
         REAL YP_OVER(NXYMAX*NOVERSAMPMAX)
         REAL XP_ERR(NXYMAX*NOVERSAMPMAX),YP_ERR(NXYMAX*NOVERSAMPMAX)
+        REAL XPB(NXYMAX*NOVERSAMPMAX,NMAXBUFF)
+        REAL YPB(NXYMAX*NOVERSAMPMAX,NMAXBUFF)
         CHARACTER*1 CH
         CHARACTER*50 GLABEL
         LOGICAL LOVERPLOT
+        LOGICAL LPB(NMAXBUFF)
 C
         COMMON/BLKNAXIS/NAXIS
         COMMON/BLKIMAGEN2/NCBUFF
         COMMON/BLKXYLIMPLOT/NX1,NX2,NY1,NY2
+        COMMON/BLKP_ALLBUFF_L/LPB
+        COMMON/BLKP_ALLBUFF_XY/XPB,YPB
 C------------------------------------------------------------------------------
         DO I=1,NXYMAX
           XP_ERR(I)=0.0
           YP_ERR(I)=0.0
+        END DO
+        DO I=1,NMAXBUFF
+          LPB(I)=.FALSE.
         END DO
 C Segun la opcion elegida, seleccionamos el corte
         IF(CAXIS.EQ.'X')THEN
@@ -62,6 +70,8 @@ C Segun la opcion elegida, seleccionamos el corte
           CALL XCUT(NCBUFF,IY1,IY2,YP)
           DO J=1,NAXIS(1,NCBUFF)
             XP(J)=REAL(J)
+            XPB(J,NCBUFF)=XP(J)
+            YPB(J,NCBUFF)=YP(J)
           END DO
         ELSE
           IF(MODECUT.EQ.1)THEN
@@ -92,15 +102,19 @@ C Segun la opcion elegida, seleccionamos el corte
           CALL YCUT(NCBUFF,IX1,IX2,YP)
           DO I=1,NAXIS(2,NCBUFF)
             XP(I)=REAL(I)
+            XPB(I,NCBUFF)=XP(I)
+            YPB(I,NCBUFF)=YP(I)
           END DO
         END IF
+C
+        LPB(NCBUFF)=.TRUE.
 C------------------------------------------------------------------------------
         IF(CAXIS.EQ.'X')THEN
           WRITE(GLABEL,'(A1,I5,A1,I5,A1)') '[',IY1,',',IY2,']'
           CALL RMBLANK(GLABEL,GLABEL,L)
           CALL SUBPLOT(NAXIS(1,NCBUFF),NX1,NX2,XP,YP,XP_ERR,YP_ERR,
      +     .TRUE.,.TRUE.,.FALSE.,.FALSE.,
-     +     'x axis','signal',GLABEL(1:L),NCBUFF+1,201,1.0)
+     +     'x axis','signal',GLABEL(1:L),NCBUFF,201,1.0)
           K1=IY1
           K2=IY2
         ELSE
@@ -108,7 +122,7 @@ C------------------------------------------------------------------------------
           CALL RMBLANK(GLABEL,GLABEL,L)
           CALL SUBPLOT(NAXIS(2,NCBUFF),NY1,NY2,XP,YP,XP_ERR,YP_ERR,
      +     .TRUE.,.TRUE.,.FALSE.,.FALSE.,
-     +     'y axis','signal',GLABEL(1:L),NCBUFF+1,201,1.0)
+     +     'y axis','signal',GLABEL(1:L),NCBUFF,201,1.0)
           K1=IX1
           K2=IX2
         END IF
@@ -121,16 +135,25 @@ C (solo lo hacemos con los buffers de datos)
             IF((NAXIS(1,NBUFF).EQ.NAXIS(1,NCBUFF)).AND.
      +         (NAXIS(2,NBUFF).EQ.NAXIS(2,NCBUFF)))THEN
               LOVERPLOT=.TRUE.
+              LPB(NBUFF)=.TRUE.
               IF(CAXIS.EQ.'X')THEN
                 CALL XCUT(NBUFF,IY1,IY2,YP_OVER)
                 CALL SUBPLOTBIS(NAXIS(1,NBUFF),NX1,NX2,XP,YP_OVER,
      +           XP_ERR,YP_ERR,
-     +           .FALSE.,.FALSE.,NBUFF+1,201,1.0)
+     +           .FALSE.,.FALSE.,NBUFF,201,1.0)
+                DO J=1,NAXIS(1,NBUFF)
+                  XPB(J,NBUFF)=XP(J)
+                  YPB(J,NBUFF)=YP_OVER(J)
+                END DO
               ELSE
                 CALL YCUT(NBUFF,IX1,IX2,YP_OVER)
                 CALL SUBPLOTBIS(NAXIS(2,NBUFF),NY1,NY2,XP,YP_OVER,
      +           XP_ERR,YP_ERR,
-     +           .FALSE.,.FALSE.,NBUFF+1,201,1.0)
+     +           .FALSE.,.FALSE.,NBUFF,201,1.0)
+                DO I=1,NAXIS(2,NBUFF)
+                  XPB(I,NBUFF)=XP(I)
+                  YPB(I,NBUFF)=YP_OVER(I)
+                END DO
               END IF
             END IF
           END IF
@@ -141,11 +164,11 @@ C dibujamos encima el corte del buffer activo
             CALL XCUT(NBUFF,IY1,IY2,YP_OVER)
             CALL SUBPLOTBIS(NAXIS(1,NCBUFF),NX1,NX2,XP,YP,
      +       XP_ERR,YP_ERR,
-     +       .FALSE.,.FALSE.,NCBUFF+1,201,1.0)
+     +       .FALSE.,.FALSE.,NCBUFF,201,1.0)
           ELSE
             CALL SUBPLOTBIS(NAXIS(2,NCBUFF),NY1,NY2,XP,YP,
      +       XP_ERR,YP_ERR,
-     +       .FALSE.,.FALSE.,NCBUFF+1,201,1.0)
+     +       .FALSE.,.FALSE.,NCBUFF,201,1.0)
           END IF
         END IF
 C------------------------------------------------------------------------------

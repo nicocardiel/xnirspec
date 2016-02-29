@@ -900,7 +900,7 @@ ccc                 J1=256
               CALL SUBPLOT(NAXIS(1,NCBUFF),1,NAXIS(1,NCBUFF),
      +          XCUTX,YCUTX,XCUTX,YCUTX,
      +         .TRUE.,.TRUE.,.FALSE.,.FALSE.,
-     +         'x axis','signal',CDUMMY(1:L),NCBUFF+1,201,1.0)
+     +         'x axis','signal',CDUMMY(1:L),NCBUFF,201,1.0)
 c..............................................................................
               IF((CINERR.EQ.'x').OR.(LBOX9))THEN               !no hacemos nada
 c..............................................................................

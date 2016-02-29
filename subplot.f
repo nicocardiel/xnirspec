@@ -25,13 +25,16 @@ C
         INTEGER NSYMB
         REAL CH
 C
+        INCLUDE 'dimensions.inc'
         INCLUDE 'largest.inc'
 C
         INTEGER NLAST,N1LAST,N2LAST
         INTEGER ICOLORLAST,NSYMBLAST
+        INTEGER NB
         REAL XMIN,XMAX,YMIN,YMAX
         REAL XPLAST(NXYMAX*NOVERSAMPMAX),YPLAST(NXYMAX*NOVERSAMPMAX)
         REAL CHLAST
+        CHARACTER*2 CBUFF
         CHARACTER*255 CLABX,CLABY,CLABG
 C
         INTEGER I
@@ -95,11 +98,18 @@ C en caso necesario, calculamos limites
           YMIN=YMIN-DY/20.
           YMAX=YMAX+DY/20.
         END IF
-C dibujamos caja y datos
+C dibujamos caja
         CALL PGSWIN(XMIN,XMAX,YMIN,YMAX)
         CALL PGBOX('BCTSN',0.0,0,'BCTSN',0.0,0)
         CALL PGLABEL(CX,CY,' ')
         CALL PGMTXT('T',1.0,0.5,0.5,CG)
+        DO NB=1,NMAXBUFF/2
+          CALL PGSCI(NB)
+          WRITE(CBUFF,'(A1,I1)') '#',NB
+          CALL PGMTXT('R',1.2,REAL(NB-1)/REAL(NMAXBUFF/2),0.0,CBUFF)
+        END DO
+        CALL PGSCI(1)
+C dibujamos datos
         CALL PGSCI(ICOLOR)
         CALL PGSCH(CH)
         IF(NSYMB.LE.100)THEN

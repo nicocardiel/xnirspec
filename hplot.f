@@ -2,6 +2,7 @@
         IMPLICIT NONE
         CHARACTER*(*) COMMAND
 C
+        INCLUDE 'dimensions.inc'
         INCLUDE 'largest.inc'
 C
         INTEGER TRUEBEG,TRUELEN
@@ -9,6 +10,7 @@ C
         INTEGER L1,L2
         INTEGER NLAST,N1LAST,N2LAST
         INTEGER ICOLORLAST,NSYMBLAST
+        INTEGER NB
         REAL XPLAST(NXYMAX*NOVERSAMPMAX),YPLAST(NXYMAX*NOVERSAMPMAX)
         REAL XMIN,XMAX,YMIN,YMAX,DX,DY
         REAL XV1,XV2,YV1,YV2
@@ -16,8 +18,12 @@ C
         REAL OLD_CH
         REAL XC,YC,XC1,XC2,YC1,YC2
         REAL CHLAST
+        REAL XPB(NXYMAX*NOVERSAMPMAX,NMAXBUFF)
+        REAL YPB(NXYMAX*NOVERSAMPMAX,NMAXBUFF)
         CHARACTER*1 CH
+        CHARACTER*2 CBUFF
         CHARACTER*255 CLABX,CLABY,CLABG
+        LOGICAL LPB(NMAXBUFF)
 C
         COMMON/BLKPLIMITS/XMIN,XMAX,YMIN,YMAX
         COMMON/BLKPNLAST/NLAST,N1LAST,N2LAST
@@ -25,6 +31,8 @@ C
         COMMON/BLKPCOLSYMB/ICOLORLAST,NSYMBLAST
         COMMON/BLKPCH/CHLAST
         COMMON/BLKPLABELS/CLABX,CLABY,CLABG
+        COMMON/BLKP_ALLBUFF_L/LPB
+        COMMON/BLKP_ALLBUFF_XY/XPB,YPB
 C------------------------------------------------------------------------------
 C comenzamos buffering
         CALL PGBBUF
@@ -103,6 +111,18 @@ C dibujamos caja y datos
         CALL PGBOX('BCTSN',0.0,0,'BCTSN',0.0,0)
         CALL PGLABEL(CLABX,CLABY,' ')
         CALL PGMTXT('T',1.0,0.5,0.5,CLABG)
+C dibujamos cortes adicionales
+        DO NB=1,NMAXBUFF/2
+          WRITE(CBUFF,'(A1,I1)') '#',NB
+          CALL PGSCI(NB)
+          CALL PGMTXT('R',1.2,REAL(NB-1)/REAL(NMAXBUFF/2),0.0,CBUFF)
+          IF(LPB(NB))THEN
+            CALL PGBIN(N2LAST-N1LAST+1,XPB(N1LAST,NB),YPB(N1LAST,NB),
+     +       .TRUE.)
+          END IF
+        END DO
+        CALL PGSCI(1)
+C dibujamos el ultimo corte el ultimo para que quede por encima
         CALL PGSCI(ICOLORLAST)
         CALL PGSCH(CHLAST)
         IF(NSYMBLAST.LE.100)THEN
