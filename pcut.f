@@ -52,7 +52,7 @@ C Segun la opcion elegida, seleccionamos el corte
             IY1=NY1
             IY2=NY2
           END IF
-          CALL XCUT(IY1,IY2,YP)
+          CALL XCUT(NCBUFF,IY1,IY2,YP)
           DO J=1,NAXIS(1,NCBUFF)
             XP(J)=REAL(J)
           END DO
@@ -82,7 +82,7 @@ C Segun la opcion elegida, seleccionamos el corte
             IX1=NX1
             IX2=NX2
           END IF
-          CALL YCUT(IX1,IX2,YP)
+          CALL YCUT(NCBUFF,IX1,IX2,YP)
           DO I=1,NAXIS(2,NCBUFF)
             XP(I)=REAL(I)
           END DO

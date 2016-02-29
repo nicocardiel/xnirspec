@@ -1,19 +1,19 @@
-        SUBROUTINE YCUT(IX1,IX2,SY)
+        SUBROUTINE YCUT(NCBUFF,IX1,IX2,SY)
         IMPLICIT NONE
         INCLUDE 'dimensions.inc'
+        INTEGER NCBUFF
         INTEGER IX1,IX2
         REAL SY(NYMAX)
 C
         INTEGER J1,J2
         INTEGER I,J
         INTEGER NAXIS(2,NMAXBUFF)
-        INTEGER NCBUFF
         REAL F
         REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
 C
         COMMON/BLKNAXIS/NAXIS
         COMMON/BLKIMAGEN1/IMAGEN
-        COMMON/BLKIMAGEN2/NCBUFF
+!       COMMON/BLKIMAGEN2/NCBUFF
 C------------------------------------------------------------------------------
         IF(IX1.LE.IX2)THEN
           J1=IX1

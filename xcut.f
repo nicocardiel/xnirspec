@@ -1,19 +1,19 @@
-        SUBROUTINE XCUT(IY1,IY2,SX)
+        SUBROUTINE XCUT(NCBUFF,IY1,IY2,SX)
         IMPLICIT NONE
         INCLUDE 'dimensions.inc'
+        INTEGER NCBUFF
         INTEGER IY1,IY2
         REAL SX(NXMAX)
 C
         INTEGER I1,I2
         INTEGER I,J
         INTEGER NAXIS(2,NMAXBUFF)
-        INTEGER NCBUFF
         REAL F
         REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
 C
         COMMON/BLKNAXIS/NAXIS
         COMMON/BLKIMAGEN1/IMAGEN
-        COMMON/BLKIMAGEN2/NCBUFF
+!       COMMON/BLKIMAGEN2/NCBUFF
 C------------------------------------------------------------------------------
         IF(IY1.LE.IY2)THEN
           I1=IY1
