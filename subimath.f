@@ -128,10 +128,15 @@ C elegimos primer buffer
             CALL RPGBAND(0,0,0.,0.,XC,YC,CH)
             CALL IFBUTTON(XC,YC,NB)
             IF(CH.EQ.'C')THEN
+              WRITE(*,101) '[CANCEL]'
               NB=NB_CANCEL
             ELSEIF(CH.EQ.'X')THEN
+              WRITE(*,101) '[EXIT]'
               NB=NB_EXIT
             ELSEIF(INDEX('123456',CH).NE.0)THEN
+              WRITE(*,100) 'Selecting buffer #['
+              WRITE(*,100) CH
+              WRITE(*,101) ']'
               READ(CH,*) NB_
               NB=10*(NB_-1)+NORIGEN
             END IF
@@ -196,30 +201,55 @@ C mostramos posibles operaciones
               CALL RPGBAND(0,0,0.,0.,XC,YC,CH)
               CALL IFBUTTON(XC,YC,NB)
               IF(CH.EQ.'C')THEN
+                WRITE(*,101) '[CANCEL]'
                 NB=NB_CANCEL
               ELSEIF(CH.EQ.'X')THEN
+                WRITE(*,101) '[EXIT]'
                 NB=NB_EXIT
               ELSEIF(CH.EQ.'<')THEN
+                WRITE(*,100) '['
+                WRITE(*,100) CH
+                WRITE(*,101) ']'
                 NB=NORIGEN+01
               ELSEIF(CH.EQ.'+')THEN
+                WRITE(*,100) '['
+                WRITE(*,100) CH
+                WRITE(*,101) ']'
                 NB=NORIGEN+11
               ELSEIF(CH.EQ.'-')THEN
+                WRITE(*,100) '['
+                WRITE(*,100) CH
+                WRITE(*,101) ']'
                 NB=NORIGEN+21
               ELSEIF(CH.EQ.'*')THEN
+                WRITE(*,100) '['
+                WRITE(*,100) CH
+                WRITE(*,101) ']'
                 NB=NORIGEN+31
               ELSEIF(CH.EQ.'/')THEN
+                WRITE(*,100) '['
+                WRITE(*,100) CH
+                WRITE(*,101) ']'
                 NB=NORIGEN+41
               ELSEIF(CH.EQ.'0')THEN
+                WRITE(*,100) '['
+                WRITE(*,100) CH
+                WRITE(*,101) ']'
                 NB=NORIGEN+51
               ELSEIF(CH.EQ.'f')THEN
+                WRITE(*,101) '[f]ilter'
                 NB=NORIGEN+61
               ELSEIF(CH.EQ.'4')THEN
+                WRITE(*,101) '< 1 -> [4]'
                 NB=NORIGEN+71
               ELSEIF(CH.EQ.'1')THEN
+                WRITE(*,101) '< 4 -> [1]'
                 NB=NORIGEN+81
               ELSEIF(CH.EQ.'q')THEN
+                WRITE(*,101) '< [q]uqd.'
                 NB=NORIGEN+91
               ELSEIF(CH.EQ.'s')THEN
+                WRITE(*,101) '[s]hift xy'
                 NB=NORIGEN+101
               END IF
               LCONT=.TRUE.
@@ -336,12 +366,16 @@ C cuyo caso no hay nada que elegir)
               CALL RPGBAND(0,0,0.,0.,XC,YC,CH)
               CALL IFBUTTON(XC,YC,NB)
               IF(CH.EQ.'C')THEN
+                WRITE(*,101) '[CANCEL]'
                 NB=NB_CANCEL
               ELSEIF(CH.EQ.'X')THEN
+                WRITE(*,101) '[EXIT]'
                 NB=NB_EXIT
               ELSEIF(CH.EQ.'f')THEN
+                WRITE(*,101) '[f]ull frame'
                 NB=NORIGEN+02
               ELSEIF(CH.EQ.'r')THEN
+                WRITE(*,101) '[r]egion'
                 NB=NORIGEN+12
               END IF
               LCONT=.TRUE.
@@ -434,16 +468,22 @@ C inmediata)
               CALL RPGBAND(0,0,0.,0.,XC,YC,CH)
               CALL IFBUTTON(XC,YC,NB)
               IF(CH.EQ.'C')THEN
+                WRITE(*,101) '[CANCEL]'
                 NB=NB_CANCEL
               ELSEIF(CH.EQ.'X')THEN
+                WRITE(*,101) '[EXIT]'
                 NB=NB_EXIT
               ELSEIF(CH.EQ.'t')THEN
+                WRITE(*,101) 'cons[t]ant'
                 NB=NORIGEN+22
               ELSEIF(CH.EQ.'f')THEN
+                WRITE(*,101) '[f]rame'
                 NB=NORIGEN+32
               ELSEIF(CH.EQ.'x')THEN
+                WRITE(*,101) '[x] cut'
                 NB=NORIGEN+42
               ELSEIF(CH.EQ.'y')THEN
+                WRITE(*,101) '[y] cut'
                 NB=NORIGEN+52
               END IF
               LCONT=.TRUE.
@@ -619,10 +659,15 @@ C un box-9 o cuando hagamos shift)
               CALL RPGBAND(0,0,0.,0.,XC,YC,CH)
               CALL IFBUTTON(XC,YC,NB)
               IF(CH.EQ.'C')THEN
+                WRITE(*,101) '[CANCEL]'
                 NB=NB_CANCEL
               ELSEIF(CH.EQ.'X')THEN
+                WRITE(*,101) '[EXIT]'
                 NB=NB_EXIT
               ELSEIF(INDEX('123456',CH).NE.0)THEN
+                WRITE(*,100) 'Selecting buffer #['
+                WRITE(*,100) CH
+                WRITE(*,101) ']'
                 READ(CH,*) NB_
                 IF((COPER.EQ.'f').OR.(COPER.EQ.'s'))THEN
                   NB=10*(NB_-1)+NORIGEN+3
@@ -1024,6 +1069,7 @@ C..............................................................................
 C la operacion 'f' (filter) puede hacerse ya
           IF(.NOT.LCANCEL)THEN
             IF(COPER.EQ.'f')THEN
+              WRITE(*,101) ' '
               WRITE(*,101) '(0) Compute local r.m.s.'
               WRITE(*,101) '(1) 2-D Mean filter'
               WRITE(*,101) '(2) 2-D Mean filter excluding points'
