@@ -14,17 +14,24 @@ C
         INTEGER K1,K2
         INTEGER NX1,NX2,NY1,NY2
         INTEGER IX1,IX2,IY1,IY2
-        INTEGER NCBUFF
+        INTEGER NCBUFF,NBUFF
         INTEGER NAXIS(2,NMAXBUFF)
         REAL XC,YC
-        REAL XP(NXYMAX),YP(NXYMAX)
+        REAL XP(NXYMAX*NOVERSAMPMAX),YP(NXYMAX*NOVERSAMPMAX)
+        REAL YP_OVER(NXYMAX*NOVERSAMPMAX)
+        REAL XP_ERR(NXYMAX*NOVERSAMPMAX),YP_ERR(NXYMAX*NOVERSAMPMAX)
         CHARACTER*1 CH
         CHARACTER*50 GLABEL
+        LOGICAL LOVERPLOT
 C
         COMMON/BLKNAXIS/NAXIS
         COMMON/BLKIMAGEN2/NCBUFF
         COMMON/BLKXYLIMPLOT/NX1,NX2,NY1,NY2
 C------------------------------------------------------------------------------
+        DO I=1,NXYMAX
+          XP_ERR(I)=0.0
+          YP_ERR(I)=0.0
+        END DO
 C Segun la opcion elegida, seleccionamos el corte
         IF(CAXIS.EQ.'X')THEN
           IF(MODECUT.EQ.1)THEN
@@ -91,19 +98,55 @@ C------------------------------------------------------------------------------
         IF(CAXIS.EQ.'X')THEN
           WRITE(GLABEL,'(A1,I5,A1,I5,A1)') '[',IY1,',',IY2,']'
           CALL RMBLANK(GLABEL,GLABEL,L)
-          CALL SUBPLOT(NAXIS(1,NCBUFF),NX1,NX2,XP,YP,XP,YP,
+          CALL SUBPLOT(NAXIS(1,NCBUFF),NX1,NX2,XP,YP,XP_ERR,YP_ERR,
      +     .TRUE.,.TRUE.,.FALSE.,.FALSE.,
-     +     'x axis','signal',GLABEL(1:L),3,201,1.0)
+     +     'x axis','signal',GLABEL(1:L),NCBUFF+1,201,1.0)
           K1=IY1
           K2=IY2
         ELSE
           WRITE(GLABEL,'(A1,I5,A1,I5,A1)') '[',IX1,',',IX2,']'
           CALL RMBLANK(GLABEL,GLABEL,L)
-          CALL SUBPLOT(NAXIS(2,NCBUFF),NY1,NY2,XP,YP,XP,YP,
+          CALL SUBPLOT(NAXIS(2,NCBUFF),NY1,NY2,XP,YP,XP_ERR,YP_ERR,
      +     .TRUE.,.TRUE.,.FALSE.,.FALSE.,
-     +     'y axis','signal',GLABEL(1:L),3,201,1.0)
+     +     'y axis','signal',GLABEL(1:L),NCBUFF+1,201,1.0)
           K1=IX1
           K2=IX2
+        END IF
+C------------------------------------------------------------------------------
+C si hay mas buffers con las mismas dimensiones, dibujamos cortes superpuestos
+C (solo lo hacemos con los buffers de datos)
+        LOVERPLOT=.FALSE.
+        DO NBUFF=1,NMAXBUFF/2
+          IF(NBUFF.NE.NCBUFF)THEN
+            IF((NAXIS(1,NBUFF).EQ.NAXIS(1,NCBUFF)).AND.
+     +         (NAXIS(2,NBUFF).EQ.NAXIS(2,NCBUFF)))THEN
+              LOVERPLOT=.TRUE.
+              IF(CAXIS.EQ.'X')THEN
+                CALL XCUT(NBUFF,IY1,IY2,YP_OVER)
+                CALL SUBPLOTBIS(NAXIS(1,NBUFF),NX1,NX2,XP,YP_OVER,
+     +           XP_ERR,YP_ERR,
+     +           .FALSE.,.FALSE.,NBUFF+1,201,1.0)
+              ELSE
+                CALL YCUT(NBUFF,IX1,IX2,YP_OVER)
+                CALL SUBPLOTBIS(NAXIS(2,NBUFF),NY1,NY2,XP,YP_OVER,
+     +           XP_ERR,YP_ERR,
+     +           .FALSE.,.FALSE.,NBUFF+1,201,1.0)
+              END IF
+            END IF
+          END IF
+        END DO
+C dibujamos encima el corte del buffer activo
+        IF(LOVERPLOT)THEN
+          IF(CAXIS.EQ.'X')THEN
+            CALL XCUT(NBUFF,IY1,IY2,YP_OVER)
+            CALL SUBPLOTBIS(NAXIS(1,NCBUFF),NX1,NX2,XP,YP,
+     +       XP_ERR,YP_ERR,
+     +       .FALSE.,.FALSE.,NCBUFF+1,201,1.0)
+          ELSE
+            CALL SUBPLOTBIS(NAXIS(2,NCBUFF),NY1,NY2,XP,YP,
+     +       XP_ERR,YP_ERR,
+     +       .FALSE.,.FALSE.,NCBUFF+1,201,1.0)
+          END IF
         END IF
 C------------------------------------------------------------------------------
         END
