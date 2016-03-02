@@ -129,11 +129,14 @@ C elegimos primer buffer
             CALL IFBUTTON(XC,YC,NB)
             IF(CH.EQ.'C')THEN
               WRITE(*,101) '[CANCEL]'
+              WRITE(*,*)
               NB=NB_CANCEL
             ELSEIF(CH.EQ.'X')THEN
               WRITE(*,101) '[EXIT]'
+              WRITE(*,*)
               NB=NB_EXIT
             ELSEIF(INDEX('123456',CH).NE.0)THEN
+              WRITE(*,*)
               WRITE(*,100) 'Selecting buffer #['
               WRITE(*,100) CH
               WRITE(*,101) ']'
@@ -202,9 +205,11 @@ C mostramos posibles operaciones
               CALL IFBUTTON(XC,YC,NB)
               IF(CH.EQ.'C')THEN
                 WRITE(*,101) '[CANCEL]'
+                WRITE(*,*)
                 NB=NB_CANCEL
               ELSEIF(CH.EQ.'X')THEN
                 WRITE(*,101) '[EXIT]'
+                WRITE(*,*)
                 NB=NB_EXIT
               ELSEIF(CH.EQ.'<')THEN
                 WRITE(*,100) '['
@@ -367,9 +372,11 @@ C cuyo caso no hay nada que elegir)
               CALL IFBUTTON(XC,YC,NB)
               IF(CH.EQ.'C')THEN
                 WRITE(*,101) '[CANCEL]'
+                WRITE(*,*)
                 NB=NB_CANCEL
               ELSEIF(CH.EQ.'X')THEN
                 WRITE(*,101) '[EXIT]'
+                WRITE(*,*)
                 NB=NB_EXIT
               ELSEIF(CH.EQ.'f')THEN
                 WRITE(*,101) '[f]ull frame'
@@ -469,9 +476,11 @@ C inmediata)
               CALL IFBUTTON(XC,YC,NB)
               IF(CH.EQ.'C')THEN
                 WRITE(*,101) '[CANCEL]'
+                WRITE(*,*)
                 NB=NB_CANCEL
               ELSEIF(CH.EQ.'X')THEN
                 WRITE(*,101) '[EXIT]'
+                WRITE(*,*)
                 NB=NB_EXIT
               ELSEIF(CH.EQ.'t')THEN
                 WRITE(*,101) 'cons[t]ant'

@@ -2314,7 +2314,10 @@ C------------------------------------------------------------------------------
 C------------------------------------------------------------------------------
           ELSEIF((NB.GE.35).AND.(NB.LE.34+NMAXBUFF/2))THEN
             IF((NAXIS(1,NB-34).EQ.0).AND.(NAXIS(2,NB-34).EQ.0))THEN
+              WRITE(*,*)
               WRITE(*,101) '***WARNING***'
+              WRITE(*,100) '=> Buffer #'
+              WRITE(*,*) NB-34
               WRITE(*,101) '=> This DATA buffer has not been defined.'
             ELSE
               NCBUFF_=NCBUFF

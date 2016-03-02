@@ -50,6 +50,9 @@ C Segun la opcion elegida, seleccionamos el corte
             IF(IY1.LT.NY1) IY1=NY1
             IF(IY1.GT.NY2) IY1=NY2
             IY2=IY1
+            WRITE(*,*)
+            WRITE(*,100) 'Selecting Y='
+            WRITE(*,*) IY1
           ELSEIF(MODECUT.EQ.2)THEN
             CALL PGSCI(5)
             CALL RPGBAND(5,0,0.,0.,XC,YC,CH)
@@ -57,15 +60,25 @@ C Segun la opcion elegida, seleccionamos el corte
             IY1=NINT(YC)
             IF(IY1.LT.NY1) IY1=NY1
             IF(IY1.GT.NY2) IY1=NY2
+            WRITE(*,*)
+            WRITE(*,100) 'Selecting Y='
+            WRITE(*,*) IY1
             CALL PGSCI(5)
             CALL RPGBAND(3,0,0.,REAL(IY1),XC,YC,CH)
             CALL PGSCI(1)
             IY2=NINT(YC)
             IF(IY2.LT.NY1) IY2=NY1
             IF(IY2.GT.NY2) IY2=NY2
+            WRITE(*,100) 'Selecting Y='
+            WRITE(*,*) IY2
           ELSE
             IY1=NY1
             IY2=NY2
+            WRITE(*,*)
+            WRITE(*,100) 'Selecting Y='
+            WRITE(*,*) IY1
+            WRITE(*,100) 'Selecting Y='
+            WRITE(*,*) IY2
           END IF
           CALL XCUT(NCBUFF,IY1,IY2,YP)
           DO J=1,NAXIS(1,NCBUFF)
@@ -82,6 +95,9 @@ C Segun la opcion elegida, seleccionamos el corte
             IF(IX1.LT.NX1) IX1=NX1
             IF(IX1.GT.NX2) IX1=NX2
             IX2=IX1
+            WRITE(*,*)
+            WRITE(*,100) 'Selecting X='
+            WRITE(*,*) IX1
           ELSEIF(MODECUT.EQ.2)THEN
             CALL PGSCI(5)
             CALL RPGBAND(6,0,0.,0.,XC,YC,CH)
@@ -89,15 +105,25 @@ C Segun la opcion elegida, seleccionamos el corte
             IX1=NINT(XC)
             IF(IX1.LT.NX1) IX1=NX1
             IF(IX1.GT.NX2) IX1=NX2
+            WRITE(*,*)
+            WRITE(*,100) 'Selecting X='
+            WRITE(*,*) IX1
             CALL PGSCI(5)
             CALL RPGBAND(4,0,REAL(IX1),0.,XC,YC,CH)
             CALL PGSCI(1)
             IX2=NINT(XC)
             IF(IX2.LT.NX1) IX2=NX1
             IF(IX2.GT.NX2) IX2=NX2
+            WRITE(*,100) 'Selecting X='
+            WRITE(*,*) IX2
           ELSE
             IX1=NX1
             IX2=NX2
+            WRITE(*,*)
+            WRITE(*,100) 'Selecting X='
+            WRITE(*,*) IX1
+            WRITE(*,100) 'Selecting X='
+            WRITE(*,*) IX2
           END IF
           CALL YCUT(NCBUFF,IX1,IX2,YP)
           DO I=1,NAXIS(2,NCBUFF)
@@ -172,4 +198,5 @@ C dibujamos encima el corte del buffer activo
           END IF
         END IF
 C------------------------------------------------------------------------------
+100     FORMAT(A,$)
         END
