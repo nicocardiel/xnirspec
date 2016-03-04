@@ -65,16 +65,21 @@ C pedimos buffer con imagen a ser desplazada
           NBUFF2=READILIM('Buffer # of image to be SHIFTED '//
      +     '(0=exit)','@',0,NMAXBUFF/2)
           IF(NBUFF2.EQ.0) RETURN
-          NAXIS1_ = NAXIS(1,NBUFF2)
-          NAXIS2_ = NAXIS(2,NBUFF2)
-          IF((NAXIS1.NE.NAXIS1_).OR.(NAXIS2.NE.NAXIS2_))THEN
-            WRITE(*,100) '>>> Buffer#, naxis1, naxis2: '
-            WRITE(*,*) NBUFF1, NAXIS1, NAXIS2
-            WRITE(*,100) '>>> Buffer#, naxis1, naxis2: '
-            WRITE(*,*) NBUFF2, NAXIS1_, NAXIS2_
-            WRITE(*,101) 'Buffer dimensions do not match! Try again.'
+          IF(NBUFF2.EQ.NBUFF1)THEN
+            WRITE(*,100) 'ERROR: you must select a different buffer!'
+            WRITE(*,101) ' Try again.'
           ELSE
-            LOOP=.FALSE.
+            NAXIS1_ = NAXIS(1,NBUFF2)
+            NAXIS2_ = NAXIS(2,NBUFF2)
+            IF((NAXIS1.NE.NAXIS1_).OR.(NAXIS2.NE.NAXIS2_))THEN
+              WRITE(*,100) '>>> Buffer#, naxis1, naxis2: '
+              WRITE(*,*) NBUFF1, NAXIS1, NAXIS2
+              WRITE(*,100) '>>> Buffer#, naxis1, naxis2: '
+              WRITE(*,*) NBUFF2, NAXIS1_, NAXIS2_
+              WRITE(*,101) 'Buffer dimensions do not match! Try again.'
+            ELSE
+              LOOP=.FALSE.
+            END IF
           END IF
         END DO
 C------------------------------------------------------------------------------ 
