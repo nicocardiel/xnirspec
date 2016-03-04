@@ -243,9 +243,9 @@ C en caso necesario, completamos ultima linea
 C cerramos fichero
         CLOSE(20)
 C abrimos imagen con xv
-        WRITE(*,100) 'Launching viewer...'
-        ISYSTEM=SYSTEMFUNCTION('xv '//PPMFILE(L1:L2)//' & \0')
-        WRITE(*,*)
+!       WRITE(*,100) 'Launching viewer...'
+!       ISYSTEM=SYSTEMFUNCTION('xv '//PPMFILE(L1:L2)//' &')
+!       WRITE(*,*)
 C------------------------------------------------------------------------------
 100     FORMAT(A,$)
 101     FORMAT(A)
