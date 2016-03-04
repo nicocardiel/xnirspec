@@ -193,7 +193,7 @@ C..............................................................................
                 IF((INDEX(REFFILE,'*').NE.0).OR.
      +             (INDEX(REFFILE,'?').NE.0))THEN
                   ISYSTEM=SYSTEMFUNCTION('ls '//
-     +             REFFILE(1:TRUELEN(REFFILE))//' \0')
+     +             REFFILE(1:TRUELEN(REFFILE)))
                 ELSE
                   INQUIRE(FILE=REFFILE,EXIST=LOGFILE)
                   IF(.NOT.LOGFILE)THEN
@@ -212,7 +212,7 @@ C..............................................................................
               INQUIRE(FILE='xyzxyzxyz.fits',EXIST=LOGFILE)
               IF(LOGFILE)THEN
                 WRITE(*,101) '> Removing previous file xyzxyzxyz.fits'
-                ISYSTEM=SYSTEMFUNCTION('rm -f xyzxyzxyz.fits \0')
+                ISYSTEM=SYSTEMFUNCTION('rm -f xyzxyzxyz.fits')
               END IF
               WRITE(*,101) '> Creating new file xyzxyzxyz.fits'
               FITSFILE='xyzxyzxyz.fits'
@@ -268,7 +268,7 @@ C..............................................................................
      +             'xyzxyzxyz.fits')
                 END IF
               END IF
-              ISYSTEM=SYSTEMFUNCTION('rm -f xyzxyzxyz.fits \0')
+              ISYSTEM=SYSTEMFUNCTION('rm -f xyzxyzxyz.fits')
               WRITE(*,101) '> File test.cat has been created.'
               OPEN(44,FILE='test.cat',STATUS='OLD',FORM='FORMATTED')
 10            READ(44,101,END=12) CLINEA

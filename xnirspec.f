@@ -615,7 +615,6 @@ C------------------------------------------------------------------------------
      +         (INDEX(INFILE_,'?').NE.0))THEN
                 L1=TRUEBEG(INFILE_)
                 L2=TRUELEN(INFILE_)
-ccc             ISYSTEM=SYSTEMFUNCTION('ls '//INFILE_(L1:L2)//' \0')
                 ISYSTEM=SYSTEMFUNCTION('ls '//INFILE_(L1:L2))
               ELSEIF(INFILE_.EQ.'none')THEN
                 LOGFILE=.TRUE.
@@ -954,7 +953,7 @@ c..............................................................................
                     L1=TRUEBEG(ERRFILE)
                     L2=TRUELEN(ERRFILE)
                     ISYSTEM=
-     +               SYSTEMFUNCTION('ls '//ERRFILE(L1:L2)//' \0')
+     +               SYSTEMFUNCTION('ls '//ERRFILE(L1:L2))
                   ELSE
                     INQUIRE(FILE=ERRFILE,EXIST=LOGFILE)
                     IF(.NOT.LOGFILE)THEN
@@ -1022,7 +1021,7 @@ C------------------------------------------------------------------------------
      +           (INDEX(OUTFILE,'?').NE.0))THEN
                   L1=TRUEBEG(OUTFILE)
                   L2=TRUELEN(OUTFILE)
-                  ISYSTEM=SYSTEMFUNCTION('ls '//OUTFILE(L1:L2)//' \0')
+                  ISYSTEM=SYSTEMFUNCTION('ls '//OUTFILE(L1:L2))
                 ELSEIF(OUTFILE.EQ.'none')THEN
                   LOGFILE=.FALSE.
                   LOGFILERR=.TRUE.
@@ -1060,7 +1059,7 @@ C------------------------------------------------------------------------------
                       L1=TRUEBEG(ERRFILE)
                       L2=TRUELEN(ERRFILE)
                       ISYSTEM=
-     +                 SYSTEMFUNCTION('ls '//ERRFILE(L1:L2)//' \0')
+     +                 SYSTEMFUNCTION('ls '//ERRFILE(L1:L2))
                     ELSE
                       INQUIRE(FILE=ERRFILE,EXIST=LOGFILE)
                       IF(LOGFILE)THEN
@@ -1214,7 +1213,7 @@ C------------------------------------------------------------------------------
      +         (INDEX(INFILE_,'?').NE.0))THEN
                 L1=TRUEBEG(INFILE_)
                 L2=TRUELEN(INFILE_)
-                ISYSTEM=SYSTEMFUNCTION('ls '//INFILE_(L1:L2)//' \0')
+                ISYSTEM=SYSTEMFUNCTION('ls '//INFILE_(L1:L2))
               ELSEIF(INFILE_.EQ.'none')THEN
                 LOGFILE=.TRUE.
                 LOGFILERR=.TRUE.

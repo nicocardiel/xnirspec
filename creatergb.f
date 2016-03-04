@@ -56,7 +56,7 @@ C------------------------------------------------------------------------------
      +         READC('Do you want to overwrite it (y/n)','y','yn')
             END IF
             IF(COVER.EQ.'y')THEN
-              ISYSTEM=SYSTEMFUNCTION('\\rm '//PPMFILE(L1:L2))
+              ISYSTEM=SYSTEMFUNCTION('rm '//PPMFILE(L1:L2))
               LOGFILE=.FALSE.
             END IF
           END IF

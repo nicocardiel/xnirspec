@@ -125,7 +125,7 @@ C------------------------------------------------------------------------------
      +       (INDEX(FILENAME,'?').NE.0))THEN
               L1=TRUEBEG(FILENAME)
               L2=TRUELEN(FILENAME)
-              ISYSTEM=SYSTEMFUNCTION('ls '//FILENAME(L1:L2)//' \0')
+              ISYSTEM=SYSTEMFUNCTION('ls '//FILENAME(L1:L2))
             ELSEIF(FILENAME.EQ.'none')THEN
               LOGFILE=.TRUE.
               LOGFILERR=.TRUE.
@@ -200,7 +200,7 @@ C------------------------------------------------------------------------------
      +       (INDEX(FILENAME,'?').NE.0))THEN
               L1=TRUEBEG(FILENAME)
               L2=TRUELEN(FILENAME)
-              ISYSTEM=SYSTEMFUNCTION('ls '//FILENAME(L1:L2)//' \0')
+              ISYSTEM=SYSTEMFUNCTION('ls '//FILENAME(L1:L2))
             ELSEIF(FILENAME.EQ.'none')THEN
               LOGFILE=.FALSE.
               LOGFILERR=.TRUE.
