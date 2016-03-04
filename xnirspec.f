@@ -629,10 +629,17 @@ ccc             ISYSTEM=SYSTEMFUNCTION('ls '//INFILE_(L1:L2)//' \0')
                 END IF
                 INQUIRE(FILE=INFILE_,EXIST=LOGFILE)
                 IF(.NOT.LOGFILE)THEN
-                  WRITE(*,101) '***ERROR***'
-                  WRITE(*,100) '=> This file does not exist.'
-                  WRITE(*,100) ' Try again. (press <CR>...)'
-                  READ(*,*)
+                  L1=TRUEBEG(INFILE_)
+                  L2=TRUELEN(INFILE_)
+                  INQUIRE(FILE=INFILE_(L1:L2)//'.fits',EXIST=LOGFILE)
+                  IF(LOGFILE)THEN
+                    INFILE_=INFILE_(L1:L2)//'.fits'
+                  ELSE
+                    WRITE(*,101) '***ERROR***'
+                    WRITE(*,100) '=> This file does not exist.'
+                    WRITE(*,100) ' Try again. (press <CR>...)'
+                    READ(*,*)
+                  END IF
                 END IF
               END IF
             END DO
