@@ -294,6 +294,8 @@ C mostramos resultados del ajuste
               WRITE(*,*) Y0,EY0,EEY0,Y0_
               WRITE(*,100) 'X0-XOFFSET,Y0-YOFFSET..: '
               WRITE(*,*) X0-XOFFSET_ORIGEN,Y0-YOFFSET_ORIGEN
+              WRITE(*,100) 'XOFFSET-X0,YOFFSET-Y0..: '
+              WRITE(*,*) XOFFSET_ORIGEN-X0,YOFFSET_ORIGEN-Y0
               WRITE(*,100) 'SIGMAX,ESIGMAX,EESIGMAX: '
               WRITE(*,*) SIGMAX,ESIGMAX,EESIGMAX,SIGMAX_
               WRITE(*,100) 'SIGMAY,ESIGMAY,EESIGMAY: '
