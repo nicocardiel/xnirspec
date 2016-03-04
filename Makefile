@@ -137,6 +137,7 @@ FSOURCE = button.f buttqbr.f buttqcf.f buttqch.f buttqex.f \
           shiftb9.f \
           show_fitpol.f \
           showperc.f \
+          shiftimage.f \
           sleefits.f \
           slit_aperture.f \
           sortlines.f \

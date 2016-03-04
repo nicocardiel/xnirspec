@@ -1990,13 +1990,16 @@ C------------------------------------------------------------------------------
             WRITE(*,*)
             WRITE(*,101) '(1) run SExtractor'
             WRITE(*,101) '(2) estimate slit aperture correction'
+            WRITE(*,101) '(3) shift one image relative to another'
             WRITE(*,101) '(0) exit'
-            CSPECIAL(1:1)=READC('Option (0..2)','0','012')
+            CSPECIAL(1:1)=READC('Option (0..2)','0','0123')
             IF(CSPECIAL.EQ.'0')THEN
             ELSEIF(CSPECIAL.EQ.'1')THEN
               CALL SEXTRACTOR(NCBUFF)
             ELSEIF(CSPECIAL.EQ.'2')THEN
               CALL SLIT_APERTURE(NCBUFF)
+            ELSEIF(CSPECIAL.EQ.'3')THEN
+              CALL SHIFTIMAGE
             END IF
             CALL BUTTON(NB,'[.]special',0)
 C------------------------------------------------------------------------------
