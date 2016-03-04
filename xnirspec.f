@@ -634,6 +634,8 @@ ccc             ISYSTEM=SYSTEMFUNCTION('ls '//INFILE_(L1:L2)//' \0')
                   INQUIRE(FILE=INFILE_(L1:L2)//'.fits',EXIST=LOGFILE)
                   IF(LOGFILE)THEN
                     INFILE_=INFILE_(L1:L2)//'.fits'
+                    WRITE(*,100) '>>> Assuming fits extension: '
+                    WRITE(*,101) INFILE_(L1:L2)//'.fits'
                   ELSE
                     WRITE(*,101) '***ERROR***'
                     WRITE(*,100) '=> This file does not exist.'
