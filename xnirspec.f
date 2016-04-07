@@ -636,10 +636,19 @@ C------------------------------------------------------------------------------
                     WRITE(*,100) '>>> Assuming fits extension: '
                     WRITE(*,101) INFILE_(L1:L2)//'.fits'
                   ELSE
-                    WRITE(*,101) '***ERROR***'
-                    WRITE(*,100) '=> This file does not exist.'
-                    WRITE(*,100) ' Try again. (press <CR>...)'
-                    READ(*,*)
+                    CALL LEEONEFILE(INFILE_,LOK)
+                    IF(LOK)THEN
+                      L1=TRUEBEG(INFILE_)
+                      L2=TRUELEN(INFILE_)
+                      WRITE(*,100) '>>> Using unambiguous file name: '
+                      WRITE(*,101) INFILE_(L1:L2)
+                      LOGFILE=.TRUE.
+                    ELSE
+                      WRITE(*,101) '***ERROR***'
+                      WRITE(*,100) '=> This file does not exist.'
+                      WRITE(*,100) ' Try again. (press <CR>...)'
+                      READ(*,*)
+                    END IF
                   END IF
                 END IF
               END IF

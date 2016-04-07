@@ -100,6 +100,7 @@ FSOURCE = button.f buttqbr.f buttqcf.f buttqch.f buttqex.f \
           intersec.f \
           iofunctions.f \
           leecolumn.f \
+          leeonefile.f \
           lrombo.f \
           ludcmp.f \
           ludcmpd.f \
