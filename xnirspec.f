@@ -171,6 +171,7 @@ C otras variables
         LOGICAL LREPEAT
         LOGICAL L_PHOTFLAM(NMAXBUFF),L_PHOTZPT(NMAXBUFF)              !HST flux
         LOGICAL L_EXPTIME(NMAXBUFF)                                   !HST flux
+        LOGICAL LOVERCUTS
 C common blocks
         COMMON/BLKIMAGEN1/IMAGEN             !imagen FITS leida en formato REAL
         COMMON/BLKIMAGEN1_/IMAGEN_              !es global para ahorrar memoria
@@ -216,6 +217,7 @@ C common blocks
         COMMON/BLK_HSTFLUX1/L_PHOTFLAM,L_PHOTZPT,L_EXPTIME !keywords with info
         COMMON/BLK_HSTFLUX2/PHOTFLAM,PHOTZPT,EXPTIME !concerning HST flux cal.
         COMMON/BLKREDUCEME/STWV,DISP,AIRMASS,TIMEXPOS
+        COMMON/BLKLOVERCUTS/LOVERCUTS
 C------------------------------------------------------------------------------
 C------------------------------------------------------------------------------
 C Note: the pattern of the frames in box-9 is the following:
@@ -273,6 +275,7 @@ C
         LMAPPING=.FALSE.
         LPMAPP=.FALSE.
         LPWAVE=.FALSE.
+        LOVERCUTS=.FALSE.
         JUST=0
 C
         MODECUT=1 !single
@@ -918,6 +921,13 @@ ccc                 J1=256
      +          XCUTX,YCUTX,XCUTX,YCUTX,
      +         .TRUE.,.TRUE.,.FALSE.,.FALSE.,
      +         'x axis','signal',CDUMMY(1:L),NCBUFF,201,1.0)
+              IF(LOVERCUTS)THEN
+                CALL BUTTON(51,'over=TRUE',0)
+                CALL BUTTON(51,'over=TRUE',NCOLOR4)
+              ELSE
+                CALL BUTTON(51,'over=FALSE',0)
+                CALL BUTTON(51,'over=FALSE',NCOLOR4)
+              END IF
 c..............................................................................
               IF((CINERR.EQ.'x').OR.(LBOX9))THEN               !no hacemos nada
 c..............................................................................
@@ -1506,12 +1516,26 @@ C------------------------------------------------------------------------------
             CALL PCUT('X',MODECUT,K1,K2,XP,YP)
             CALL BUTTON(NB,'[x] cut',0)
             CALL BUTTON(NB,'[x] cut',NCOLOR2)
+            IF(LOVERCUTS)THEN
+              CALL BUTTON(51,'over=TRUE',0)
+              CALL BUTTON(51,'over=TRUE',NCOLOR4)
+            ELSE
+              CALL BUTTON(51,'over=FALSE',0)
+              CALL BUTTON(51,'over=FALSE',NCOLOR4)
+            END IF
 C------------------------------------------------------------------------------
           ELSEIF(NB.EQ.17)THEN
             CALL BUTTON(NB,'[y] cut',5)
             CALL PCUT('Y',MODECUT,K1,K2,XP,YP)
             CALL BUTTON(NB,'[y] cut',0)
             CALL BUTTON(NB,'[y] cut',NCOLOR2)
+            IF(LOVERCUTS)THEN
+              CALL BUTTON(51,'over=TRUE',0)
+              CALL BUTTON(51,'over=TRUE',NCOLOR4)
+            ELSE
+              CALL BUTTON(51,'over=FALSE',0)
+              CALL BUTTON(51,'over=FALSE',NCOLOR4)
+            END IF
 C------------------------------------------------------------------------------
           ELSEIF(NB.EQ.18)THEN
             IF(LPMAPP)THEN
@@ -2455,6 +2479,17 @@ C------------------------------------------------------------------------------
                 NY2=NAXIS(2,NCBUFF)
                 CALL SUBLOOK(.FALSE.,NCBUFF,.FALSE.)
               END IF
+            END IF
+C------------------------------------------------------------------------------
+          ELSEIF(NB.EQ.51)THEN
+            IF(LOVERCUTS)THEN
+              CALL BUTTON(51,'over=FALSE',0)
+              CALL BUTTON(51,'over=FALSE',NCOLOR4)
+              LOVERCUTS=.FALSE.
+            ELSE
+              CALL BUTTON(51,'over=TRUE',0)
+              CALL BUTTON(51,'over=TRUE',NCOLOR4)
+              LOVERCUTS=.TRUE.
             END IF
 C------------------------------------------------------------------------------
           ELSEIF(NB.EQ.161)THEN

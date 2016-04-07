@@ -24,7 +24,7 @@ C
         REAL YPB(NXYMAX*NOVERSAMPMAX,NMAXBUFF)
         CHARACTER*1 CH
         CHARACTER*50 GLABEL
-        LOGICAL LOVERPLOT
+        LOGICAL LOVERCUTS,LOVERPLOT_USED
         LOGICAL LPB(NMAXBUFF)
 C
         COMMON/BLKNAXIS/NAXIS
@@ -32,6 +32,7 @@ C
         COMMON/BLKXYLIMPLOT/NX1,NX2,NY1,NY2
         COMMON/BLKP_ALLBUFF_L/LPB
         COMMON/BLKP_ALLBUFF_XY/XPB,YPB
+        COMMON/BLKLOVERCUTS/LOVERCUTS
 C------------------------------------------------------------------------------
         DO I=1,NXYMAX
           XP_ERR(I)=0.0
@@ -155,12 +156,13 @@ C------------------------------------------------------------------------------
 C------------------------------------------------------------------------------
 C si hay mas buffers con las mismas dimensiones, dibujamos cortes superpuestos
 C (solo lo hacemos con los buffers de datos)
-        LOVERPLOT=.FALSE.
+        IF(.NOT.LOVERCUTS) RETURN
+        LOVERPLOT_USED=.FALSE.
         DO NBUFF=1,NMAXBUFF/2
           IF(NBUFF.NE.NCBUFF)THEN
             IF((NAXIS(1,NBUFF).EQ.NAXIS(1,NCBUFF)).AND.
      +         (NAXIS(2,NBUFF).EQ.NAXIS(2,NCBUFF)))THEN
-              LOVERPLOT=.TRUE.
+              LOVERPLOT_USED=.TRUE.
               LPB(NBUFF)=.TRUE.
               IF(CAXIS.EQ.'X')THEN
                 CALL XCUT(NBUFF,IY1,IY2,YP_OVER)
@@ -185,7 +187,7 @@ C (solo lo hacemos con los buffers de datos)
           END IF
         END DO
 C dibujamos encima el corte del buffer activo
-        IF(LOVERPLOT)THEN
+        IF(LOVERPLOT_USED)THEN
           IF(CAXIS.EQ.'X')THEN
             CALL XCUT(NBUFF,IY1,IY2,YP_OVER)
             CALL SUBPLOTBIS(NAXIS(1,NCBUFF),NX1,NX2,XP,YP,
