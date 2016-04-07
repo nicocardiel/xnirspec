@@ -33,6 +33,7 @@ C
         REAL FMEAN,FSIGMA,FMEDIAN,FMIN,FMAX
         REAL EFMEAN
         REAL FMEANTSIGMA,FSIGMATSIGMA
+        REAL Q25,Q75,FSIGMA_ROBUST
         REAL BG,FG
 C
         COMMON/BLKIMAGEN1/IMAGEN
@@ -212,6 +213,11 @@ C------------------------------------------------------------------------------
           IF(LMEDIAN)THEN
             FMEDIAN=FMEDIAN1(NPIX,PIXEL)
             IF(LSHOW)THEN
+              Q25=PIXEL(INT(REAL(NPIX)*0.25+0.5))
+              Q75=PIXEL(INT(REAL(NPIX)*0.75+0.5))
+              FSIGMA_ROBUST=0.7413*(Q75-Q25)
+              WRITE(*,100) '=> StDev (robust)............: '
+              WRITE(*,*) FSIGMA_ROBUST
               WRITE(*,100) '=> Median....................: '
               WRITE(*,*) FMEDIAN
             END IF
