@@ -34,6 +34,8 @@ C
         REAL EFMEAN
         REAL FMEANTSIGMA,FSIGMATSIGMA
         REAL Q25,Q75,FSIGMA_ROBUST
+        REAL Q1587,Q8413
+        REAL Q0250,Q9750
         REAL BG,FG
 C
         COMMON/BLKIMAGEN1/IMAGEN
@@ -220,6 +222,18 @@ C------------------------------------------------------------------------------
               WRITE(*,*) FSIGMA_ROBUST
               WRITE(*,100) '=> Median....................: '
               WRITE(*,*) FMEDIAN
+              Q0250=PIXEL(INT(REAL(NPIX)*0.0250+0.5))
+              Q1587=PIXEL(INT(REAL(NPIX)*0.1587+0.5))
+              Q8413=PIXEL(INT(REAL(NPIX)*0.8413+0.5))
+              Q9750=PIXEL(INT(REAL(NPIX)*0.9750+0.5))
+              WRITE(*,100) '=> Q 02.50%..................: '
+              WRITE(*,*) Q0250
+              WRITE(*,100) '=> Q 15.87%..................: '
+              WRITE(*,*) Q1587
+              WRITE(*,100) '=> Q 84.13%..................: '
+              WRITE(*,*) Q8413
+              WRITE(*,100) '=> Q 97.50%..................: '
+              WRITE(*,*) Q9750
             END IF
             FMEANTSIGMA=FMEAN2(NPIX,PIXEL,3.0,FSIGMATSIGMA)   
             IF(LSHOW)THEN

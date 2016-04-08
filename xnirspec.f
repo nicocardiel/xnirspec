@@ -292,7 +292,7 @@ C
         CINERR='0'
         CSAVE='f'
         CSAVEERR='n'
-        NBOX=101
+        NBOX=0
 ccc     IROTATE=-90 !default for NIRSPEC FITS images
         IROTATE=0
 C
