@@ -11,11 +11,10 @@ C variables
         INTEGER NLINES
         INTEGER ISYSTEM
         CHARACTER*255 CLINEA
-        LOGICAL LOGFILE
 C------------------------------------------------------------------------------
         L1=TRUEBEG(INFILE_)
         L2=TRUELEN(INFILE_)
-        ISYSTEM=SYSTEMFUNCTION('ls *'//INFILE_(L1:L2)//
+        ISYSTEM=SYSTEMFUNCTION('ls -l *'//INFILE_(L1:L2)//
      +   '* > .tmp_input_file_xnirspec')
         IF(ISYSTEM.NE.0)THEN
           LOK=.FALSE.
@@ -24,18 +23,31 @@ C------------------------------------------------------------------------------
 C------------------------------------------------------------------------------
         NLINES=0
 10      OPEN(10,FILE='.tmp_input_file_xnirspec',STATUS='OLD',
-     +   FORM='FORMATTED',ERR=99)
-        READ(10,101,END=99) CLINEA
+     +   FORM='FORMATTED',ERR=98)
+        READ(10,101,END=98) CLINEA
         NLINES=NLINES+1
         GOTO 10
-99      CLOSE(10)
-        IF(NLINES.EQ.1)THEN
-          LOK=.TRUE.
-          INFILE_=CLINEA
-        ELSE
-          LOK=.FALSE.
-        END IF
+98      CLOSE(10)
         ISYSTEM=SYSTEMFUNCTION('rm -f .tmp_input_file_xnirspec')
+C
+        IF(NLINES.NE.1)THEN
+          LOK=.FALSE.
+          RETURN
+        END IF
+C
+        ISYSTEM=SYSTEMFUNCTION('ls *'//INFILE_(L1:L2)//
+     +   '* > .tmp_input_file_xnirspec_single')
+        OPEN(20,FILE='.tmp_input_file_xnirspec_single',STATUS='OLD',
+     +   FORM='FORMATTED',ERR=99)
+        READ(20,101,END=99) CLINEA
+        CLOSE(20)
+        ISYSTEM=SYSTEMFUNCTION('rm -f .tmp_input_file_xnirspec_single')
+        INFILE_=CLINEA
+        LOK=.TRUE.
+        RETURN
+C
+99      LOK=.FALSE.
+        RETURN
 C------------------------------------------------------------------------------
 101     FORMAT(A)
         END
