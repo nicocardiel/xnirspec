@@ -2162,8 +2162,8 @@ C------------------------------------------------------------------------------
                 X0=0
                 Y0=0
               ELSE
-                X0=X0-XOFFSET_ORIGEN
-                Y0=Y0-YOFFSET_ORIGEN
+                X0=XOFFSET_ORIGEN-X0
+                Y0=YOFFSET_ORIGEN-Y0
               END IF
               WRITE(12,100) FILEOFFSET(L1:L2)
               IF(L2-L1+1.LT.L3)THEN
