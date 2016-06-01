@@ -2039,7 +2039,7 @@ C------------------------------------------------------------------------------
 C------------------------------------------------------------------------------
           ELSEIF(NB.EQ.30)THEN
             CALL BUTTON(NB,'offsets',5)
-            COFFSETS=READC('Use [c]entroid or just c[u]rsor',
+            COFFSETS(1:1)=READC('Use [c]entroid or just c[u]rsor',
      +       COFFSETS,'cu')
             LOGFILE=.FALSE.
             DO WHILE(.NOT.LOGFILE)
@@ -2179,6 +2179,7 @@ C------------------------------------------------------------------------------
                 X0=XOFFSET_ORIGEN-X0
                 Y0=YOFFSET_ORIGEN-Y0
               END IF
+              WRITE(12,100) '0  '  ! include flag for imcombine program
               WRITE(12,100) FILEOFFSET(L1:L2)
               IF(L2-L1+1.LT.L3)THEN
                 DO L=1,L3-(L2-L1+1)
