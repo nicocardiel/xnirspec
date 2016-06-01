@@ -144,6 +144,7 @@ C otras variables
         CHARACTER*1 CLOGRGB        !use of logarithmic scale in RGB composition
         CHARACTER*1 COFFSET !indicates whether we measure offsets with centroid
         CHARACTER*1 CSPECIAL               !option in menu of special utilities
+        CHARACTER*1 COFFSETS       !mode to compute offsets with list of images
         CHARACTER*20 CIXC,CIYC,CSIGNAL     !character strings to display cursor
         CHARACTER*50 CDUMMY                             !dum character variable
         CHARACTER*255 TTER                                    !graphics display
@@ -322,6 +323,7 @@ C
         NBUFFBOX9=0
         XOFFSET_ORIGEN=0.0
         YOFFSET_ORIGEN=0.0
+        COFFSETS='u'
 C Por si usamos formato REDUCEME
         STWV=0.
         DISP=0.
@@ -2037,6 +2039,8 @@ C------------------------------------------------------------------------------
 C------------------------------------------------------------------------------
           ELSEIF(NB.EQ.30)THEN
             CALL BUTTON(NB,'offsets',5)
+            COFFSETS=READC('Use [c]entroid or just c[u]rsor',
+     +       COFFSETS,'cu')
             LOGFILE=.FALSE.
             DO WHILE(.NOT.LOGFILE)
               FILELISTIN=
@@ -2143,16 +2147,26 @@ C------------------------------------------------------------------------------
                   CLOSE(12)
                   GOTO 888
                 END IF
-                CALL CENTROID(NCBUFF,'d',XC_,YC_,.FALSE.,
-     +           X0,Y0,SIGMAX,SIGMAY,BETA,AMP,CTE,
-     +           EX0,EY0,ESIGMAX,ESIGMAY,EBETA,EAMP,ECTE,.FALSE.)
-                WRITE(*,100) 'Please confirm fit with mouse...'
+                IF(COFFSETS.EQ.'c')THEN
+                  CALL CENTROID(NCBUFF,'d',XC_,YC_,.FALSE.,
+     +             X0,Y0,SIGMAX,SIGMAY,BETA,AMP,CTE,
+     +             EX0,EY0,ESIGMAX,ESIGMAY,EBETA,EAMP,ECTE,.FALSE.)
+                  WRITE(*,100) 'Please confirm fit with mouse...'
+                ELSE
+                  X0 = XC_
+                  Y0 = YC_
+                  WRITE(*,100) 'Please confirm with mouse...'
+                END IF
                 CALL PGBAND(0,0,0.,0.,XDUMMY,YDUMMY,CH)
                 IF(CH.NE.'X')THEN
                   LREPEAT=.FALSE.
                   WRITE(*,101) 'OK!'
                 ELSE
-                  WRITE(*,100) 'last fit has been rejected!'
+                  IF(COFFSETS.EQ.'c')THEN
+                    WRITE(*,100) 'last fit has been rejected!'
+                  ELSE
+                    WRITE(*,100) 'last position has been rejected!'
+                  END IF
                   WRITE(*,101) ' Try again.'
                 END IF
               END DO
