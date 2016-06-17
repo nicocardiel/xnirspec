@@ -442,6 +442,9 @@ C..............................................................................
         NMAP=N
 C..............................................................................
 C matriz del primer sistema de ecuaciones a resolver
+C II: numero de ecuacion
+C JJ: numero de incognita dentro de la ecuacion
+C A(II,JJ): coeficiente de la ecuacion II e incognita JJ
         II=0
         DO L=0,N
           DO M=0,N-L
