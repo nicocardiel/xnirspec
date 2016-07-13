@@ -28,6 +28,9 @@ C------------------------------------------------------------------------------
         NLINES=NLINES+1
         GOTO 10
 98      CLOSE(10)
+        IF(NLINES.NE.1)THEN
+          ISYSTEM=SYSTEMFUNCTION('cat .tmp_input_file_xnirspec')
+        END IF
         ISYSTEM=SYSTEMFUNCTION('rm -f .tmp_input_file_xnirspec')
 C
         IF(NLINES.NE.1)THEN
