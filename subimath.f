@@ -29,7 +29,7 @@ C
         INTEGER ICUT,IWIDTH
         INTEGER NBOX_X,NBOX_Y
         INTEGER NEXTINFO
-        INTEGER NDEGREE,NCOEF
+        INTEGER NDEGREE,NCOEF,NCOEFDER
         INTEGER DI(9),DJ(9)
         INTEGER ISYSTEM
         INTEGER NX1_PLOT,NX2_PLOT,NY1_PLOT,NY2_PLOT
@@ -44,6 +44,7 @@ C
         REAL FSIGMA,TSIGMA
         REAL XF(NXMAX),YF(NYMAX)
         REAL COEF(20),CHISQR
+        REAL COEFDER(20)
         REAL FACTOR,SUMFACTOR
         REAL XOFFSET,YOFFSET,FI0,FJ0
         REAL THRESHOLD
@@ -52,7 +53,7 @@ C
         CHARACTER*1 CH,CZERO
         CHARACTER*1 COPER
         CHARACTER*1 CUTIL
-        CHARACTER*1 CFILT,CAXIS
+        CHARACTER*1 CFILT,CAXIS,CFUN_OR_DER
         CHARACTER*50 CDUMMY
         LOGICAL LDEFBUFF(NMAXBUFF)
         LOGICAL LEXIT,LCANCEL,LCONT,LASK
@@ -96,6 +97,7 @@ C
 C------------------------------------------------------------------------------
         NORIGEN=86
         CFILT='@'
+        CFUN_OR_DER='@'
         IWIDTH=3
         NBOX_X=3
         NBOX_Y=3
@@ -1154,6 +1156,8 @@ c
                     WRITE(CDUMMY,*) TSIGMA
                     TSIGMA=READF('Times sigma to exclude points',CDUMMY)
                   END IF
+                  CFUN_OR_DER(1:1)=READC('Function (1), derivative (2)',
+     +             CFUN_OR_DER,'12')
                 END IF
               ELSEIF(CFILT.EQ.'8')THEN
                 THRESHOLD=READF('Threshold','@')
@@ -1310,12 +1314,29 @@ c
                       ELSE
                         CALL POLFITSIG(K,XF,YF,TSIGMA,NCOEF-1,COEF,LFIT)
                       END IF
-                      IMAGEN(J,I,NBUFF1)=COEF(NCOEF)
-                      IF(NCOEF.GT.1)THEN
-                        DO K=NCOEF-1,1,-1
-                          IMAGEN(J,I,NBUFF1)=IMAGEN(J,I,NBUFF1)*REAL(J)+
-     +                     COEF(K)
-                        END DO
+                      IF(CFUN_OR_DER.EQ.'1')THEN !function
+                        IMAGEN(J,I,NBUFF1)=COEF(NCOEF)
+                        IF(NCOEF.GT.1)THEN
+                          DO K=NCOEF-1,1,-1
+                            IMAGEN(J,I,NBUFF1)=
+     +                       IMAGEN(J,I,NBUFF1)*REAL(J)+COEF(K)
+                          END DO
+                        END IF
+                      ELSE                       !derivative
+                        IMAGEN(J,I,NBUFF1)=0.0
+                        IF(NCOEF.GT.1)THEN
+                          DO K=2,NCOEF
+                            COEFDER(K-1)=(K-1)*COEF(K)
+                          END DO
+                          NCOEFDER=NCOEF-1
+                          IMAGEN(J,I,NBUFF1)=COEFDER(NCOEFDER)
+                          IF(NCOEFDER.GT.1)THEN
+                            DO K=NCOEFDER-1,1,-1
+                              IMAGEN(J,I,NBUFF1)=
+     +                         IMAGEN(J,I,NBUFF1)*REAL(J)+COEFDER(K)
+                            END DO
+                          END IF
+                        END IF
                       END IF
                     END DO
                     CALL SHOWPERC(NY1,NY2,1,I,NEXTINFO)
@@ -1343,12 +1364,29 @@ c
                       ELSE
                         CALL POLFITSIG(K,XF,YF,TSIGMA,NCOEF-1,COEF,LFIT)
                       END IF
-                      IMAGEN(J,I,NBUFF1)=COEF(NCOEF)
-                      IF(NCOEF.GT.1)THEN
-                        DO K=NCOEF-1,1,-1
-                          IMAGEN(J,I,NBUFF1)=IMAGEN(J,I,NBUFF1)*REAL(I)+
-     +                     COEF(K)
-                        END DO
+                      IF(CFUN_OR_DER.EQ.'1')THEN !function
+                        IMAGEN(J,I,NBUFF1)=COEF(NCOEF)
+                        IF(NCOEF.GT.1)THEN
+                          DO K=NCOEF-1,1,-1
+                            IMAGEN(J,I,NBUFF1)=
+     +                       IMAGEN(J,I,NBUFF1)*REAL(I)+COEF(K)
+                          END DO
+                        END IF
+                      ELSE                       !derivative
+                        IMAGEN(J,I,NBUFF1)=0.0
+                        IF(NCOEF.GT.1)THEN
+                          DO K=2,NCOEF
+                            COEFDER(K-1)=(K-1)*COEF(K)
+                          END DO
+                          NCOEFDER=NCOEF-1
+                          IMAGEN(J,I,NBUFF1)=COEFDER(NCOEFDER)
+                          IF(NCOEFDER.GT.1)THEN
+                            DO K=NCOEFDER-1,1,-1
+                              IMAGEN(J,I,NBUFF1)=
+     +                         IMAGEN(J,I,NBUFF1)*REAL(I)+COEFDER(K)
+                            END DO
+                          END IF
+                        END IF
                       END IF
                     END DO
                     CALL SHOWPERC(NX1,NX2,1,J,NEXTINFO)
