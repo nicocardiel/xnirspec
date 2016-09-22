@@ -1092,6 +1092,8 @@ C la operacion 'f' (filter) puede hacerse ya
               WRITE(*,101) '(7) 1-D: 1,0,1,0,...,1,...,0,1,0,1 filter'
               WRITE(*,101) '(8) Set to zero below threshold'
               WRITE(*,101) '(9) Set to constant for data in a range'
+              WRITE(*,101) '(x) Reverse image in the x direction'
+              WRITE(*,101) '(y) Reverse image in the y direction'
               WRITE(*,*)
               WRITE(*,100) '* Note: so far these operations are not'
               WRITE(*,101) ' translated to the error frames,'
@@ -1099,7 +1101,7 @@ C la operacion 'f' (filter) puede hacerse ya
               WRITE(*,101) 'r.m.s. is stored in the associated '
               WRITE(*,101) '  error buffer'
               WRITE(*,*)
-              CFILT(1:1)=READC('Option',CFILT,'0123456789')
+              CFILT(1:1)=READC('Option',CFILT,'0123456789xy')
 c
               NAXIS(1,NBUFF1)=NAXIS(1,NBUFF0)
               NAXIS(2,NBUFF1)=NAXIS(2,NBUFF0)
@@ -1168,7 +1170,19 @@ c
               END IF
 c
               NEXTINFO=0
-              IF(CFILT.EQ.'8')THEN
+              IF(CFILT.EQ.'x')THEN
+                DO I=NY1,NY2
+                  DO J=NX1,NX2
+                    IMAGEN(J,I,NBUFF1)=IMAGEN(NX2+NX1-J,I,NBUFF0)
+                  END DO
+                END DO
+              ELSEIF(CFILT.EQ.'y')THEN
+                DO I=NY1,NY2
+                  DO J=NX1,NX2
+                    IMAGEN(J,I,NBUFF1)=IMAGEN(J,NY2+NY1-I,NBUFF0)
+                  END DO
+                END DO
+              ELSEIF(CFILT.EQ.'8')THEN
                 DO I=NY1,NY2
                   DO J=NX1,NX2
                     IF(IMAGEN(J,I,NBUFF0).LT.THRESHOLD)THEN
