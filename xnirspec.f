@@ -153,7 +153,8 @@ C otras variables
         CHARACTER*255 OFFFILE                          !generic input file name
         CHARACTER*255 INFILE(NMAXBUFF)                         !input file name
         CHARACTER*255 WAVEFILE  !file name of polynomial wavelength calibration
-        CHARACTER*255 OUTFILE                          !generic input file name
+        CHARACTER*255 OUTFILE                         !generic output file name
+        CHARACTER*255 HDRFILE                         !generic output file name
         CHARACTER*255 NEWDEV      !generic output file name for postscript plot
         CHARACTER*255 FILELISTIN             !file name with list of FITS files
         CHARACTER*255 FILELISTOUT            !file name with list of FITS files
@@ -1019,10 +1020,8 @@ C
 C------------------------------------------------------------------------------
           ELSEIF(NB.EQ.2)THEN
             CALL BUTTON(NB,'[s]ave',5)
-            LOGFILE=.TRUE.
-            LOGFILERR=.FALSE.
-            CSAVE(1:1)=READC('[f]its or [r]educeme format (f/r/x)',
-     +       CSAVE,'frx')
+            CSAVE(1:1)=READC('[f/F]its or [r]educeme format (f/F/r/x)',
+     +       CSAVE,'fFrx')
             IF(CSAVE.NE.'x')THEN
               IF(NCBUFF.LE.NMAXBUFF/2)THEN
                 CSAVEERR(1:1)=
@@ -1030,8 +1029,10 @@ C------------------------------------------------------------------------------
               ELSE
                 CSAVEERR='n'
               END IF
+              LOGFILE=.TRUE.
+              LOGFILERR=.FALSE.
               DO WHILE(LOGFILE)
-                IF(CSAVE.EQ.'f')THEN
+                IF((CSAVE.EQ.'f').OR.(CSAVE.EQ.'F'))THEN
                   OUTFILE=READC('Output FITS file name (none=EXIT)',
      +             '*.fits','@')
                 ELSE
@@ -1056,10 +1057,40 @@ C------------------------------------------------------------------------------
                   END IF
                 END IF
               END DO
+              IF(.NOT.LOGFILERR)THEN
+                IF(CSAVE.EQ.'F')THEN
+                  LOGFILE=.FALSE.
+                  LOGFILERR=.FALSE.
+                  DO WHILE(.NOT.LOGFILE)
+                    WRITE(*,101)'* Including header from other file'
+                    HDRFILE=READC('Header FITS file name (none=EXIT)',
+     +               '*.fits','@')
+                    IF((INDEX(HDRFILE,'*').NE.0).OR.
+     +               (INDEX(HDRFILE,'?').NE.0))THEN
+                      L1=TRUEBEG(HDRFILE)
+                      L2=TRUELEN(HDRFILE)
+                      ISYSTEM=SYSTEMFUNCTION('ls '//HDRFILE(L1:L2))
+                    ELSEIF(HDRFILE.EQ.'none')THEN
+                      LOGFILE=.TRUE.
+                      LOGFILERR=.TRUE.
+                    ELSE
+                      INQUIRE(FILE=HDRFILE,EXIST=LOGFILE)
+                      IF(.NOT.LOGFILE)THEN
+                        WRITE(*,101) '***ERROR***'
+                        WRITE(*,100) '=> This file does not exist.'
+                        WRITE(*,100) ' Try again. (press <CR>...)'
+                        READ(*,*)
+                      END IF
+                    END IF
+                  END DO
+                END IF
+              END IF
               IF(.NOT.LOGFILERR)THEN               !the file name is not 'none'
                 WRITE(*,101) 'Writting file...'
                 IF(CSAVE.EQ.'f')THEN
-                  CALL SESCRFITS(OUTFILE,NCBUFF)
+                  CALL SESCRFITS(OUTFILE,NCBUFF,'none')
+                ELSEIF(CSAVE.EQ.'F')THEN
+                  CALL SESCRFITS(OUTFILE,NCBUFF,HDRFILE)
                 ELSE
                   CALL SESCRREDU(OUTFILE,NCBUFF,.FALSE.)
                 END IF
@@ -1068,7 +1099,7 @@ C------------------------------------------------------------------------------
                   LOGFILE=.TRUE.
                   CALL GUESSEF(OUTFILE,ERRFILE)
                   DO WHILE(LOGFILE)
-                    IF(CSAVE.EQ.'f')THEN
+                    IF((CSAVE.EQ.'f').OR.(CSAVE.EQ.'F'))THEN
                       ERRFILE=READC('Output FITS error file name',
      +                 ERRFILE,'@')
                     ELSE
@@ -1093,7 +1124,9 @@ C------------------------------------------------------------------------------
                   END DO
                   WRITE(*,100) 'Writting file...'
                   IF(CSAVE.EQ.'f')THEN
-                    CALL SESCRFITS(ERRFILE,NCBUFF+NMAXBUFF/2)
+                    CALL SESCRFITS(ERRFILE,NCBUFF+NMAXBUFF/2,'none')
+                  ELSEIF(CSAVE.EQ.'F')THEN
+                    CALL SESCRFITS(ERRFILE,NCBUFF+NMAXBUFF/2,HDRFILE)
                   ELSE
                     CALL SESCRREDU(ERRFILE,NCBUFF+NMAXBUFF/2,.TRUE.)
                   END IF

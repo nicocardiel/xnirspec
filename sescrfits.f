@@ -1,10 +1,11 @@
 C
 C******************************************************************************
 C Subrutina para escribir una image FITS
-        SUBROUTINE SESCRFITS(FITSFILE,NCBUFF)
+        SUBROUTINE SESCRFITS(FITSFILE,NCBUFF,HDRFILE)
         IMPLICIT NONE
         CHARACTER*(*) FITSFILE
         INTEGER NCBUFF
+        CHARACTER*(*) HDRFILE
 C
         INTEGER NBOXMAX
         PARAMETER (NBOXMAX=9)
@@ -161,6 +162,36 @@ C si estamos en Box-9, copiamos los header de las imagenes de referencia
               CALL FTPREC(IUNIT,RECORD,ISTATUS) 
             END DO
             CALL FTCLOS(IUNIT_,ISTATUS)
+          ELSE
+C si HDRFILE no es 'none' salvamos el header de una imagen externa
+            IF(HDRFILE.NE.'none')THEN
+              READWRITE=0 !solo lectura
+              CALL FTOPEN(IUNIT_,HDRFILE,READWRITE,BLOCKSIZE,ISTATUS)
+              CALL FTGHSP(IUNIT_,NKEYS,NSPACE,ISTATUS)
+              WRITE(*,100) 'KEYS='
+              WRITE(*,*) NKEYS
+              WRITE(*,101) 'NOTE: the first keywords of the header'
+              WRITE(*,101) 'template file will be skipped since they'
+              WRITE(*,101) 'have already been written by this program.'
+              WRITE(*,101) 'In particular:'
+              WRITE(*,101) 'SIMPLE  =                    T'
+              WRITE(*,101) 'BITPIX  =                  -32'
+              WRITE(*,101) 'NAXIS   =                    2'
+              WRITE(*,101) 'NAXIS1  =                 ????'
+              WRITE(*,101) 'NAXIS2  =                 ????'
+              WRITE(*,101) ' '
+              WRITE(*,101) 'So, you must know the actual number of'
+              WRITE(*,101) 'keywords including the NAXIS2 description.'
+              NSKIP=READI('No. of initial keywords to be skipped','5')
+              DO I=1,NSKIP
+                CALL FTGREC(IUNIT_,I,RECORD,ISTATUS)
+              END DO
+              DO I=NSKIP+1,NKEYS
+                CALL FTGREC(IUNIT_,I,RECORD,ISTATUS)
+                CALL FTPREC(IUNIT,RECORD,ISTATUS) 
+              END DO
+              CALL FTCLOS(IUNIT_,ISTATUS)
+            END IF
           END IF
 C salvamos la imagen
           DO I=1,NAXIS_(2,NCBUFF)
