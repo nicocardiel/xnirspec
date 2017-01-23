@@ -35,6 +35,7 @@ C Cuando se decidio rotar las imagenes para tener dispersion en el
 C eje X y direccion espacial en el eje Y, BL se convirtio en polinomios 
 C en la direccion espectral de la forma y=f(x), y BA en polinomios en la 
 C direccion espacial de la forma x=g(y).
+        INTEGER NXYMAX_
         INTEGER NDEGBL(NXYMAX),NDEGBA(NXYMAX)  !polynomial degrees for boundary
         INTEGER NDEGBL00,NDEGBA00                 !maximum of NDEGBL and NDEGBA
         INTEGER NLINBL,NLINBA            !number of BL and BA lines in boundary
@@ -253,7 +254,19 @@ C
         NNY1_=0 !evita WARNING de compilacion
 C------------------------------------------------------------------------------
         WRITE(*,101) 'Welcome to NIRSPEC'
-        WRITE(*,101) 'This is version 4.2'
+        WRITE(*,101) 'This is version 5.0'
+C------------------------------------------------------------------------------
+        NXYMAX_ = AMAX0(NXMAX, NYMAX)
+        IF(NXYMAX.NE.NXYMAX_)THEN
+          WRITE(*,100) 'NXMAX...: '
+          WRITE(*,*) NXMAX
+          WRITE(*,100) 'NYMAX...: '
+          WRITE(*,*) NYMAX
+          WRITE(*,100) 'NXYMAX..: '
+          WRITE(*,*) NXYMAX
+          WRITE(*,101) 'FATAL ERROR: NXYMAX must be set to the '//
+     +     'MAX(NXMAX,NYMAX) value in configure.ac'
+        END IF
 C------------------------------------------------------------------------------
         NCBUFF=1
         DO K=1,NMAXBUFF
