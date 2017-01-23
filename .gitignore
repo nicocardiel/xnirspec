@@ -1,0 +1,25 @@
+syntax: glob
+.gitignore~
+
+src/*.dSYM
+src/*.o
+
+Makefile
+Makefile.in
+aclocal.m4
+autom4te.cache/
+compile
+config.h
+config.h.in
+config.log
+config.status
+configure
+install-sh
+missing
+src/Makefile
+src/Makefile.in
+src/dimensions.inc
+src/largest.inc
+src/sexpath.inc
+src/xnirspec
+stamp-h1
