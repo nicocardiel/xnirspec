@@ -132,3 +132,5 @@ xnirspec.f \
 ycut.f \
 zoomhistog.f \
 zscale.f
+
+xnirspec_LDADD = $(CFITSIO_LIBS) $(PGPLOT_LDFLAGS)
