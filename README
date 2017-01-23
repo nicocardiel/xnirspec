@@ -1,0 +1,13 @@
+This is xnirspec, a Fortran 77 program that helps to visualise and manipulate
+FITS images. The program was originally written by its author to reduce
+spectroscopic data obtained with near-infrared spectrograph NIRSPEC, installed
+in one of the Keck Telescopes (Hawaii). 
+
+The program is first mentioned in Cardiel et al. (2003, ApJ, 584, 76; 
+see http://adsabs.harvard.edu/abs/2003ApJ...584...76C)
+
+This software is distributed under GPL, either version 3 of the License, or
+(at your option) any later version. See the file COPYING for details.
+
+Maintainer: Nicolás Cardiel, cardiel@ucm.es
+Webpage (source): https://github.com/nicocardiel/xnirspec
