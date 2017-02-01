@@ -479,7 +479,12 @@ ccc               FAREATOT=1.0 !lo sabemos, por lo que no hacemos PPOLYN
                   CALL SRCPAT(4,XCOR1,4,XCOR2,NCOR,XCOM)
                   IF(NCOR.GT.0)THEN
                     CALL PPOLYN(NCOR,XCOM,FAREA)
-                    IF(IMAGEN(JJ,II,NEWBUFF1).GT.0)THEN
+                    !!!la siguiente línea está comentada porque hacía
+                    !que el método sólo funcionara cuando la señal del
+                    !cielo es positiva; sin embargo, nos interesa poder
+                    !utilizarlo cuando quiero restar residuos de cielo,
+                    !que pueden tener valores positivos y negativos.
+                    !IF(IMAGEN(JJ,II,NEWBUFF1).GT.0)THEN
                       !La clave está en redistribuir la señal en el pixel
                       !IMAGEN(JJ,II,NCBUFF) usando la informacion del espectro
                       !anterior XCUT(J). Para ello calculamos qué fracción
@@ -515,7 +520,9 @@ ccc               FAREATOT=1.0 !lo sabemos, por lo que no hacemos PPOLYN
 !!!     +                   IMAGEN(JJ,II,NCBUFF+NMAXBUFF/2)*
 !!!     +                   FAREA*FAREA!!!/(FAREATOT*FAREATOT)
 !!!                      END IF
-                    END IF
+                    !!!la siguiente línea está comentada por la
+                    !explicación que se da más arriba
+                    !END IF
                   END IF
                 END DO
               END DO
