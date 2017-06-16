@@ -382,11 +382,11 @@ C..............................................................................
           WRITE(*,100) 'Creating file: '
           WRITE(*,100) OUTFILE(L1:L2)
           WRITE(*,100) '...'
-          CALL SESCRFITS(OUTFILE(L1:L2),NEWBUFF1)
+          CALL SESCRFITS(OUTFILE(L1:L2),NEWBUFF1,'none')
           CALL GUESSEF(OUTFILE(L1:L2),ERRFILE)
           L1=TRUEBEG(ERRFILE)
           L2=TRUELEN(ERRFILE)
-          CALL SESCRFITS(ERRFILE(L1:L2),NEWBUFF1+NMAXBUFF/2)
+          CALL SESCRFITS(ERRFILE(L1:L2),NEWBUFF1+NMAXBUFF/2,'none')
           WRITE(*,101) 'OK!'
         END DO
 C

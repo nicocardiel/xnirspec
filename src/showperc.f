@@ -57,7 +57,7 @@ C
         IF((FN2-FN1)/FISTEP.GT.10.)THEN
           IF(I-N1.GE.NINT((FN2-FN1)/10.*FNEXTINFO))THEN
             IF(NEXTINFO.EQ.10)THEN
-              WRITE(*,'(A8)'),'100% OK!'
+              WRITE(*,'(A8)') '100% OK!'
               NEXTINFO=NEXTINFO+1
             ELSE
               WRITE(*,'(I3,A6,$)')10*NEXTINFO,'%,... '

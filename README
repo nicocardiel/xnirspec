@@ -11,3 +11,7 @@ This software is distributed under GPL, either version 3 of the License, or
 
 Maintainer: Nicolás Cardiel, cardiel@ucm.es
 Webpage (source): https://github.com/nicocardiel/xnirspec
+
+Installation example (Mac OSX):
+
+$ ./configure F77=gfortran-mp-6 SEXPATH=/usr/local/bin

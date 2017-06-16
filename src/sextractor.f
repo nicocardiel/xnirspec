@@ -216,7 +216,7 @@ C..............................................................................
               END IF
               WRITE(*,101) '> Creating new file xyzxyzxyz.fits'
               FITSFILE='xyzxyzxyz.fits'
-              CALL SESCRFITS(FITSFILE,NCBUFF)
+              CALL SESCRFITS(FITSFILE,NCBUFF,'none')
               L1=TRUEBEG(SEXPATH)
               L2=TRUELEN(SEXPATH)
               IF(L_PHOTFLAM(NCBUFF).AND.L_PHOTZPT(NCBUFF).AND.
