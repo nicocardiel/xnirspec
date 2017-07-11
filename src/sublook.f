@@ -14,12 +14,14 @@ C
         REAL BG,FG
         REAL TR(6)                          !auxiliary matrix for PGIMAG/PGGRAY
         CHARACTER*255 INFILE(NMAXBUFF)
+        LOGICAL LDS9REG(NMAXBUFF)
 C common blocks
         COMMON/BLKIMAGEN1/IMAGEN             !imagen FITS leida en formato REAL
         COMMON/BLKBGFG/BG,FG
         COMMON/BLKJUST/JUST
         COMMON/BLKXYLIMPLOT/NX1,NX2,NY1,NY2
         COMMON/BLKINFILE/INFILE
+        COMMON/BLKLDS9REG/LDS9REG
 C------------------------------------------------------------------------------
         TR(1)=0.
         TR(2)=1.
@@ -53,5 +55,7 @@ C------------------------------------------------------------------------------
           CALL PGMTXT('T',1.0,0.5,0.5,INFILE(NCBUFF))
           CALL PGSCI(1)
         END IF
+C------------------------------------------------------------------------------
+        IF(LDS9REG(NCBUFF)) CALL PLOTDS9REG(NCBUFF)
 C------------------------------------------------------------------------------
         END

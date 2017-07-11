@@ -160,6 +160,7 @@ C otras variables
         CHARACTER*255 FILELISTIN             !file name with list of FITS files
         CHARACTER*255 FILELISTOUT            !file name with list of FITS files
         CHARACTER*255 FILEOFFSET
+        CHARACTER*255 DS9REGFILE(NMAXBUFF)                    !ds9 region files
         LOGICAL LEXIT                              !govern the main button loop
         LOGICAL LBEXIST                !button selected with keyboard is active
         LOGICAL LOGFILE,LOGFILERR             !govern the reading of a new file
@@ -175,6 +176,7 @@ C otras variables
         LOGICAL L_PHOTFLAM(NMAXBUFF),L_PHOTZPT(NMAXBUFF)              !HST flux
         LOGICAL L_EXPTIME(NMAXBUFF)                                   !HST flux
         LOGICAL LOVERCUTS
+        LOGICAL LDS9REG(NMAXBUFF)               !if .TRUE. overplot ds9 regions
 C common blocks
         COMMON/BLKIMAGEN1/IMAGEN             !imagen FITS leida en formato REAL
         COMMON/BLKIMAGEN1_/IMAGEN_              !es global para ahorrar memoria
@@ -221,6 +223,8 @@ C common blocks
         COMMON/BLK_HSTFLUX2/PHOTFLAM,PHOTZPT,EXPTIME !concerning HST flux cal.
         COMMON/BLKREDUCEME/STWV,DISP,AIRMASS,TIMEXPOS
         COMMON/BLKLOVERCUTS/LOVERCUTS
+        COMMON/BLKLDS9REG/LDS9REG
+        COMMON/BLKDS9REGFILE/DS9REGFILE
 C------------------------------------------------------------------------------
 C------------------------------------------------------------------------------
 C Note: the pattern of the frames in box-9 is the following:
@@ -280,6 +284,7 @@ C------------------------------------------------------------------------------
           PHOTFLAM(K)=0.0
           PHOTZPT(K)=0.0
           EXPTIME(K)=0.0
+          LDS9REG(K)=.FALSE.
         END DO
 C
         LFIRSTPLOT=.TRUE.
@@ -2071,8 +2076,9 @@ C------------------------------------------------------------------------------
             WRITE(*,101) '(1) run SExtractor'
             WRITE(*,101) '(2) estimate slit aperture correction'
             WRITE(*,101) '(3) shift one image relative to another'
+            WRITE(*,101) '(4) overplot ds9 regions'
             WRITE(*,101) '(0) exit'
-            CSPECIAL(1:1)=READC('Option (0..2)','0','0123')
+            CSPECIAL(1:1)=READC('Option (0..4)','0','01234')
             IF(CSPECIAL.EQ.'0')THEN
             ELSEIF(CSPECIAL.EQ.'1')THEN
               CALL SEXTRACTOR(NCBUFF)
@@ -2080,6 +2086,27 @@ C------------------------------------------------------------------------------
               CALL SLIT_APERTURE(NCBUFF)
             ELSEIF(CSPECIAL.EQ.'3')THEN
               CALL SHIFTIMAGE
+            ELSEIF(CSPECIAL.EQ.'4')THEN
+              LOGFILE=.FALSE.
+              DO WHILE(.NOT.LOGFILE)
+                INFILE_=READC(
+     +           'Input ds9 file name (none=EXIT)','*.reg','@')
+                IF((INDEX(INFILE_,'*').NE.0).OR.
+     +           (INDEX(INFILE_,'?').NE.0))THEN
+                  L1=TRUEBEG(INFILE_)
+                  L2=TRUELEN(INFILE_)
+                  ISYSTEM=SYSTEMFUNCTION('ls '//INFILE_(L1:L2))
+                ELSEIF(INFILE_.EQ.'none')THEN
+                  LOGFILE=.TRUE.
+                ELSE
+                  INQUIRE(FILE=INFILE_,EXIST=LOGFILE)
+                  IF(LOGFILE)THEN
+                    LDS9REG(NCBUFF)=.TRUE.
+                    DS9REGFILE(NCBUFF)=INFILE_
+                    CALL SUBLOOK(.TRUE.,NCBUFF,.FALSE.)
+                  END IF
+                END IF
+              END DO
             END IF
             CALL BUTTON(NB,'[.]special',0)
 C------------------------------------------------------------------------------
