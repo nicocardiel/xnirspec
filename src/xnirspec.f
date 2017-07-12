@@ -2088,25 +2088,43 @@ C------------------------------------------------------------------------------
               CALL SHIFTIMAGE
             ELSEIF(CSPECIAL.EQ.'4')THEN
               LOGFILE=.FALSE.
+              LOGFILERR=.FALSE.
               DO WHILE(.NOT.LOGFILE)
                 INFILE_=READC(
-     +           'Input ds9 file name (none=EXIT)','*.reg','@')
+     +           'Input ds9 file name (none=EXIT, NONE=delete region)',
+     +           '*.reg','@')
                 IF((INDEX(INFILE_,'*').NE.0).OR.
-     +           (INDEX(INFILE_,'?').NE.0))THEN
+     +             (INDEX(INFILE_,'?').NE.0))THEN
                   L1=TRUEBEG(INFILE_)
                   L2=TRUELEN(INFILE_)
                   ISYSTEM=SYSTEMFUNCTION('ls '//INFILE_(L1:L2))
                 ELSEIF(INFILE_.EQ.'none')THEN
                   LOGFILE=.TRUE.
+                  LOGFILERR=.TRUE.
+                ELSEIF(INFILE_.EQ.'NONE')THEN
+                  LOGFILE=.TRUE.
+                  LOGFILERR=.TRUE.
+                  LDS9REG(NCBUFF)=.FALSE.
                 ELSE
                   INQUIRE(FILE=INFILE_,EXIST=LOGFILE)
-                  IF(LOGFILE)THEN
-                    LDS9REG(NCBUFF)=.TRUE.
-                    DS9REGFILE(NCBUFF)=INFILE_
-                    CALL SUBLOOK(.TRUE.,NCBUFF,.FALSE.)
+                  IF(.NOT.LOGFILE)THEN
+                    !Try adding extension .reg
+                    L1=TRUEBEG(INFILE_)
+                    L2=TRUELEN(INFILE_)
+                    INFILE_=INFILE_(L1:L2)//'.reg'
+                    INQUIRE(FILE=INFILE_,EXIST=LOGFILE)
+                    IF(.NOT.LOGFILE)THEN
+                      WRITE(*,101) 'This file does not exist. Try again'
+                      WRITE(*,101) INFILE_(L1:L2)
+                    END IF
                   END IF
                 END IF
               END DO
+              IF((LOGFILE).AND.(.NOT.LOGFILERR))THEN
+                LDS9REG(NCBUFF)=.TRUE.
+                DS9REGFILE(NCBUFF)=INFILE_
+                CALL SUBLOOK(.TRUE.,NCBUFF,.FALSE.)
+              END IF
             END IF
             CALL BUTTON(NB,'[.]special',0)
 C------------------------------------------------------------------------------
