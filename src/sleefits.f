@@ -213,7 +213,7 @@ C las magnitudes con SExtractor
           END IF
         END IF
 C leemos la imagen
-        IF(BITPIX.EQ.16)THEN
+        IF((BITPIX.EQ.8).OR.(BITPIX.EQ.16))THEN
           DO I=1,NAXIS_(2)
             FIRSTPIX=(I-1)*NAXIS_(1)+1
             CALL FTGPFJ(IUNIT,1,FIRSTPIX,NAXIS_(1),JROW(1),LROW(1),
