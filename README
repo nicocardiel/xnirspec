@@ -15,6 +15,6 @@ Webpage (source): https://github.com/nicocardiel/xnirspec
 Installation example (Mac OSX):
 
 $ autoreconf -s -i -f
-$ ./configure F77=gfortran-mp-6 SEXPATH=/usr/local/bin
+$ ./configure F77=gfortran-mp-7 SEXPATH=/usr/local/bin
 $ make
 $ sudo make install
