@@ -34,6 +34,7 @@ C
         INTEGER ISYSTEM
         INTEGER NX1_PLOT,NX2_PLOT,NY1_PLOT,NY2_PLOT
         REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
+        REAL CRPIX1(NMAXBUFF),CRVAL1(NMAXBUFF),CDELT1(NMAXBUFF)
         REAL PIXEL(NXYMAX*NXYMAX) !OJO: para no consumir mas memoria, esta
                                   !     variable utiliza el mismo common que
                                   !     la variable IMAGEN_
@@ -55,6 +56,7 @@ C
         CHARACTER*1 CUTIL
         CHARACTER*1 CFILT,CAXIS,CFUN_OR_DER
         CHARACTER*50 CDUMMY
+        LOGICAL LWAVECAL(NMAXBUFF)
         LOGICAL LDEFBUFF(NMAXBUFF)
         LOGICAL LEXIT,LCANCEL,LCONT,LASK
         LOGICAL LDIVZERO
@@ -64,6 +66,8 @@ C
 C
         COMMON/BLKIMAGEN1/IMAGEN             !imagen FITS leida en formato REAL
         COMMON/BLKIMAGEN1_/PIXEL                !es global para ahorrar memoria
+        COMMON/BLKWAVECAL1/CRPIX1,CRVAL1,CDELT1         !wavelength calibration
+        COMMON/BLKWAVECAL2/LWAVECAL                     !wavelength calibration
         COMMON/BLKNAXIS/NAXIS                                      !dimensiones
         COMMON/BLKNFRAMES/NFRAMES
         COMMON/BLKDEFAULTS3/TSIGMA
@@ -744,6 +748,10 @@ C la operacion '<' puede hacerse ya
               NAXIS(1,NBUFF0)=NAXIS(1,NBUFF1)
               NAXIS(2,NBUFF0)=NAXIS(2,NBUFF1)
               NFRAMES(NBUFF0)=NFRAMES(NBUFF1)
+              LWAVECAL(NBUFF0)=LWAVECAL(NBUFF1)
+              CRPIX1(NBUFF0)=CRPIX1(NBUFF1)
+              CRVAL1(NBUFF0)=CRVAL1(NBUFF1)
+              CDELT1(NBUFF0)=CDELT1(NBUFF1)
               DO I=1,NAXIS(2,NBUFF0)
                 DO J=1,NAXIS(1,NBUFF0)
                   IMAGEN(J,I,NBUFF0)=IMAGEN(J,I,NBUFF1)
