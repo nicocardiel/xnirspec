@@ -61,7 +61,7 @@ C otras variables
         INTEGER PGOPEN                                         !PGPLOT function
         INTEGER ID,IDNEW              !identification number of graphic display
         INTEGER NB,NBLOCAL                           !number of selected button
-        INTEGER L1,L2,L3                 !TRUEBEG and TRUELEN of generic string
+        INTEGER L1,L2,L3,L4              !TRUEBEG and TRUELEN of generic string
         INTEGER ISYSTEM              !returned value of function SYSTEMFUNCTION
         INTEGER NAXIS(2,NMAXBUFF)                             !image dimensions
         INTEGER NAXIS1_,NAXIS2_                               !image dimensions
@@ -132,6 +132,7 @@ C otras variables
         REAL XOFFSET_ORIGEN,YOFFSET_ORIGEN           !origen para medir offsets
         REAL STWV,DISP,AIRMASS,TIMEXPOS
         REAL MASKVALUE                        !value to be masked in statistics
+        REAL CRPIX1(NMAXBUFF),CRVAL1(NMAXBUFF),CDELT1(NMAXBUFF)  !wavel. calib.
         CHARACTER*1 CH                            !mouse button or keyboard key
         CHARACTER*1 CDUM                             !dum character*1 variables
         CHARACTER*1 CSAVE               !choose between FITS or REDUCEME format
@@ -146,7 +147,7 @@ C otras variables
         CHARACTER*1 COFFSET !indicates whether we measure offsets with centroid
         CHARACTER*1 CSPECIAL               !option in menu of special utilities
         CHARACTER*1 COFFSETS       !mode to compute offsets with list of images
-        CHARACTER*20 CIXC,CIYC,CSIGNAL     !character strings to display cursor
+        CHARACTER*20 CIXC,CWXC,CIYC,CSIGNAL!character strings to display cursor
         CHARACTER*50 CDUMMY                             !dum character variable
         CHARACTER*255 TTER                                    !graphics display
         CHARACTER*250 CLINBUT               !character string with accelerators
@@ -177,6 +178,7 @@ C otras variables
         LOGICAL L_EXPTIME(NMAXBUFF)                                   !HST flux
         LOGICAL LOVERCUTS
         LOGICAL LDS9REG(NMAXBUFF)               !if .TRUE. overplot ds9 regions
+        LOGICAL LWAVECAL(NMAXBUFF) !if .TRUE., image has wavelength calibration
 C common blocks
         COMMON/BLKIMAGEN1/IMAGEN             !imagen FITS leida en formato REAL
         COMMON/BLKIMAGEN1_/IMAGEN_              !es global para ahorrar memoria
@@ -225,6 +227,8 @@ C common blocks
         COMMON/BLKLOVERCUTS/LOVERCUTS
         COMMON/BLKLDS9REG/LDS9REG
         COMMON/BLKDS9REGFILE/DS9REGFILE
+        COMMON/BLKWAVECAL1/CRPIX1,CRVAL1,CDELT1
+        COMMON/BLKWAVECAL2/LWAVECAL
 C------------------------------------------------------------------------------
 C------------------------------------------------------------------------------
 C Note: the pattern of the frames in box-9 is the following:
@@ -569,12 +573,23 @@ c..............................................................................
      +             (IYC.LE.NY2))THEN
                   WRITE(CIXC,*) XC
                   CALL RMBLANK(CIXC,CIXC,L1)
+                  IF(LWAVECAL(NCBUFF))THEN
+                    WRITE(CWXC,*) (XC-CRPIX1(NCBUFF))*CDELT1(NCBUFF)+
+     +               CRVAL1(NCBUFF)
+                    CALL RMBLANK(CWXC,CWXC,L2)
+                  END IF
                   WRITE(CIYC,*) YC
-                  CALL RMBLANK(CIYC,CIYC,L2)
+                  CALL RMBLANK(CIYC,CIYC,L3)
                   WRITE(CSIGNAL,*) IMAGEN(IXC,IYC,NCBUFF)
-                  CALL RMBLANK(CSIGNAL,CSIGNAL,L3)
-                  WRITE(*,101) '=> Cursor at X='//CIXC(1:L1)//
-     +             ', Y='//CIYC(1:L2)//', signal='//CSIGNAL(1:L3)
+                  CALL RMBLANK(CSIGNAL,CSIGNAL,L4)
+                  IF(LWAVECAL(NCBUFF))THEN
+                    WRITE(*,101) '=> Cursor at X='//CIXC(1:L1)//
+     +               ', WV='//CWXC(1:L2)//
+     +               ', Y='//CIYC(1:L3)//', signal='//CSIGNAL(1:L4)
+                  ELSE
+                    WRITE(*,101) '=> Cursor at X='//CIXC(1:L1)//
+     +               ', Y='//CIYC(1:L3)//', signal='//CSIGNAL(1:L4)
+                  END IF
                   IF(LMAPPING)THEN
                     CALL FMAP(NMAP,AIJ,BIJ,XC,YC,U,V)
                     WRITE(CIXC,*) U

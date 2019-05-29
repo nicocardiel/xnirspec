@@ -27,6 +27,10 @@ C funciones auxiliares
         INTEGER TRUELEN
 C variables globales (COMMONs)
         REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
+        REAL CRPIX1(NMAXBUFF),CRVAL1(NMAXBUFF),CDELT1(NMAXBUFF)
+        LOGICAL LWAVECAL(NMAXBUFF)
+        REAL STWV,DISP
+        REAL AIRMASS,TIMEXPOS
         LOGICAL LNULL(NXMAX,NYMAX,NMAXBUFF),ANYNULL
         INTEGER NAXIS(2,NMAXBUFF)
 C variables locales
@@ -53,6 +57,9 @@ C variables locales
 C
         COMMON/BLKIMAGEN1/IMAGEN             !imagen FITS leida en formato REAL
         COMMON/BLKIMAGEN1_/IMAGEN_              !es global para ahorrar memoria
+        COMMON/BLKWAVECAL1/CRPIX1,CRVAL1,CDELT1         !wavelength calibration
+        COMMON/BLKWAVECAL2/LWAVECAL                     !wavelength calibration
+        COMMON/BLKREDUCEME/STWV,DISP,AIRMASS,TIMEXPOS     !Reduceme header info
         COMMON/BLKLNULL/LNULL,ANYNULL   !mascara que indica si existen NaN, etc
         COMMON/BLKNAXIS/NAXIS                                      !dimensiones
         COMMON/BLK_HSTFLUX1/L_PHOTFLAM,L_PHOTZPT,L_EXPTIME !keywords with info
@@ -212,6 +219,33 @@ C las magnitudes con SExtractor
             L_EXPTIME(IBUFF)=.TRUE.
           END IF
         END IF
+C leemos calibracion en longitud de onda
+        LWAVECAL(NEWBUFF)=.TRUE.           !salvo que se demuestre lo contrario
+        CALL FTGKYE(IUNIT,'CRPIX1',CRPIX1(NEWBUFF),COMMENT,ISTATUS)
+        IF(ISTATUS.GT.0)THEN
+          CRPIX1(NEWBUFF)=1.0
+          ISTATUS=0
+        END IF
+        CALL FTGKYE(IUNIT,'CRVAL1',CRVAL1(NEWBUFF),COMMENT,ISTATUS)
+        IF(ISTATUS.GT.0)THEN
+          LWAVECAL(NEWBUFF)=.FALSE.
+          CRVAL1(NEWBUFF)=0.0
+          ISTATUS=0
+        END IF
+        CALL FTGKYE(IUNIT,'CDELT1',CDELT1(NEWBUFF),COMMENT,ISTATUS)
+        IF(ISTATUS.GT.0)THEN
+          LWAVECAL(NEWBUFF)=.FALSE.
+          CDELT1(NEWBUFF)=0.0
+          ISTATUS=0
+        END IF
+        IF(LWAVECAL(NEWBUFF))THEN
+          WRITE(*,100) 'CFITSIO> CRPIX1: '
+          WRITE(*,*) CRPIX1(NEWBUFF)
+          WRITE(*,100) 'CFITSIO> CRVAL1: '
+          WRITE(*,*) CRVAL1(NEWBUFF)
+          WRITE(*,100) 'CFITSIO> CDELT1: '
+          WRITE(*,*) CDELT1(NEWBUFF)
+        END IF
 C leemos la imagen
         IF((BITPIX.EQ.8).OR.(BITPIX.EQ.16))THEN
           DO I=1,NAXIS_(2)
@@ -316,6 +350,9 @@ C tratamos la orientacion de la imagen
           END DO
           NAXIS(1,NEWBUFF)=NAXIS_(2)
           NAXIS(2,NEWBUFF)=NAXIS_(1)
+          CRPIX1(NEWBUFF)=1.0
+          CRVAL1(NEWBUFF)=STWV
+          CDELT1(NEWBUFF)=DISP
         ELSE
           WRITE(*,101) '***FATAL ERROR***'
           WRITE(*,100) '=> IROTATE='
@@ -324,8 +361,8 @@ C tratamos la orientacion de la imagen
           STOP
         END IF
 C------------------------------------------------------------------------------
-100        FORMAT(A,$)
-101        FORMAT(A)
+100     FORMAT(A,$)
+101     FORMAT(A)
         END
 C
 C******************************************************************************
