@@ -98,6 +98,7 @@ C otras variables
         INTEGER IMODEG2D                              !fit mode for 2D gaussian
         INTEGER NBUFF_R,NBUFF_G,NBUFF_B            !buffers for RGB *.ppm files
         INTEGER NFITSFILES             !number of fits files to measure offsets
+        INTEGER NIARG                                !number of input arguments
         REAL XC,YC,XC_,YC_,XC__,YC__                            !mouse location
         REAL XOFFSET(9),YOFFSET(9)                            !measured offsets
         REAL BG,FG                              !image bacground and foreground
@@ -162,6 +163,7 @@ C otras variables
         CHARACTER*255 FILELISTOUT            !file name with list of FITS files
         CHARACTER*255 FILEOFFSET
         CHARACTER*255 DS9REGFILE(NMAXBUFF)                    !ds9 region files
+        CHARACTER*255 CARG(NMAXBUFF/2)
         LOGICAL LEXIT                              !govern the main button loop
         LOGICAL LBEXIST                !button selected with keyboard is active
         LOGICAL LOGFILE,LOGFILERR             !govern the reading of a new file
@@ -263,6 +265,23 @@ C
 C------------------------------------------------------------------------------
         WRITE(*,101) 'Welcome to NIRSPEC'
         WRITE(*,101) 'This is version 5.0'
+C
+        NIARG=IARGC()
+        IF(NIARG.GT.NMAXBUFF/2)THEN
+          WRITE(*,100) 'Number of input arguments: '
+          WRITE(*,*) NIARG
+          WRITE(*,100) 'Maximum number allowed...: '
+          WRITE(*,*) NMAXBUFF/2
+          WRITE(*,101) 'FATAL ERROR: number of input arguments is '//
+     +     'too large'
+          STOP
+        END IF
+!       DO I=1,NIARG
+!         CALL GETARG(I, CARG(I))
+!         L1=TRUELEN(CARG(I))
+!         WRITE(*,*) '-->'//CARG(I)(1:L1)//'<--'
+!       END DO
+!       STOP
 C------------------------------------------------------------------------------
         NXYMAX_ = AMAX0(NXMAX, NYMAX)
         IF(NXYMAX.NE.NXYMAX_)THEN
@@ -274,6 +293,7 @@ C------------------------------------------------------------------------------
           WRITE(*,*) NXYMAX
           WRITE(*,101) 'FATAL ERROR: NXYMAX must be set to the '//
      +     'MAX(NXMAX,NYMAX) value in configure.ac'
+          STOP
         END IF
 C------------------------------------------------------------------------------
         NCBUFF=1
@@ -498,6 +518,96 @@ C
         CALL BUTTON(163,'z1[/]z2',3)
         CALL BUTTON(164,'BG[:]FG',0)
         CALL BUTTON(164,'BG[:]FG',3)
+C------------------------------------------------------------------------------
+C Load images indicated as arguments in the command line
+        IF(NIARG.GT.0)THEN
+          DO NEWBUFF=1,NIARG
+            CALL GETARG(NEWBUFF, CARG(NEWBUFF))
+            L1=TRUELEN(CARG(NEWBUFF))
+            INFILE_=CARG(NEWBUFF)(1:L1)
+            INQUIRE(FILE=INFILE_,EXIST=LOGFILE)
+            IF(LOGFILE)THEN
+              WRITE(*,100) 'Reading file...'
+              CALL SLEEFITS(INFILE_,.FALSE.,IROTATE,NEWBUFF,LBOX9,
+     +         NEWBUFF)
+              WRITE(*,101) ' ...OK!'
+              IF(ANYNULL) THEN
+                WRITE(*,101) '***FATAL ERROR***'
+                WRITE(*,101) '=> ANYNULL=.TRUE.!'
+                CALL PGEND
+                STOP
+              END IF
+              NFRAMES(NEWBUFF)=1
+              NSIZEFB9(NEWBUFF)=0
+              NAXISFRAME(1,1,NEWBUFF)=0
+              NAXISFRAME(2,1,NEWBUFF)=0
+            ELSE
+              WRITE(*,101) 'FATAL ERROR: the following file does not '//
+     +         'exist:'
+              WRITE(*,101) INFILE_
+              STOP
+            END IF
+            NCBUFF=NEWBUFF
+            INFILE(NCBUFF)=INFILE_
+            DO K=1,NMAXBUFF
+              IF(K.LE.NMAXBUFF/2)THEN
+                WRITE(CDUMMY,'(A2,I1,A1)') '#[',K,']'
+                CALL RMBLANK(CDUMMY,CDUMMY,L)
+                IF(K.EQ.NCBUFF)THEN
+                  CALL BUTTON(34+K,CDUMMY(1:L),1)
+                ELSE
+                  CALL BUTTON(34+K,CDUMMY(1:L),0)
+                END IF
+              ELSE
+                WRITE(CDUMMY,'(A5,I1)') 'err #',K-NMAXBUFF/2
+                L=TRUELEN(CDUMMY)
+                IF(K.EQ.NCBUFF)THEN
+                  CALL BUTTON(44+K-NMAXBUFF/2,CDUMMY(1:L),1)
+                ELSE
+                  CALL BUTTON(44+K-NMAXBUFF/2,CDUMMY(1:L),0)
+                END IF
+              END IF
+            END DO
+            NX1=1
+            NX2=NAXIS(1,NCBUFF)
+            NY1=1
+            NY2=NAXIS(2,NCBUFF)
+            CALL STATISTIC(NCBUFF,NX1,NX2,NY1,NY2,
+     +       .FALSE.,.TRUE.,.TRUE.,0.0,.FALSE.)
+            IF(LFIRSTPLOT)THEN
+              CALL ACTIVEBUT(JUST,MODECUT)
+              IF(FSIGMA.GT.0.0)THEN
+                BG=FMEAN-5.*FSIGMA
+                FG=FMEAN+5.*FSIGMA
+              ELSE
+                BG=FMEAN-1.0
+                FG=FMEAN+1.0
+              END IF
+              CALL SUBLOOK(.FALSE.,NCBUFF,.FALSE.)
+            ELSE
+              CALL SUBLOOK(.TRUE.,NCBUFF,.FALSE.)
+            END IF
+            IF(LFIRSTPLOT)THEN
+              CALL HISTOGRAM(NCBUFF)
+              LFIRSTPLOT=.FALSE.
+            END IF
+            NY_CUT=NY2/2
+            IF(NY_CUT.EQ.0) NY_CUT=1
+            DO J=1,NAXIS(1,NCBUFF)
+              XCUTX(J)=REAL(J)
+              YCUTX(J)=IMAGEN(J,NY_CUT,NCBUFF)
+            END DO
+            WRITE(CDUMMY,'(A1,I10,A1,I10,A1)') 
+     +       '[',NY_CUT,',',NY_CUT,']'
+            CALL RMBLANK(CDUMMY,CDUMMY,L)
+            CALL SUBPLOT(NAXIS(1,NCBUFF),1,NAXIS(1,NCBUFF),
+     +        XCUTX,YCUTX,XCUTX,YCUTX,
+     +       .TRUE.,.TRUE.,.FALSE.,.FALSE.,
+     +       'x axis','signal',CDUMMY(1:L),NCBUFF,201,1.0)
+            CALL BUTTON(51,'over=FALSE',0)
+            CALL BUTTON(51,'over=FALSE',NCOLOR4)
+          END DO
+        END IF
 C------------------------------------------------------------------------------
 C ***MAIN LOOP***
 C------------------------------------------------------------------------------
