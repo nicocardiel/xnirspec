@@ -96,6 +96,10 @@ C si la imagen no es FITS, miramos a ver si es de formato REDUCEME
                 LNULL_(J,I)=.FALSE.
               END DO
             END DO
+            LWAVECAL(NEWBUFF)=.TRUE.
+            CRPIX1(NEWBUFF)=1.0
+            CRVAL1(NEWBUFF)=STWV
+            CDELT1(NEWBUFF)=DISP
             WRITE(*,100) 'WARNING: reading file with REDUCEME format'
             GOTO 777
           END IF
