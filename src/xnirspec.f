@@ -1919,7 +1919,11 @@ C------------------------------------------------------------------------------
      +             ' <DEFINED>: '
                 END IF
                 L=TRUELEN(INFILE(K))
-                WRITE(*,101) INFILE(K)(1:L)
+                WRITE(*,100) INFILE(K)(1:L)
+                WRITE(CDUMMY,'(A1,I6,A1,I6,A1)') '[',NAXIS(1,K),',',
+     +           NAXIS(2,K),']'
+                CALL RMBLANK(CDUMMY,CDUMMY,L)
+                WRITE(*,101) ' --> '//CDUMMY(1:L)
               ELSE
                 IF(K.LE.NMAXBUFF/2)THEN
                   WRITE(*,'(A4,I1,A13)') '  #[',K,'] <UNDEFINED>'
