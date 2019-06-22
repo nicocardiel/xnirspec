@@ -532,10 +532,10 @@ C Load images indicated as arguments in the command line
      +         NEWBUFF)
               WRITE(*,101) ' ...OK!'
               IF(ANYNULL) THEN
-                WRITE(*,101) '***FATAL ERROR***'
+                WRITE(*,101) '***WARNING***'
                 WRITE(*,101) '=> ANYNULL=.TRUE.!'
-                CALL PGEND
-                STOP
+                !CALL PGEND
+                !STOP
               END IF
               NFRAMES(NEWBUFF)=1
               NSIZEFB9(NEWBUFF)=0
@@ -988,10 +988,10 @@ ccc                 J1=256
      +           NEWBUFF)
                 WRITE(*,101) ' ...OK!'
                 IF(ANYNULL) THEN
-                  WRITE(*,101) '***FATAL ERROR***'
+                  WRITE(*,101) '***WARNING***'
                   WRITE(*,101) '=> ANYNULL=.TRUE.!'
-                  CALL PGEND
-                  STOP
+                  !CALL PGEND
+                  !STOP
                 END IF
                 NFRAMES(NEWBUFF)=1
                 NSIZEFB9(NEWBUFF)=0
@@ -1148,10 +1148,10 @@ c..............................................................................
      +           NCBUFF+NMAXBUFF/2,LBOX9,0)
                 WRITE(*,101) ' ...OK!'
                 IF(ANYNULL) THEN
-                  WRITE(*,101) '***FATAL ERROR***'
+                  WRITE(*,101) '***WARNING***'
                   WRITE(*,100) '=> ANYNULL=.TRUE.!'
-                  CALL PGEND
-                  STOP
+                  !CALL PGEND
+                  !STOP
                 END IF
                 INFILE(NCBUFF+NMAXBUFF/2)=INFILE_
               END IF

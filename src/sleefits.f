@@ -256,16 +256,19 @@ C leemos la imagen
             FIRSTPIX=(I-1)*NAXIS_(1)+1
             CALL FTGPFJ(IUNIT,1,FIRSTPIX,NAXIS_(1),JROW(1),LROW(1),
      +       ANYNULL,ISTATUS)
-            DO J=1,NAXIS_(1)
-              IMAGEN_(J,I)=REAL(JROW(J))
-            END DO
             IF(ANYNULL)THEN
               DO J=1,NAXIS_(1)
                 LNULL_(J,I)=LROW(J)
-                if(lnull_(j,i)) print*,j,i,jrow(j)
+                IF(LNULL_(J,I))THEN
+                  print*,j,i,jrow(j)
+                  JROW(J)=0
+                END IF
               END DO
               LANYNULL=.TRUE.
             END IF
+            DO J=1,NAXIS_(1)
+              IMAGEN_(J,I)=REAL(JROW(J))
+            END DO
           END DO
 !        ELSEIF(BITPIX.EQ.32)THEN
 !          DO I=1,NAXIS_(2)
@@ -287,16 +290,19 @@ C leemos la imagen
             FIRSTPIX=(I-1)*NAXIS_(1)+1
             CALL FTGPFE(IUNIT,1,FIRSTPIX,NAXIS_(1),FROW(1),LROW(1),
      +       ANYNULL,ISTATUS)
-            DO J=1,NAXIS_(1)
-              IMAGEN_(J,I)=FROW(J)
-            END DO
             IF(ANYNULL)THEN
               DO J=1,NAXIS_(1)
                 LNULL_(J,I)=LROW(J)
-                if(lnull_(j,i)) print*,j,i,frow(j)
+                IF(LNULL_(J,I))THEN
+                  print*,j,i,frow(j)
+                  FROW(J)=0.0
+                END IF
               END DO
               LANYNULL=.TRUE.
             END IF
+            DO J=1,NAXIS_(1)
+              IMAGEN_(J,I)=FROW(J)
+            END DO
           END DO
         ELSE
           WRITE(*,100) 'FATAL ERROR in subroutine LEEFITS: BITPIX ='
