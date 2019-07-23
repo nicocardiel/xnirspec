@@ -57,7 +57,6 @@ C Comando identico a PGENV de PGPLOT pero restringido a la region
 C de plots. Subrutina copiada de codigo de PGENV de [TJP]
 C------------------------------------------------------------------------------
         INCLUDE 'button.inc'
-        INTEGER TRUELEN
 C------------------------------------------------------------------------------
 C Variables locales
         CHARACTER*10 XOPTS,YOPTS

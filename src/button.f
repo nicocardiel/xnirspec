@@ -43,7 +43,6 @@ C Ancho del boton = DX/10; separacion entre botones = DX/40
         INTEGER MODE,LMODE
 C------------------------------------------------------------------------------
         INCLUDE 'button.inc'
-        INTEGER TRUELEN
 C------------------------------------------------------------------------------
 C Variables locales
         INTEGER L

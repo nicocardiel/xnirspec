@@ -47,8 +47,6 @@ C------------------------------------------------------------------------------
         IMPLICIT NONE
 C------------------------------------------------------------------------------
         INCLUDE 'button.inc'
-        INTEGER TRUELEN
-        CHARACTER*255 READC
 C------------------------------------------------------------------------------
 C subroutine parameters
         INTEGER NTERM  !number of graphic devices to be employed simultaneously

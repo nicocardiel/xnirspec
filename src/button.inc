@@ -65,3 +65,9 @@ C (this variable is true when file .button_modoover do exist)
         LOGICAL MODOOVER_BUTT
         COMMON/BUTTON9/MODOOVER_BUTT
 C------------------------------------------------------------------------------
+C Miscellany
+        INTEGER TRUELEN,TRUEBEG
+        INTEGER READI
+        REAL READF
+        CHARACTER*255 READC
+C------------------------------------------------------------------------------

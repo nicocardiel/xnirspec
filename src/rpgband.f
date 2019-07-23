@@ -42,8 +42,6 @@ C modo texto permite la entrada de los parametros de la subrutina desde
 C teclado.
 C------------------------------------------------------------------------------
         INCLUDE 'button.inc'
-        REAL READF
-        CHARACTER*255 READC
 C------------------------------------------------------------------------------
 C Variables locales
         INTEGER PGBAND,IDUM

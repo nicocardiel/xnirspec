@@ -38,7 +38,6 @@ C El numero de boton se corresponde con el numero de cuadricula
 C dentro del grid definido por MAX_XBUTT y MAX_YBUTT
 C------------------------------------------------------------------------------
         INCLUDE 'button.inc'
-        INTEGER READI
 C------------------------------------------------------------------------------
 C Variables locales
         INTEGER I
