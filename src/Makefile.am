@@ -25,6 +25,7 @@ buttsxb.f \
 buttsyb.f \
 buttsytext.f \
 centroid.f \
+chupper.f \
 combine.f \
 combpf.f \
 creatergb.f \
@@ -62,7 +63,6 @@ histogram.f \
 hplot.f \
 ifbutton.f \
 intersec.f \
-iofunctions.f \
 leecolumn.f \
 leeonefile.f \
 lrombo.f \
@@ -90,10 +90,16 @@ poly2.f \
 pwave.f \
 pxmap.f \
 randomnumber.f \
+read2i.f \
+readc.f \
+readf.f \
+readi.f \
+readilim.f \
 readpwave.f \
 rectify.f \
 refineba.f \
 refinebl.f \
+rmblank.f \
 rpgband.f \
 rpgbegin.f \
 rpgbegok.f \
@@ -123,6 +129,8 @@ subplot.f \
 subplotbis.f \
 subzoom.f \
 systemfunction.f \
+truebeg.f \
+truelen.f \
 try_reduceme.f \
 unrectify.f \
 whereami.f \

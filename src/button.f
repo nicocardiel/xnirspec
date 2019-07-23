@@ -209,12 +209,12 @@ C------------------------------------------------------------------------------
         IF(LMODE.EQ.3) CALL PGSCI(1)
         IF(LMODE.EQ.2) CALL PGSCI(1)
 C
-80        CALL PGVPORT(X1V,X2V,Y1V,Y2V)
+80      CALL PGVPORT(X1V,X2V,Y1V,Y2V)
         CALL PGWINDOW(X1W,X2W,Y1W,Y2W)
         RETURN
 C------------------------------------------------------------------------------
 C Botones en modo texto
-90        WRITE(CWHERE,'(A,I2,A1,I3,A1)')'[',NLIN,';',(NCOL-1)*20,'f'
+90      WRITE(CWHERE,'(A,I2,A1,I3,A1)')'[',NLIN,';',(NCOL-1)*20,'f'
         CALL RMBLANK(CWHERE,CWHERE,L)
         WRITE(*,'(A)')CWHERE(1:L)//'                    '
         IF(LMODE.EQ.-1)THEN
@@ -237,9 +237,9 @@ C Botones en modo texto
         WRITE(*,'(A)')CWHERE(1:L)//'[J'
         WRITE(*,'(A)')CWHERE(1:L)
 C------------------------------------------------------------------------------
-100        FORMAT(A,$)
-101        FORMAT(A)
-110        FORMAT(A,I4)
+100     FORMAT(A,$)
+101     FORMAT(A)
+110     FORMAT(A,I4)
         END
 C
 C******************************************************************************
