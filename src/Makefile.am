@@ -82,6 +82,7 @@ palette.f \
 pbound.f \
 pcut.f \
 plot3dbars.f \
+plotascreg.f \
 plotds9reg.f \
 pmapp.f \
 polfit.f \

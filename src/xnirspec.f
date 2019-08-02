@@ -98,6 +98,9 @@ C otras variables
         INTEGER IMODEG2D                              !fit mode for 2D gaussian
         INTEGER NBUFF_R,NBUFF_G,NBUFF_B            !buffers for RGB *.ppm files
         INTEGER NFITSFILES             !number of fits files to measure offsets
+        INTEGER NCOLASC1(NMAXBUFF),NCOLASC2(NMAXBUFF)    !plot marks from ASCII
+        INTEGER ASCCOLOR(NMAXBUFF),ASCLWIDTH(NMAXBUFF)   !plot marks from ASCII
+        INTEGER ASCSYMB(NMAXBUFF)                        !plot marks from ASCII
         INTEGER NIARG                                !number of input arguments
         REAL XC,YC,XC_,YC_,XC__,YC__                            !mouse location
         REAL XOFFSET(9),YOFFSET(9)                            !measured offsets
@@ -134,6 +137,7 @@ C otras variables
         REAL STWV,DISP,AIRMASS,TIMEXPOS
         REAL MASKVALUE                        !value to be masked in statistics
         REAL CRPIX1(NMAXBUFF),CRVAL1(NMAXBUFF),CDELT1(NMAXBUFF)  !wavel. calib.
+        REAL ASCCHEIGHT(NMAXBUFF)                        !plot marks from ASCII
         CHARACTER*1 CH                            !mouse button or keyboard key
         CHARACTER*1 CDUM                             !dum character*1 variables
         CHARACTER*1 CSAVE               !choose between FITS or REDUCEME format
@@ -163,6 +167,7 @@ C otras variables
         CHARACTER*255 FILELISTOUT            !file name with list of FITS files
         CHARACTER*255 FILEOFFSET
         CHARACTER*255 DS9REGFILE(NMAXBUFF)                    !ds9 region files
+        CHARACTER*255 ASCREGFILE(NMAXBUFF)                    !ds9 region files
         CHARACTER*255 CARG(NMAXBUFF/2)
         LOGICAL LEXIT                              !govern the main button loop
         LOGICAL LBEXIST                !button selected with keyboard is active
@@ -180,6 +185,7 @@ C otras variables
         LOGICAL L_EXPTIME(NMAXBUFF)                                   !HST flux
         LOGICAL LOVERCUTS
         LOGICAL LDS9REG(NMAXBUFF)               !if .TRUE. overplot ds9 regions
+        LOGICAL LASCREG(NMAXBUFF)      !if .TRUE. overplot X,Y from binary FITS
         LOGICAL LWAVECAL(NMAXBUFF) !if .TRUE., image has wavelength calibration
 C common blocks
         COMMON/BLKIMAGEN1/IMAGEN             !imagen FITS leida en formato REAL
@@ -228,7 +234,11 @@ C common blocks
         COMMON/BLKREDUCEME/STWV,DISP,AIRMASS,TIMEXPOS
         COMMON/BLKLOVERCUTS/LOVERCUTS
         COMMON/BLKLDS9REG/LDS9REG
+        COMMON/BLKLASCREG/LASCREG
         COMMON/BLKDS9REGFILE/DS9REGFILE
+        COMMON/BLKASCREGFILE/ASCREGFILE
+        COMMON/BLKASCCOLS1/NCOLASC1,NCOLASC2,ASCCOLOR,ASCLWIDTH,ASCSYMB
+        COMMON/BLKASCCOLS2/ASCCHEIGHT
         COMMON/BLKWAVECAL1/CRPIX1,CRVAL1,CDELT1
         COMMON/BLKWAVECAL2/LWAVECAL
 C------------------------------------------------------------------------------
@@ -309,6 +319,7 @@ C------------------------------------------------------------------------------
           PHOTZPT(K)=0.0
           EXPTIME(K)=0.0
           LDS9REG(K)=.FALSE.
+          LASCREG(K)=.FALSE.
         END DO
 C
         LFIRSTPLOT=.TRUE.
@@ -2206,8 +2217,9 @@ C------------------------------------------------------------------------------
             WRITE(*,101) '(2) estimate slit aperture correction'
             WRITE(*,101) '(3) shift one image relative to another'
             WRITE(*,101) '(4) overplot ds9 regions'
+            WRITE(*,101) '(5) overplot X,Y columns from ASCII file'
             WRITE(*,101) '(0) exit'
-            CSPECIAL(1:1)=READC('Option (0..4)','0','01234')
+            CSPECIAL(1:1)=READC('Option (0..5)','0','012345')
             IF(CSPECIAL.EQ.'0')THEN
             ELSEIF(CSPECIAL.EQ.'1')THEN
               CALL SEXTRACTOR(NCBUFF)
@@ -2252,6 +2264,46 @@ C------------------------------------------------------------------------------
               IF((LOGFILE).AND.(.NOT.LOGFILERR))THEN
                 LDS9REG(NCBUFF)=.TRUE.
                 DS9REGFILE(NCBUFF)=INFILE_
+                CALL SUBLOOK(.TRUE.,NCBUFF,.FALSE.)
+              END IF
+            ELSEIF(CSPECIAL.EQ.'5')THEN
+              LOGFILE=.FALSE.
+              LOGFILERR=.FALSE.
+              DO WHILE(.NOT.LOGFILE)
+                INFILE_=READC(
+     +           'Input ASCII file (none=EXIT, NONE=delete region)',
+     +           '*','@')
+                IF((INDEX(INFILE_,'*').NE.0).OR.
+     +             (INDEX(INFILE_,'?').NE.0))THEN
+                  L1=TRUEBEG(INFILE_)
+                  L2=TRUELEN(INFILE_)
+                  ISYSTEM=SYSTEMFUNCTION('ls '//INFILE_(L1:L2))
+                ELSEIF(INFILE_.EQ.'none')THEN
+                  LOGFILE=.TRUE.
+                  LOGFILERR=.TRUE.
+                ELSEIF(INFILE_.EQ.'NONE')THEN
+                  LOGFILE=.TRUE.
+                  LOGFILERR=.TRUE.
+                  LASCREG(NCBUFF)=.FALSE.
+                ELSE
+                  INQUIRE(FILE=INFILE_,EXIST=LOGFILE)
+                  IF(.NOT.LOGFILE)THEN
+                    L1=TRUEBEG(INFILE_)
+                    L2=TRUELEN(INFILE_)
+                    WRITE(*,101) 'This file does not exist. Try again'
+                    WRITE(*,101) INFILE_(L1:L2)
+                  END IF
+                END IF
+              END DO
+              IF((LOGFILE).AND.(.NOT.LOGFILERR))THEN
+                NCOLASC1(NCBUFF)=READI('Column number for X value','@')
+                NCOLASC2(NCBUFF)=READI('Column number for Y value','@')
+                ASCSYMB(NCBUFF)=READI('PGPLOT symbol number','2')
+                ASCCOLOR(NCBUFF)=READI('Color number','@')
+                ASCLWIDTH(NCBUFF)=READI('Line width','1')
+                ASCCHEIGHT(NCBUFF)=READF('Symbol size','1.0')
+                LASCREG(NCBUFF)=.TRUE.
+                ASCREGFILE(NCBUFF)=INFILE_
                 CALL SUBLOOK(.TRUE.,NCBUFF,.FALSE.)
               END IF
             END IF
