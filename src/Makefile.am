@@ -53,6 +53,8 @@ fmedian1.f \
 fmedian1e.f \
 fpoly.f \
 fpolyinv.f \
+frobustrms0.f \
+frobustrms1.f \
 fstatistic.f \
 gauscfit.f \
 gauss2dfit.f \

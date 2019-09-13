@@ -12,6 +12,7 @@ C
         INTEGER SYSTEMFUNCTION
         REAL READF
         REAL FMEAN0,FMEAN0E,FMEAN1,FMEAN2,FMEAN2E,FMEDIAN1
+        REAL FROBUSTRMS0,FROBUSTRMS1
         CHARACTER*255 READC
 C
         INTEGER I,J,K,L,I1,I2,J1,J2,I0,J0
@@ -54,7 +55,7 @@ C
         CHARACTER*1 CH,CZERO
         CHARACTER*1 COPER
         CHARACTER*1 CUTIL
-        CHARACTER*1 CFILT,CAXIS,CFUN_OR_DER
+        CHARACTER*1 CFILT,CAXIS,CFUN_OR_DER,CRMS
         CHARACTER*50 CDUMMY
         LOGICAL LWAVECAL(NMAXBUFF)
         LOGICAL LDEFBUFF(NMAXBUFF)
@@ -102,6 +103,7 @@ C------------------------------------------------------------------------------
         NORIGEN=86
         CFILT='@'
         CFUN_OR_DER='@'
+        CRMS='@'
         IWIDTH=3
         NBOX_X=3
         NBOX_Y=3
@@ -1132,8 +1134,17 @@ c
                   END DO
                 END DO
               END IF
-c
+c set options for selected filter
               IF(CFILT.EQ.'0')THEN
+                WRITE(*,101) '(1) traditional r.m.s.'
+                WRITE(*,101) '(2) traditional r.m.s. excluding points'
+                WRITE(*,101) '(3) robust r.m.s.'
+                WRITE(*,101) '(4) robust r.m.s. excluding points'
+                CRMS(1:1)=READC('Option',CRMS,'1234')
+                IF((CRMS.EQ.'2').OR.(CRMS.EQ.'4'))THEN
+                  WRITE(CDUMMY,*) TSIGMA
+                  TSIGMA=READF('Times sigma to exclude points',CDUMMY)
+                END IF
               ELSEIF(CFILT.EQ.'1')THEN
               ELSEIF(CFILT.EQ.'2')THEN
                 WRITE(CDUMMY,*) TSIGMA
@@ -1178,7 +1189,7 @@ c
                 THRESHOLD1=READF('Mininum value for range','@')
                 THRESHOLD2=READF('Maximum value for range','@')
               END IF
-c
+c execute filter
               NEXTINFO=0
               IF(CFILT.EQ.'x')THEN
                 DO I=NY1,NY2
@@ -1417,7 +1428,7 @@ c
                   END DO
                 END IF
                 ISYSTEM=SYSTEMFUNCTION('date')
-              ELSE
+              ELSE ! CFILT = 0, 1, 2 or 3
                 WRITE(CDUMMY,*) NBOX_X
                 NBOX_X=READILIM('Box width in X (must be odd)',
      +           CDUMMY,1,NAXIS(1,NBUFF0))
@@ -1463,7 +1474,19 @@ c
                       END DO
                     END DO
                     IF(CFILT.EQ.'0')THEN
-                      FDUMMY=FMEAN0(K,PIXEL,FSIGMA)
+                      IF(CRMS.EQ.'1')THEN
+                        FDUMMY=FMEAN0(K,PIXEL,FSIGMA)
+                      ELSEIF(CRMS.EQ.'2')THEN
+                        FDUMMY=FMEAN2(K,PIXEL,TSIGMA,FSIGMA)
+                      ELSEIF(CRMS.EQ.'3')THEN
+                        FSIGMA=FROBUSTRMS0(K,PIXEL)
+                      ELSEIF(CRMS.EQ.'4')THEN
+                        FSIGMA=FROBUSTRMS1(K,PIXEL,TSIGMA)
+                      ELSE
+                        WRITE(*,101) '***FATAL ERROR***'
+                        WRITE(*,101) '=> invalid CRMS value: '//CRMS
+                        STOP
+                      END IF
                       IMAGEN(J,I,NBUFF1)=FSIGMA
                     ELSEIF(CFILT.EQ.'1')THEN
                       IMAGEN(J,I,NBUFF1)=FMEAN1(K,PIXEL)

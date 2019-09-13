@@ -54,7 +54,7 @@ C
           IFX(I)=.TRUE.
         END DO
 C
-10        NN=0
+10      NN=0
         SUM=0.
         DO I=1,N
           IF(IFX(I))THEN
