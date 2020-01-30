@@ -26,7 +26,9 @@ C
         REAL FMEDIAN1
 C
         INTEGER I,J,K
+        INTEGER IFMIN,IFMAX,JFMIN,JFMAX
         INTEGER NPIX
+        INTEGER IPIXEL(NXMAX*NYMAX), JPIXEL(NXMAX*NYMAX)
         REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
         REAL PIXEL(NXMAX*NYMAX),EPIXEL(NXMAX*NYMAX)
         REAL IMAGEN_(NXMAX,NYMAX)
@@ -53,10 +55,14 @@ C------------------------------------------------------------------------------
                   IF(IMAGEN_(J,I).NE.MASKVALUE)THEN
                     K=K+1
                     PIXEL(K)=IMAGEN_(J,I)
+                    JPIXEL(K)=J
+                    IPIXEL(K)=I
                   END IF
                 ELSE
                   K=K+1
                   PIXEL(K)=IMAGEN_(J,I)
+                  JPIXEL(K)=J
+                  IPIXEL(K)=I
                 END IF
               END DO
             END DO
@@ -68,10 +74,14 @@ C------------------------------------------------------------------------------
                   IF(IMAGEN(J,I,NBUFF).NE.MASKVALUE)THEN
                     K=K+1
                     PIXEL(K)=IMAGEN(J,I,NBUFF)
+                    JPIXEL(K)=J
+                    IPIXEL(K)=I
                   END IF
                 ELSE
                   K=K+1
                   PIXEL(K)=IMAGEN(J,I,NBUFF)
+                  JPIXEL(K)=J
+                  IPIXEL(K)=I
                 END IF
               END DO
             END DO
@@ -103,6 +113,8 @@ C------------------------------------------------------------------------------
      +               (IMAGEN_(J,I).LE.FG))THEN
                       K=K+1
                       PIXEL(K)=IMAGEN_(J,I)
+                      JPIXEL(K)=J
+                      IPIXEL(K)=I
                     END IF
                   END IF
                 ELSE
@@ -110,6 +122,8 @@ C------------------------------------------------------------------------------
      +             (IMAGEN_(J,I).LE.FG))THEN
                     K=K+1
                     PIXEL(K)=IMAGEN_(J,I)
+                    JPIXEL(K)=J
+                    IPIXEL(K)=I
                   END IF
                 END IF
               END DO
@@ -124,6 +138,8 @@ C------------------------------------------------------------------------------
      +               (IMAGEN(J,I,NBUFF).LE.FG))THEN
                       K=K+1
                       PIXEL(K)=IMAGEN(J,I,NBUFF)
+                      JPIXEL(K)=J
+                      IPIXEL(K)=I
                     END IF
                   END IF
                 ELSE
@@ -131,6 +147,8 @@ C------------------------------------------------------------------------------
      +             (IMAGEN(J,I,NBUFF).LE.FG))THEN
                     K=K+1
                     PIXEL(K)=IMAGEN(J,I,NBUFF)
+                    JPIXEL(K)=J
+                    IPIXEL(K)=I
                   END IF
                 END IF
               END DO
@@ -193,18 +211,30 @@ C------------------------------------------------------------------------------
           END IF
           FMIN=PIXEL(1)
           FMAX=FMIN
+          JFMIN=1
+          IFMIN=1
+          JFMAX=1
+          IFMAX=1
           DO K=2,NPIX
-            IF(PIXEL(K).LT.FMIN) FMIN=PIXEL(K)
-            IF(PIXEL(K).GT.FMAX) FMAX=PIXEL(K)
+            IF(PIXEL(K).LT.FMIN)THEN
+              FMIN=PIXEL(K)
+              JFMIN=JPIXEL(K)
+              IFMIN=IPIXEL(K)
+            END IF
+            IF(PIXEL(K).GT.FMAX)THEN
+              FMAX=PIXEL(K)
+              JFMAX=JPIXEL(K)
+              IFMAX=IPIXEL(K)
+            END IF
           END DO
           IF(LSHOW)THEN
             WRITE(*,*)
             WRITE(*,100) '=> Number of pixels..........: '
             WRITE(*,*) NPIX
-            WRITE(*,100) '=> Minimum...................: '
-            WRITE(*,*) FMIN
-            WRITE(*,100) '=> Maximum...................: '
-            WRITE(*,*) FMAX
+            WRITE(*,100) '=> Minimum, at (X,Y).........: '
+            WRITE(*,*) FMIN,JFMIN,IFMIN
+            WRITE(*,100) '=> Maximum, at (X,Y).........: '
+            WRITE(*,*) FMAX,JFMAX,IFMAX
             WRITE(*,100) '=> Mean & error..............: '
             WRITE(*,*) FMEAN,EFMEAN
             WRITE(*,100) '=> Total no. of counts & err.: '

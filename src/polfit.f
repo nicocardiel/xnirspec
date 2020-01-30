@@ -116,8 +116,22 @@ C
         DO I=1,NPTS
           XI=X(I)
           YI=Y(I)
-          IF (MODE) 32,37,39
-32        IF (YI) 35,37,33
+!         IF (MODE) 32,37,39 !obsolete arithmetic IF
+          IF (MODE.LT.0) THEN
+            GOTO 32
+          ELSEIF (MODE.EQ.0) THEN
+            GOTO 37
+          ELSE
+            GOTO 39
+          END IF
+!32        IF (YI) 35,37,33 !obsolete arithmetic IF
+32        IF (YI.LT.0) THEN
+            GOTO 35
+          ELSEIF (YI.EQ.0) THEN
+            GOTO 37
+          ELSE
+            GOTO 33
+          END IF
 33        WEIGHT=1./YI
           GO TO 41
 35        WEIGHT=1./(-YI)
@@ -147,7 +161,14 @@ C
           END DO
         END DO
         DELTA=DETERM(ARRAY,NTERMS)
-        IF (DELTA) 61,57,61
+!       IF (DELTA) 61,57,61 !obsolete arithmetic IF
+        IF (DELTA.LT.0) THEN
+          GOTO 61
+        ELSEIF (DELTA.EQ.0) THEN
+          GOTO 57
+        ELSE
+          GOTO 61
+        END IF
 57      CHISQR=0.
         DO J=1,NTERMS
           A(J)=0.
@@ -222,10 +243,24 @@ C
 C
         DETERM=1.d0
         DO 50 K=1,NORDER
-          IF(ARRAY(K,K)) 41,21,41
+!         IF(ARRAY(K,K)) 41,21,41 !obsolete arithmetic IF
+          IF(ARRAY(K,K).LT.0)THEN
+            GOTO 41
+          ELSEIF(ARRAY(K,K).EQ.0)THEN
+            GOTO 21
+          ELSE
+            GOTO 41
+          END IF
 21        DO 23 J=K,NORDER
 ccccc            IF(ARRAY(J,K)) 31,23,31  !HORROR!!!!!!!!!!!!!!!!!!!!!!!!
-            IF(ARRAY(K,J)) 31,23,31
+!           IF(ARRAY(K,J)) 31,23,31 !obsolete arithmetic IF
+            IF(ARRAY(K,J).LT.0)THEN
+              GOTO 31
+            ELSEIF(ARRAY(K,J).EQ.0)THEN
+              GOTO 23
+            ELSE
+              GOTO 31
+            END IF
 23        CONTINUE
           DETERM=0.
           GO TO 60
@@ -236,7 +271,14 @@ ccccc            IF(ARRAY(J,K)) 31,23,31  !HORROR!!!!!!!!!!!!!!!!!!!!!!!!
           END DO
           DETERM=-DETERM
 41        DETERM=DETERM*ARRAY(K,K)
-          IF (K-NORDER) 43,50,50
+!         IF (K-NORDER) 43,50,50 !obsolete arithmetic IF
+          IF (K-NORDER.LT.0) THEN
+            GOTO 43
+          ELSEIF (K-NORDER.EQ.0) THEN
+            GOTO 50
+          ELSE
+            GOTO 50
+          END IF
 43        K1=K+1
           DO I=K1,NORDER
             DO J=K1,NORDER
