@@ -58,14 +58,14 @@ C calculamos el histograma
         DO K=1,NBIN
           NPIX(K)=0
         END DO
-        DBIN=(FG-BG)/REAL(NBIN-1)                          !anchura de cada bin
+        DBIN=(FG-BG)/REAL(NBIN)                            !anchura de cada bin
         DO K=1,NBIN
-          XPLOT(K)=BG+REAL(K-1)*DBIN
+          XPLOT(K)=BG+(0.5+REAL(K-1))*DBIN                          !bin center
         END DO
 C
         DO I=NY1,NY2
           DO J=NX1,NX2
-            K=NINT((IMAGEN(J,I,NBUFF)-BG)/DBIN)+1
+            K=INT((IMAGEN(J,I,NBUFF)-BG)/DBIN)+1
             IF((K.GE.1).AND.(K.LE.NBIN)) NPIX(K)=NPIX(K)+1
           END DO
         END DO
@@ -123,9 +123,9 @@ C dibujamos gaussiana
             ISUM=ISUM+NPIX(K)
           END DO
           AMP=REAL(ISUM)*DBIN/(FSIGMA*SQRT(2.*3.141593))
-          DBIN2=(FG-BG)/REAL(NBIN-1)
+          DBIN2=(FG-BG)/REAL(NBIN)
           DO K=1,NBIN
-            XPLOT(K)=BG+REAL(K-1)*DBIN2
+            XPLOT(K)=BG+(0.5+REAL(K-1))*DBIN2
           END DO
           DO K=1,NBIN
             FDUM=(XPLOT(K)-FMEAN)*(XPLOT(K)-FMEAN)/(2.*FSIGMA*FSIGMA)
