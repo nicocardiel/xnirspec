@@ -35,9 +35,11 @@ C
         REAL FMEAN,FSIGMA,FMEDIAN,FMIN,FMAX
         REAL EFMEAN
         REAL FMEANTSIGMA,FSIGMATSIGMA
-        REAL Q25,Q75,FSIGMA_ROBUST
+        REAL Q2500,Q7500
         REAL Q1587,Q8413
         REAL Q0250,Q9750
+        REAL Q5000
+        REAL FSIGMA_ROBUST
         REAL BG,FG
 C
         COMMON/BLKIMAGEN1/IMAGEN
@@ -245,21 +247,28 @@ C------------------------------------------------------------------------------
           IF(LMEDIAN)THEN
             FMEDIAN=FMEDIAN1(NPIX,PIXEL)
             IF(LSHOW)THEN
-              Q25=PIXEL(INT(REAL(NPIX)*0.25+0.5))
-              Q75=PIXEL(INT(REAL(NPIX)*0.75+0.5))
-              FSIGMA_ROBUST=0.7413*(Q75-Q25)
+              Q0250=PIXEL(INT(REAL(NPIX)*0.0250+0.5))
+              Q1587=PIXEL(INT(REAL(NPIX)*0.1587+0.5))
+              Q2500=PIXEL(INT(REAL(NPIX)*0.2500+0.5))
+              Q5000=PIXEL(INT(REAL(NPIX)*0.5000+0.5))
+              Q7500=PIXEL(INT(REAL(NPIX)*0.7500+0.5))
+              Q8413=PIXEL(INT(REAL(NPIX)*0.8413+0.5))
+              Q9750=PIXEL(INT(REAL(NPIX)*0.9750+0.5))
+              FSIGMA_ROBUST=0.7413*(Q7500-Q2500)
               WRITE(*,100) '=> StDev (robust)............: '
               WRITE(*,*) FSIGMA_ROBUST
               WRITE(*,100) '=> Median....................: '
               WRITE(*,*) FMEDIAN
-              Q0250=PIXEL(INT(REAL(NPIX)*0.0250+0.5))
-              Q1587=PIXEL(INT(REAL(NPIX)*0.1587+0.5))
-              Q8413=PIXEL(INT(REAL(NPIX)*0.8413+0.5))
-              Q9750=PIXEL(INT(REAL(NPIX)*0.9750+0.5))
               WRITE(*,100) '=> Q 02.50%..................: '
               WRITE(*,*) Q0250
               WRITE(*,100) '=> Q 15.87%..................: '
               WRITE(*,*) Q1587
+              WRITE(*,100) '=> Q 25.00%..................: '
+              WRITE(*,*) Q2500
+              WRITE(*,100) '=> Q 50.00%..................: '
+              WRITE(*,*) Q5000
+              WRITE(*,100) '=> Q 75.00%..................: '
+              WRITE(*,*) Q7500
               WRITE(*,100) '=> Q 84.13%..................: '
               WRITE(*,*) Q8413
               WRITE(*,100) '=> Q 97.50%..................: '
