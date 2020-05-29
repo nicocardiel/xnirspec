@@ -110,9 +110,11 @@ C
           CALL RPGBAND(0,0,0.,0.,XC1,YC1,CH)
           IF(CH.NE.'X')THEN
             CALL PXMAP(XC1,YC1,U1,V1)
+            WRITE(*,*) XC1, YC1
             CALL RPGBAND(0,0,0.,0.,XC2,YC2,CH)
             IF(CH.NE.'X')THEN
               CALL PXMAP(XC2,YC2,U2,V2)
+              WRITE(*,*) XC2, YC2
               IF(V2.GT.V1)THEN
                 IV1=NINT(V1)
                 IV2=NINT(V2)
@@ -163,9 +165,11 @@ C
           CALL RPGBAND(0,0,0.,0.,XC1,YC1,CH)
           IF(CH.NE.'X')THEN
             CALL PXMAP(XC1,YC1,U1,V1)
+            WRITE(*,*) XC1, YC1
             CALL RPGBAND(0,0,0.,0.,XC2,YC2,CH)
             IF(CH.NE.'X')THEN
               CALL PXMAP(XC2,YC2,U2,V2)
+              WRITE(*,*) XC2, YC2
               IF(V2.GT.V1)THEN
                 IV1=NINT(V1)
                 IV2=NINT(V2)
