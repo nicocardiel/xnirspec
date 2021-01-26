@@ -27,6 +27,7 @@ C
         REAL XPEAKS(NXYMAX),YPEAKS(NXYMAX),RPEAKS(NXYMAX)
         REAL XF(NXYMAX),YF(NXYMAX)
         REAL XMIN,YMIN,XMAX,YMAX
+        REAL XXMIN(1),YYMIN(1),XXMAX(1),YYMAX(1)
         REAL XX,YY
 ccc        REAL COEFFPAR(3),CHISQR
         REAL X0_,Y0_,AMP,SIGMA
@@ -52,8 +53,15 @@ C intersecciones del polinomio temporal con los espectros del borde
      +   X0,XMAX,YMAX)
         IF(LDEBUGLOCAL)THEN
           CALL PGSCI(5)
-          CALL PGPOINT(1,XMIN,YMIN,17)
-          CALL PGPOINT(1,XMAX,YMAX,17)
+          !usamos un array unidimensional porque el compilador
+          !gfortran-mp-10 da error al usar un escalar en lugar
+          !de una matriz
+          XXMIN(1)=XMIN
+          XXMAX(1)=XMAX
+          YYMIN(1)=YMIN
+          YYMAX(1)=YMAX
+          CALL PGPOINT(1,XXMIN,YYMIN,17)
+          CALL PGPOINT(1,XXMAX,YYMAX,17)
           CALL PGSCI(1)
         END IF
 C------------------------------------------------------------------------------

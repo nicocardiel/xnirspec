@@ -34,6 +34,7 @@ C
         REAL COEFFBL00_(20),COEFFBA00_(20)
         REAL XP(NXYMAX),YP(NXYMAX),ZP(NXYMAX)
         REAL XMIN,XMAX,YMIN,YMAX
+        REAL XXMIN(1),XXMAX(1),YYMIN(1),YYMAX(1)
         REAL XMINBL(NXYMAX),XMAXBL(NXYMAX)
         REAL YMINBL(NXYMAX),YMAXBL(NXYMAX)
         REAL XMINBA(NXYMAX),XMAXBA(NXYMAX)
@@ -47,6 +48,7 @@ C
         REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
         REAL XBUFPEAK(NMAXPEAKS,NXYMAX),YBUFPEAK(NMAXPEAKS,NXYMAX)
         REAL X0,Y0,DMIN,DIST
+        REAL XX0(1),YY0(1)
         REAL X0_(NXYMAX)
         REAL XF(NXYMAX),YF(NXYMAX)
         REAL CHISQR
@@ -165,8 +167,13 @@ c tomamos el siguiente pico no utilizado todavia
               X0=XBUFPEAK(NP,NS)
               Y0=YBUFPEAK(NP,NS)
               IF(LDEBUGLOCAL)THEN
+                !usamos un array unidimensional porque el compilador
+                !gfortran-mp-10 da error al usar un escalar en lugar
+                !de una matriz
+                XX0(1)=X0
+                YY0(1)=Y0
                 CALL PGSCI(5)
-                CALL PGPOINT(1,X0,Y0,17)
+                CALL PGPOINT(1,XX0,YY0,17)
                 CALL PGSCI(1)
               END IF
 c determinamos condiciones locales
@@ -179,9 +186,16 @@ c calculamos extremos de la linea espectral
      +         NDEGBL(NLINBL),COEFFBL(1,NLINBL),
      +         X0,XMAX,YMAX)
               IF(LDEBUGLOCAL)THEN
+                !usamos un array unidimensional porque el compilador
+                !gfortran-mp-10 da error al usar un escalar en lugar
+                !de una matriz
+                XXMIN(1)=XMIN
+                XXMAX(1)=XMAX
+                YYMIN(1)=YMIN
+                YYMAX(1)=YMAX
                 CALL PGSCI(7)
-                CALL PGPOINT(1,XMIN,YMIN,17)
-                CALL PGPOINT(1,XMAX,YMAX,17)
+                CALL PGPOINT(1,XXMIN,YYMIN,17)
+                CALL PGPOINT(1,XXMAX,YYMAX,17)
                 CALL PGSCI(1)
               END IF
 C chequeamos si los limites estan dentro de la imagen (con un borde de

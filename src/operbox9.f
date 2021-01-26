@@ -95,6 +95,7 @@ C
         REAL FFACTOR,X(128),Y(128),XSOL(MAXNCOEFF,36)
         REAL QMIN_STACK(36,NOPERMAX_STACK),QMAX_STACK(36,NOPERMAX_STACK)
         REAL XW1,XW2,YW1,YW2
+        REAL XX0(1),YY0(1)
         CHARACTER*1 CINTERACTIVE,CCONT,CREJECT,CERRSKY
         CHARACTER*1 CMEDIANA1,CMEDIANA2,CREFINE1,CREFINE2
         CHARACTER*1 CMEDIANAFILL,CREFINEFILL
@@ -1831,14 +1832,22 @@ ccc                  NPIXELSVECINOS=NPIXELSVECINOS-4
                     PIXEL(NK)=FMEDIAN1(NPIXELSVECINOS,PIXELVECINO)
                     EPIXEL(NK)=FSIGMA_PIX
                     CALL PGSCI(4)
-                    CALL PGPOINT(1,REAL(JJ_LAST(NK)+DJ(K_LAST(NK))),
-     +               REAL(II_LAST(NK)+DI(K_LAST(NK))),21)
+                    !usamos un array unidimensional porque el compilador
+                    !gfortran-mp-10 da error al usar un escalar en lugar
+                    !de una matriz
+                    XX0(1)=REAL(JJ_LAST(NK)+DJ(K_LAST(NK)))
+                    YY0(1)=REAL(II_LAST(NK)+DI(K_LAST(NK)))
+                    CALL PGPOINT(1,XX0,YY0,21)
                     CALL PGSCI(1)
                     IF(CPOST.EQ.'y')THEN
                       CALL PGSLCT(IDNEW)
                       CALL PGSCI(4)
-                      CALL PGPOINT(1,REAL(JJ_LAST(NK)+DJ(K_LAST(NK))),
-     +                 REAL(II_LAST(NK)+DI(K_LAST(NK))),21)
+                      !usamos un array unidimensional porque el compilador
+                      !gfortran-mp-10 da error al usar un escalar en lugar
+                      !de una matriz
+                      XX0(1)=REAL(JJ_LAST(NK)+DJ(K_LAST(NK)))
+                      YY0(1)=REAL(II_LAST(NK)+DI(K_LAST(NK)))
+                      CALL PGPOINT(1,XX0,YY0,21)
                       CALL PGSCI(1)
                       CALL PGSLCT(IDOLD)
                     END IF
@@ -1858,14 +1867,22 @@ C el mas debil
 C eliminamos el pixel mas brillante si excede en TSHOT veces sigma
                 IF(PIXEL(KK)-FMEAN_PIX.GT.TSHOT*FSIGMA_PIX)THEN
                   CALL PGSCI(5)
-                  CALL PGPOINT(1,REAL(JJ_LAST(KK)+DJ(K_LAST(KK))),
-     +             REAL(II_LAST(KK)+DI(K_LAST(KK))),21)
+                  !usamos un array unidimensional porque el compilador
+                  !gfortran-mp-10 da error al usar un escalar en lugar
+                  !de una matriz
+                  XX0(1)=REAL(JJ_LAST(KK)+DJ(K_LAST(KK)))
+                  YY0(1)=REAL(II_LAST(KK)+DI(K_LAST(KK)))
+                  CALL PGPOINT(1,XX0,YY0,21)
                   CALL PGSCI(1)
                   IF(CPOST.EQ.'y')THEN
                     CALL PGSLCT(IDNEW)
                     CALL PGSCI(5)
-                    CALL PGPOINT(1,REAL(JJ_LAST(KK)+DJ(K_LAST(KK))),
-     +               REAL(II_LAST(Kk)+DI(K_LAST(KK))),21)
+                    !usamos un array unidimensional porque el compilador
+                    !gfortran-mp-10 da error al usar un escalar en lugar
+                    !de una matriz
+                    XX0(1)=REAL(JJ_LAST(KK)+DJ(K_LAST(KK)))
+                    YY0(1)=REAL(II_LAST(KK)+DI(K_LAST(KK)))
+                    CALL PGPOINT(1,XX0,YY0,21)
                     CALL PGSCI(1)
                     CALL PGSLCT(IDOLD)
                   END IF
@@ -1875,14 +1892,22 @@ C eliminamos el pixel mas brillante si excede en TSHOT veces sigma
 C eliminamos el pixel mas debil si excede en -TSHOT veces sigma
                 IF(FMEAN_PIX-PIXEL(1).GT.TSHOT*FSIGMA_PIX)THEN
                   CALL PGSCI(6)
-                  CALL PGPOINT(1,REAL(JJ_LAST(1)+DJ(K_LAST(1))),
-     +             REAL(II_LAST(1)+DI(K_LAST(1))),21)
+                  !usamos un array unidimensional porque el compilador
+                  !gfortran-mp-10 da error al usar un escalar en lugar
+                  !de una matriz
+                  XX0(1)=REAL(JJ_LAST(1)+DJ(K_LAST(1)))
+                  YY0(1)=REAL(II_LAST(1)+DI(K_LAST(1)))
+                  CALL PGPOINT(1,XX0,YY0,21)
                   CALL PGSCI(1)
                   IF(CPOST.EQ.'y')THEN
                     CALL PGSLCT(IDNEW)
                     CALL PGSCI(6)
-                    CALL PGPOINT(1,REAL(JJ_LAST(1)+DJ(K_LAST(1))),
-     +               REAL(II_LAST(1)+DI(K_LAST(1))),21)
+                    !usamos un array unidimensional porque el compilador
+                    !gfortran-mp-10 da error al usar un escalar en lugar
+                    !de una matriz
+                    XX0(1)=REAL(JJ_LAST(1)+DJ(K_LAST(1)))
+                    YY0(1)=REAL(II_LAST(1)+DI(K_LAST(1)))
+                    CALL PGPOINT(1,XX0,YY0,21)
                     CALL PGSCI(1)
                     CALL PGSLCT(IDOLD)
                   END IF
@@ -3497,6 +3522,7 @@ C
         REAL SCALEROW(MAXNCOEFF),XSOL(MAXNCOEFF)
         REAL DXSOL(MAXNCOEFF),XXSOL(MAXNCOEFF),DXXSOL(MAXNCOEFF)
         REAL FFACTOR
+        REAL XX0(1),YY0(1)
         LOGICAL SUBMASKBOX9(256,256,9)
         LOGICAL IFGOOD(128,128)
         LOGICAL LANY
@@ -3588,7 +3614,9 @@ C superponemos mascara
                 DO I=I1(NQUAD),I2(NQUAD)
                   DO J=J1(NQUAD),J2(NQUAD)
                     IF(.NOT.SUBMASKBOX9(J,I,K))THEN
-                      CALL PGPOINT(1,REAL(J+DJ(K)),REAL(I+DI(K)),1)
+                      XX0(1)=REAL(J+DJ(K))
+                      YY0(1)=REAL(I+DI(K))
+                      CALL PGPOINT(1,XX0,YY0,1)
                     END IF
                   END DO
                 END DO
@@ -3698,7 +3726,9 @@ C decidimos si eliminamos puntos
                            ELSE
                              CALL PGSCI(3)
                            END IF
-                           CALL PGPOINT(1,REAL(J+DJ(K)),REAL(I+DI(K)),1)
+                           XX0(1)=REAL(J+DJ(K))
+                           YY0(1)=REAL(I+DI(K))
+                           CALL PGPOINT(1,XX0,YY0,1)
                            IFGOOD(L_,M_)=.FALSE.
                           END IF
                         END IF

@@ -138,6 +138,7 @@ C otras variables
         REAL MASKVALUE                        !value to be masked in statistics
         REAL CRPIX1(NMAXBUFF),CRVAL1(NMAXBUFF),CDELT1(NMAXBUFF)  !wavel. calib.
         REAL ASCCHEIGHT(NMAXBUFF)                        !plot marks from ASCII
+        REAL XX0(1),YY0(1)
         CHARACTER*1 CH                            !mouse button or keyboard key
         CHARACTER*1 CDUM                             !dum character*1 variables
         CHARACTER*1 CSAVE               !choose between FITS or REDUCEME format
@@ -733,7 +734,12 @@ c..............................................................................
                       READ(*,*)
                     ELSE
                       CALL PGSCI(2)
-                      CALL PGPOINT(1,REAL(IXC),REAL(IYC),21)
+                      !usamos un array unidimensional porque el compilador
+                      !gfortran-mp-10 da error al usar un escalar en lugar
+                      !de una matriz
+                      XX0(1)=REAL(IXC)
+                      YY0(1)=REAL(IYC)
+                      CALL PGPOINT(1,XX0,YY0,21)
                       CALL PGSCI(1)
                       WRITE(*,101) 'Please, confirm this point...'
                       CALL RPGBAND(0,0,0.,0.,XC,YC,CH)

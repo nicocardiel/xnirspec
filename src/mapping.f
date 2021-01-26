@@ -43,6 +43,7 @@ C
         REAL X(NXYMAX),Y(NXYMAX),U(NXYMAX),V(NXYMAX)
         REAL XX,YY,UU,VV
         REAL X0,Y0,X1,Y1
+        REAL XX0(1),YY0(1)
         REAL SX,SY
         REAL XMIN,XMAX,YMIN,YMAX
         REAL XP(NXYMAX),YP(NXYMAX),RP(NXYMAX)
@@ -385,7 +386,12 @@ C origen de medida de longitudes de arco
      +   NDEGBL(NREFBL),COEFFBL(1,NREFBL),
      +   0.5*(XMINBA(NREFBA)+XMAXBA(NREFBA)),X0,Y0)
         CALL PGSCI(3)
-        CALL PGPOINT(1,X0,Y0,24)
+        !usamos un array unidimensional porque el compilador
+        !gfortran-mp-10 da error al usar un escalar en lugar
+        !de una matriz
+        XX0(1)=X0
+        YY0(1)=Y0
+        CALL PGPOINT(1,XX0,YY0,24)
 C..............................................................................
 C calculamos todas las intersecciones y almacenamos los puntos para el ajuste
         CALL PGSCI(7)
