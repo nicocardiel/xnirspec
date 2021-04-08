@@ -101,6 +101,7 @@ C otras variables
         INTEGER NCOLASC1(NMAXBUFF),NCOLASC2(NMAXBUFF)    !plot marks from ASCII
         INTEGER ASCCOLOR(NMAXBUFF),ASCLWIDTH(NMAXBUFF)   !plot marks from ASCII
         INTEGER ASCSYMB(NMAXBUFF)                        !plot marks from ASCII
+        INTEGER ASCNUMBER(NMAXBUFF)              !plot symbol number from ASCII
         INTEGER NIARG                                !number of input arguments
         REAL XC,YC,XC_,YC_,XC__,YC__                            !mouse location
         REAL XOFFSET(9),YOFFSET(9)                            !measured offsets
@@ -239,7 +240,7 @@ C common blocks
         COMMON/BLKDS9REGFILE/DS9REGFILE
         COMMON/BLKASCREGFILE/ASCREGFILE
         COMMON/BLKASCCOLS1/NCOLASC1,NCOLASC2,ASCCOLOR,ASCLWIDTH,ASCSYMB
-        COMMON/BLKASCCOLS2/ASCCHEIGHT
+        COMMON/BLKASCCOLS2/ASCCHEIGHT,ASCNUMBER
         COMMON/BLKWAVECAL1/CRPIX1,CRVAL1,CDELT1
         COMMON/BLKWAVECAL2/LWAVECAL
 C------------------------------------------------------------------------------
@@ -273,6 +274,17 @@ C
         J1=0 !evita WARNING de compilacion
         NNX1_=0 !evita WARNING de compilacion
         NNY1_=0 !evita WARNING de compilacion
+C Defaults for symbols at (X,Y) coordinates given in external ASCII file
+        DO I=1,NMAXBUFF
+          NCOLASC1(I)=1
+          NCOLASC2(I)=2
+          ASCSYMB(I)=25
+          ASCCOLOR(I)=3
+          ASCLWIDTH(I)=1
+          ASCCHEIGHT(I)=1.0
+          ASCNUMBER(I)=0   !0=no, 1=yes
+          ASCREGFILE(I)='none'
+        END DO
 C------------------------------------------------------------------------------
         WRITE(*,101) 'Welcome to NIRSPEC'
         WRITE(*,101) 'This is version 5.0'
@@ -2276,9 +2288,14 @@ C------------------------------------------------------------------------------
               LOGFILE=.FALSE.
               LOGFILERR=.FALSE.
               DO WHILE(.NOT.LOGFILE)
+                IF(ASCREGFILE(NCBUFF).NE.'none')THEN
+                  CDUMMY=ASCREGFILE(NCBUFF)
+                ELSE
+                  CDUMMY='*'
+                END IF
                 INFILE_=READC(
      +           'Input ASCII file (none=EXIT, NONE=delete region)',
-     +           '*','@')
+     +           CDUMMY,'@')
                 IF((INDEX(INFILE_,'*').NE.0).OR.
      +             (INDEX(INFILE_,'?').NE.0))THEN
                   L1=TRUEBEG(INFILE_)
@@ -2302,12 +2319,23 @@ C------------------------------------------------------------------------------
                 END IF
               END DO
               IF((LOGFILE).AND.(.NOT.LOGFILERR))THEN
-                NCOLASC1(NCBUFF)=READI('Column number for X value','@')
-                NCOLASC2(NCBUFF)=READI('Column number for Y value','@')
-                ASCSYMB(NCBUFF)=READI('PGPLOT symbol number','2')
-                ASCCOLOR(NCBUFF)=READI('Color number','@')
-                ASCLWIDTH(NCBUFF)=READI('Line width','1')
-                ASCCHEIGHT(NCBUFF)=READF('Symbol size','1.0')
+                WRITE(CDUMMY,*)NCOLASC1(NCBUFF)
+                NCOLASC1(NCBUFF)=READI('Column number for X value',
+     +           CDUMMY)
+                WRITE(CDUMMY,*)NCOLASC2(NCBUFF)
+                NCOLASC2(NCBUFF)=READI('Column number for Y value',
+     +           CDUMMY)
+                WRITE(CDUMMY,*)ASCSYMB(NCBUFF)
+                ASCSYMB(NCBUFF)=READI('PGPLOT symbol number',CDUMMY)
+                WRITE(CDUMMY,*)ASCCOLOR(NCBUFF)
+                ASCCOLOR(NCBUFF)=READI('Color number',CDUMMY)
+                WRITE(CDUMMY,*)ASCLWIDTH(NCBUFF)
+                ASCLWIDTH(NCBUFF)=READI('Line width',CDUMMY)
+                WRITE(CDUMMY,*)ASCNUMBER(NCBUFF)
+                ASCNUMBER(NCBUFF)=READILIM('Plot number (0=no, 1=yes)',
+     +           CDUMMY,0,1)
+                WRITE(CDUMMY,*)ASCCHEIGHT(NCBUFF)
+                ASCCHEIGHT(NCBUFF)=READF('Symbol size',CDUMMY)
                 LASCREG(NCBUFF)=.TRUE.
                 ASCREGFILE(NCBUFF)=INFILE_
                 CALL SUBLOOK(.TRUE.,NCBUFF,.FALSE.)
