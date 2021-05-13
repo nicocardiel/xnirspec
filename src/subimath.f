@@ -52,6 +52,7 @@ C
         REAL THRESHOLD
         REAL NEWCONSTANT,THRESHOLD1,THRESHOLD2
         REAL FDUMMY
+        REAL OFFSET_LOG
         CHARACTER*1 CH,CZERO
         CHARACTER*1 COPER
         CHARACTER*1 CUTIL
@@ -1104,6 +1105,7 @@ C la operacion 'f' (filter) puede hacerse ya
               WRITE(*,101) '(7) 1-D: 1,0,1,0,...,1,...,0,1,0,1 filter'
               WRITE(*,101) '(8) Set to zero below threshold'
               WRITE(*,101) '(9) Set to constant for data in a range'
+              WRITE(*,101) '(m) Mathematical transformation'
               WRITE(*,101) '(x) Reverse image in the x direction'
               WRITE(*,101) '(y) Reverse image in the y direction'
               WRITE(*,*)
@@ -1113,7 +1115,7 @@ C la operacion 'f' (filter) puede hacerse ya
               WRITE(*,101) 'r.m.s. is stored in the associated '
               WRITE(*,101) '  error buffer'
               WRITE(*,*)
-              CFILT(1:1)=READC('Option',CFILT,'0123456789xy')
+              CFILT(1:1)=READC('Option',CFILT,'0123456789mxy')
 c
               NAXIS(1,NBUFF1)=NAXIS(1,NBUFF0)
               NAXIS(2,NBUFF1)=NAXIS(2,NBUFF0)
@@ -1201,6 +1203,16 @@ c execute filter
                 DO I=NY1,NY2
                   DO J=NX1,NX2
                     IMAGEN(J,I,NBUFF1)=IMAGEN(J,NY2+NY1-I,NBUFF0)
+                  END DO
+                END DO
+              ELSEIF(CFILT.EQ.'m')THEN
+                WRITE(*,101)'* Only logarithmic transformation so far!'
+                OFFSET_LOG=READF('Offset for logarithmic transformation'
+     +           , '@')
+                DO I=NY1,NY2
+                  DO J=NX1,NX2
+                    IMAGEN(J,I,NBUFF1)=
+     +               ALOG10(IMAGEN(J,NY2+NY1-I,NBUFF0)+OFFSET_LOG)
                   END DO
                 END DO
               ELSEIF(CFILT.EQ.'8')THEN
