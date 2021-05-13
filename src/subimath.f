@@ -1212,7 +1212,7 @@ c execute filter
                 DO I=NY1,NY2
                   DO J=NX1,NX2
                     IMAGEN(J,I,NBUFF1)=
-     +               ALOG10(IMAGEN(J,NY2+NY1-I,NBUFF0)+OFFSET_LOG)
+     +               ALOG10(IMAGEN(J,I,NBUFF0)+OFFSET_LOG)
                   END DO
                 END DO
               ELSEIF(CFILT.EQ.'8')THEN
