@@ -42,7 +42,7 @@ C variables locales
         INTEGER ISTATUS,IREADWRITE,IUNIT
         INTEGER BLOCKSIZE,NULLVAL
         INTEGER NKEYS,NSPACE,NFOUND
-        INTEGER NAXIS_(0:2)                                !OJO: el limite es 2
+        INTEGER NAXIS_(0:3)                                !OJO: el limite es 2
         REAL IMAGEN_(NXYMAX,NXYMAX)
         REAL FROW(NXYMAX)
         CHARACTER*50 COMMENT
@@ -54,6 +54,7 @@ C variables locales
         LOGICAL LROW(NXYMAX)
         LOGICAL L_PHOTFLAM(NMAXBUFF),L_PHOTZPT(NMAXBUFF)
         LOGICAL L_EXPTIME(NMAXBUFF)
+        LOGICAL LERROR
 C
         COMMON/BLKIMAGEN1/IMAGEN             !imagen FITS leida en formato REAL
         COMMON/BLKIMAGEN1_/IMAGEN_              !es global para ahorrar memoria
@@ -135,12 +136,25 @@ C leemos BITPIX
 C comprobamos que NAXIS=2
         CALL FTGKYJ(IUNIT,'NAXIS',NAXIS_(0),COMMENT,ISTATUS)
         IF(NAXIS_(0).GT.2)THEN
-          WRITE(*,101) '***FATAL ERROR***'
-          WRITE(*,100) '=> NAXIS='
-          WRITE(*,*) NAXIS_(0)
-          WRITE(*,101) '=> NAXIS > 2'
-          CALL FTCLOS(IUNIT,ISTATUS)
-          STOP
+          IF(NAXIS_(0).EQ.3)THEN
+            CALL FTGKNJ(IUNIT,'NAXIS',1,3,NAXIS_(1),NFOUND,ISTATUS)
+            IF(NAXIS_(3).NE.1)THEN
+              LERROR=.TRUE.
+            ELSE
+              WRITE(*,101) 'WARNING: NAXIS = 3. Reading anyway!'
+              LERROR=.FALSE.
+            END IF
+          ELSE
+            LERROR=.FALSE.
+          END IF
+          IF(LERROR)THEN
+            WRITE(*,101) '***FATAL ERROR***'
+            WRITE(*,100) '=> NAXIS='
+            WRITE(*,*) NAXIS_(0)
+            WRITE(*,101) '=> NAXIS > 2'
+            CALL FTCLOS(IUNIT,ISTATUS)
+            STOP
+          END IF
         ELSEIF(NAXIS_(0).EQ.1)THEN
           NAXIS_(2)=1
         END IF
