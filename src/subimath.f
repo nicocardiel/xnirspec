@@ -34,6 +34,7 @@ C
         INTEGER DI(9),DJ(9)
         INTEGER ISYSTEM
         INTEGER NX1_PLOT,NX2_PLOT,NY1_PLOT,NY2_PLOT
+        INTEGER IKERNEL
         REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
         REAL CRPIX1(NMAXBUFF),CRVAL1(NMAXBUFF),CDELT1(NMAXBUFF)
         REAL PIXEL(NXYMAX*NXYMAX) !OJO: para no consumir mas memoria, esta
@@ -57,6 +58,7 @@ C
         CHARACTER*1 COPER
         CHARACTER*1 CUTIL
         CHARACTER*1 CFILT,CAXIS,CFUN_OR_DER,CRMS
+        CHARACTER*1 CKERNEL
         CHARACTER*50 CDUMMY
         LOGICAL LWAVECAL(NMAXBUFF)
         LOGICAL LDEFBUFF(NMAXBUFF)
@@ -1105,6 +1107,7 @@ C la operacion 'f' (filter) puede hacerse ya
               WRITE(*,101) '(7) 1-D: 1,0,1,0,...,1,...,0,1,0,1 filter'
               WRITE(*,101) '(8) Set to zero below threshold'
               WRITE(*,101) '(9) Set to constant for data in a range'
+              WRITE(*,101) '(k) Apply predefined kernel'
               WRITE(*,101) '(m) Mathematical transformation'
               WRITE(*,101) '(x) Reverse image in the x direction'
               WRITE(*,101) '(y) Reverse image in the y direction'
@@ -1115,7 +1118,7 @@ C la operacion 'f' (filter) puede hacerse ya
               WRITE(*,101) 'r.m.s. is stored in the associated '
               WRITE(*,101) '  error buffer'
               WRITE(*,*)
-              CFILT(1:1)=READC('Option',CFILT,'0123456789mxy')
+              CFILT(1:1)=READC('Option',CFILT,'0123456789kmxy')
 c
               NAXIS(1,NBUFF1)=NAXIS(1,NBUFF0)
               NAXIS(2,NBUFF1)=NAXIS(2,NBUFF0)
@@ -1213,6 +1216,38 @@ c execute filter
                   DO J=NX1,NX2
                     IMAGEN(J,I,NBUFF1)=
      +               ALOG10(IMAGEN(J,I,NBUFF0)+OFFSET_LOG)
+                  END DO
+                END DO
+              ELSEIF(CFILT.EQ.'k')THEN
+                WRITE(*,101)'* Only sharpen kernel so far!'
+                CKERNEL=READC('kernel side (3, 5, 7 o 9)','3','3579')
+                IF(CKERNEL.EQ.'3')THEN
+                  IKERNEL=1
+                ELSEIF(CKERNEL.EQ.'5')THEN
+                  IKERNEL=2
+                ELSEIF(CKERNEL.EQ.'7')THEN
+                  IKERNEL=3
+                ELSE
+                  IKERNEL=4
+                END IF
+                NX1_=NX1+IKERNEL
+                NX2_=NX2-IKERNEL
+                NY1_=NY1+IKERNEL
+                NY2_=NY2-IKERNEL
+                DO I=NY1_,NY2_
+                  DO J=NX1_,NX2_
+                    FDUMMY=0.0
+                    DO II=I-IKERNEL,I+IKERNEL
+                      DO JJ=J-IKERNEL,J+IKERNEL
+                        IF((II.EQ.I).AND.(JJ.EQ.J))THEN
+                          FDUMMY=FDUMMY+FLOAT(2*IKERNEL+1)
+     +                     *FLOAT(2*IKERNEL+1)*IMAGEN(JJ,II,NBUFF0)
+                        ELSE
+                          FDUMMY=FDUMMY-IMAGEN(JJ,II,NBUFF0)
+                        END IF
+                      END DO
+                    END DO
+                    IMAGEN(J,I,NBUFF1)=FDUMMY
                   END DO
                 END DO
               ELSEIF(CFILT.EQ.'8')THEN
