@@ -53,6 +53,7 @@ C
         REAL THRESHOLD
         REAL NEWCONSTANT,THRESHOLD1,THRESHOLD2
         REAL FDUMMY
+        REAL FMIN_ABSOLUTE,FMIN_POSITIVE
         REAL OFFSET_LOG
         CHARACTER*1 CH,CZERO
         CHARACTER*1 COPER
@@ -1211,11 +1212,49 @@ c execute filter
               ELSEIF(CFILT.EQ.'m')THEN
                 WRITE(*,101)'* Only logarithmic transformation so far!'
                 OFFSET_LOG=READF('Offset for logarithmic transformation'
-     +           , '@')
+     +           , '0.0')
+                !compute minimum value greater than zero (just in case)
+                FMIN_POSITIVE=-1.0
                 DO I=NY1,NY2
                   DO J=NX1,NX2
-                    IMAGEN(J,I,NBUFF1)=
-     +               ALOG10(IMAGEN(J,I,NBUFF0)+OFFSET_LOG)
+                    FDUMMY=IMAGEN(J,I,NBUFF0)+OFFSET_LOG
+                    IF((I.EQ.NY1).AND.(J.EQ.NX1))THEN
+                      FMIN_ABSOLUTE=FDUMMY
+                    ELSE
+                      IF(FDUMMY.LT.FMIN_ABSOLUTE)THEN
+                        FMIN_ABSOLUTE=FDUMMY
+                      END IF
+                    END IF
+                    IF(FDUMMY.GT.0.0)THEN
+                      IF(FMIN_POSITIVE.LT.0.0)THEN
+                        FMIN_POSITIVE=FDUMMY
+                      ELSE
+                        IF(FDUMMY.LT.FMIN_POSITIVE)THEN
+                          FMIN_POSITIVE=FDUMMY
+                        END IF
+                      END IF
+                    END IF
+                  END DO
+                END DO
+                WRITE(*,100)'FMIN_POSITIVE: '
+                WRITE(*,*) FMIN_POSITIVE
+                WRITE(*,100)'FMIN_ABSOLUTE: '
+                WRITE(*,*) FMIN_ABSOLUTE
+                IF(FMIN_POSITIVE.LT.0.0)THEN
+                  WRITE(*,101)'WARNING: all pixels are negative!'
+                  WRITE(*,101)'-> Forcing minimum value to 1.0'
+                  OFFSET_LOG=OFFSET_LOG-FMIN_ABSOLUTE+1.0
+                  FMIN_POSITIVE=1.0
+                END IF
+                DO I=NY1,NY2
+                  DO J=NX1,NX2
+                    FDUMMY=IMAGEN(J,I,NBUFF0)+OFFSET_LOG
+                    IF(FDUMMY.GT.0.0)THEN
+                      IMAGEN(J,I,NBUFF1)=
+     +                 ALOG10(IMAGEN(J,I,NBUFF0)+OFFSET_LOG)
+                    ELSE
+                      IMAGEN(J,I,NBUFF1)=ALOG10(FMIN_POSITIVE)
+                    END IF
                   END DO
                 END DO
               ELSEIF(CFILT.EQ.'k')THEN
