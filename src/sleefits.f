@@ -43,6 +43,7 @@ C variables locales
         INTEGER BLOCKSIZE,NULLVAL
         INTEGER NKEYS,NSPACE,NFOUND
         INTEGER NAXIS_(0:3)                                !OJO: el limite es 2
+        INTEGER NANYNULLS
         REAL IMAGEN_(NXYMAX,NXYMAX)
         REAL FROW(NXYMAX)
         CHARACTER*50 COMMENT
@@ -71,6 +72,7 @@ C inicializamos variables
         IREADWRITE=0                      !la imagen se abrira en modo READONLY
         NULLVAL=-999
         LANYNULL=.FALSE.
+        NANYNULLS=0
 C------------------------------------------------------------------------------
 C chequeamos si existe la imagen
         INQUIRE(FILE=FITSFILE,EXIST=LOGFILE)
@@ -274,7 +276,10 @@ C leemos la imagen
               DO J=1,NAXIS_(1)
                 LNULL_(J,I)=LROW(J)
                 IF(LNULL_(J,I))THEN
-                  print*,j,i,jrow(j)
+                  NANYNULLS=NANYNULLS+1
+                  IF(NANYNULLS.LT.10)THEN
+                    print*,j,i,jrow(j)
+                  END IF
                   JROW(J)=0
                 END IF
               END DO
@@ -308,7 +313,10 @@ C leemos la imagen
               DO J=1,NAXIS_(1)
                 LNULL_(J,I)=LROW(J)
                 IF(LNULL_(J,I))THEN
-                  print*,j,i,frow(j)
+                  NANYNULLS=NANYNULLS+1
+                  IF(NANYNULLS.LT.10)THEN
+                    print*,j,i,frow(j)
+                  END IF
                   FROW(J)=0.0
                 END IF
               END DO
@@ -383,6 +391,10 @@ C tratamos la orientacion de la imagen
           WRITE(*,*) IROTATE
           WRITE(*,101) '=> Invalid IROTATE in subroutine SLEEFITS.'
           STOP
+        END IF
+        IF(NANYNULLS.GT.0)THEN
+          WRITE(*,100) 'Total number of ANYNULL pixels: '
+          WRITE(*,*) NANYNULLS
         END IF
 C------------------------------------------------------------------------------
 100     FORMAT(A,$)
