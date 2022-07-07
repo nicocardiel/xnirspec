@@ -551,7 +551,8 @@ C Load images indicated as arguments in the command line
             INFILE_=CARG(NEWBUFF)(1:L1)
             INQUIRE(FILE=INFILE_,EXIST=LOGFILE)
             IF(LOGFILE)THEN
-              WRITE(*,100) 'Reading file...'
+              WRITE(*,100) 'Reading file: '
+              WRITE(*,101) INFILE_
               CALL SLEEFITS(INFILE_,.FALSE.,IROTATE,NEWBUFF,LBOX9,
      +         NEWBUFF)
               WRITE(*,101) ' ...OK!'
@@ -1012,7 +1013,8 @@ ccc                 J1=256
                 END DO
                 CLOSE(11)
               ELSE
-                WRITE(*,100) 'Reading file...'
+                WRITE(*,100) 'Reading file: '
+                WRITE(*,101) INFILE_
                 CALL SLEEFITS(INFILE_,.FALSE.,IROTATE,NEWBUFF,LBOX9,
      +           NEWBUFF)
                 WRITE(*,101) ' ...OK!'
@@ -1172,7 +1174,8 @@ c..............................................................................
                     READ(*,*)
                   END IF
                 END DO
-                WRITE(*,100) 'Reading file...'
+                WRITE(*,100) 'Reading file: '
+                WRITE(*,101) ERRFILE
                 CALL SLEEFITS(ERRFILE,.FALSE.,IROTATE,
      +           NCBUFF+NMAXBUFF/2,LBOX9,0)
                 WRITE(*,101) ' ...OK!'
