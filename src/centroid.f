@@ -54,6 +54,7 @@ C
         REAL AREA1,AREA2,AREA3,EAREA1,EAREA2,EAREA3
         REAL XC_,YC_
         REAL XOFFSET_ORIGEN,YOFFSET_ORIGEN
+        REAL M00, M10, M01
         CHARACTER*1 CH_
         CHARACTER*50 CDUMMY
         LOGICAL LEXIT
@@ -136,6 +137,22 @@ C
                 IMAGEN_(J,I)=IMAGEN(J,I,NBUFF)
               END DO
             END DO
+C calculo sencillo del centro de masas (usando momentos)
+C (ver https://en.wikipedia.org/wiki/Image_moment)
+            M00 = 0.0
+            M10 = 0.0
+            M01 = 0.0
+            DO I=IY1,IY2
+              DO J=IX1,IX2
+                M00 = M00 + IMAGEN_(J,I)
+                M10 = M10 + REAL(J)*IMAGEN_(J,I)
+                M01 = M01 + REAL(I)*IMAGEN_(J,I)
+              END DO
+            END DO
+            WRITE(*,100) 'X_cm (center of mass): '
+            WRITE(*,*) M10/M00
+            WRITE(*,100) 'Y_cm (center of mass): '
+            WRITE(*,*) M01/M00
 C comenzamos buffering
             CALL PGBBUF
 C almacenamos region de dibujo actual
