@@ -269,6 +269,7 @@ ccc     +   512,256/  !9
      +   1,2,  !7
      +   0,0,  !8
      +   2,1/  !9
+        LBOX9=.FALSE.
 C
         I1=0 !evita WARNING de compilacion
         J1=0 !evita WARNING de compilacion
