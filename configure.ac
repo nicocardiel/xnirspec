@@ -2,16 +2,16 @@
 #
 
 # Prelude
-AC_INIT(xnirspec,5.0,[cardiel@ucm.es])
+AC_INIT(xnirspec,6.0,[cardiel@ucm.es])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_SRCDIR([config.h.in])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign])
 
 # Checks for programs
-AC_PROG_F77
+AC_PROG_FC
 
 # Safety check
-AC_CONFIG_SRCDIR([src/xnirspec.f])
+AC_CONFIG_SRCDIR([src/xnirspec.f90])
 
 # Define directories to search for libraries
 AC_MSG_CHECKING([uname -s for detecting host operating system])

@@ -1,3 +1,2 @@
         CHARACTER*255 SEXPATH
-        PARAMETER (SEXPATH=
-     +   '@SEXPATH@')
+        PARAMETER (SEXPATH='@SEXPATH@')
