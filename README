@@ -1,7 +1,10 @@
-This is xnirspec, a Fortran 77 program that helps to visualise and manipulate
+This is xnirspec, a Fortran program that helps to visualise and manipulate
 FITS images. The program was originally written by its author to reduce
 spectroscopic data obtained with near-infrared spectrograph NIRSPEC, installed
-in one of the Keck Telescopes (Hawaii). 
+in one of the Keck Telescopes (Hawaii). The code was initially developed
+in Fortran 77, although some minor changes have been introduced (January 2023)
+to compile it as Fortran 90 code (without trying to make full use of the
+advantages of Fortran 90).
 
 The program is first mentioned in Cardiel et al. (2003, ApJ, 584, 76; 
 see http://adsabs.harvard.edu/abs/2003ApJ...584...76C)
