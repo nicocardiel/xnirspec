@@ -113,6 +113,7 @@
               ID0=PGOPEN('?')
               IF(ID0.LE.0)THEN
                 WRITE(*,101)'FATAL ERROR: unable to open graphic device.'
+                INCLUDE 'deallocate_arrays.inc'
                 STOP
               END IF
             END IF

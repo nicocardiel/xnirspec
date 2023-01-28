@@ -310,9 +310,7 @@
           WRITE(*,100) 'Maximum number allowed...: '
           WRITE(*,*) NMAXBUFF/2
           WRITE(*,101) 'FATAL ERROR: number of input arguments is too large'
-          CALL Deallocate_Array_IMAGEN
-          CALL Deallocate_Array_IMAGEN_
-          CALL Deallocate_Array_LNULL
+          INCLUDE 'deallocate_arrays.inc'
           STOP
         END IF
 !       DO I=1,NIARG
@@ -320,6 +318,7 @@
 !         L1=TRUELEN(CARG(I))
 !         WRITE(*,*) '-->'//CARG(I)(1:L1)//'<--'
 !       END DO
+!       INCLUDE 'deallocate_arrays.inc'
 !       STOP
 !------------------------------------------------------------------------------
         NXYMAX_ = AMAX0(NXMAX, NYMAX)
@@ -331,9 +330,7 @@
           WRITE(*,100) 'NXYMAX..: '
           WRITE(*,*) NXYMAX
           WRITE(*,101) 'FATAL ERROR: NXYMAX must be set to the MAX(NXMAX,NYMAX) value in configure.ac'
-          CALL Deallocate_Array_IMAGEN
-          CALL Deallocate_Array_IMAGEN_
-          CALL Deallocate_Array_LNULL
+          INCLUDE 'deallocate_arrays.inc'
           STOP
         END IF
 !------------------------------------------------------------------------------
@@ -577,6 +574,7 @@
                 WRITE(*,101) '***WARNING***'
                 WRITE(*,101) '=> ANYNULL=.TRUE.!'
                 !CALL PGEND
+                !INCLUDE 'deallocate_arrays.inc'
                 !STOP
               END IF
               NFRAMES(NEWBUFF)=1
@@ -586,9 +584,7 @@
             ELSE
               WRITE(*,101) 'FATAL ERROR: the following file does not exist:'
               WRITE(*,101) INFILE_
-              CALL Deallocate_Array_IMAGEN
-              CALL Deallocate_Array_IMAGEN_
-              CALL Deallocate_Array_LNULL
+              INCLUDE 'deallocate_arrays.inc'
               STOP
             END IF
             NCBUFF=NEWBUFF
@@ -901,18 +897,14 @@
                   WRITE(*,100) 'NAXIS(1), NXMAX: '
                   WRITE(*,*) NAXIS(1,NEWBUFF),NXMAX
                   WRITE(*,101) 'FATAL ERROR: NAXIS(1).GT.NXMAX'
-                  CALL Deallocate_Array_IMAGEN
-                  CALL Deallocate_Array_IMAGEN_
-                  CALL Deallocate_Array_LNULL
+                  INCLUDE 'deallocate_arrays.inc'
                   STOP
                 END IF
                 IF(NAXIS(2,NEWBUFF).GT.NYMAX)THEN
                   WRITE(*,100) 'NAXIS(2), NYMAX: '
                   WRITE(*,*) NAXIS(2,NEWBUFF),NYMAX
                   WRITE(*,101) 'FATAL ERROR: NAXIS(2).GT.NYMAX'
-                  CALL Deallocate_Array_IMAGEN
-                  CALL Deallocate_Array_IMAGEN_
-                  CALL Deallocate_Array_LNULL
+                  INCLUDE 'deallocate_arrays.inc'
                   STOP
                 END IF
                 DO I=1,NAXIS(2,NEWBUFF)
@@ -1027,6 +1019,7 @@
                   WRITE(*,101) '***WARNING***'
                   WRITE(*,101) '=> ANYNULL=.TRUE.!'
                   !CALL PGEND
+                  !INCLUDE 'deallocate_arrays.inc'
                   !STOP
                 END IF
                 NFRAMES(NEWBUFF)=1
@@ -1179,6 +1172,7 @@
                   WRITE(*,101) '***WARNING***'
                   WRITE(*,100) '=> ANYNULL=.TRUE.!'
                   !CALL PGEND
+                  !INCLUDE 'deallocate_arrays.inc'
                   !STOP
                 END IF
                 INFILE(NCBUFF+NMAXBUFF/2)=INFILE_
@@ -2821,9 +2815,7 @@
 !------------------------------------------------------------------------------
 ! Close graphic display and end program
         CALL PGEND
-        CALL Deallocate_Array_IMAGEN
-        CALL Deallocate_Array_IMAGEN_
-        CALL Deallocate_Array_LNULL
+        INCLUDE 'deallocate_arrays.inc'
         STOP
 !------------------------------------------------------------------------------
 100     FORMAT(A,$)

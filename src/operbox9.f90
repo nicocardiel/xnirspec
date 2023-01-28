@@ -647,8 +647,7 @@
                 WRITE(*,100) 'NOPER, TYPEOPER_STACK: '
                 WRITE(*,*) NOPER,TYPEOPER_STACK(NOPER)
                 WRITE(*,101) 'FATAL ERROR: invalid operation type.'
-                CALL Deallocate_Array_IMAGEN
-                CALL Deallocate_Array_IMAGEN_
+                INCLUDE 'deallocate_arrays.inc'
                 STOP
               END IF
 !
@@ -2733,29 +2732,25 @@
               IF(.NOT.INSIDE(J-DJJ1,1,NXMAXB9_,I-DII1,1,NYMAXB9_))THEN
                 WRITE(*,*) J0(K),FJ0(K),I0(K),FI0(K)
                 WRITE(*,*) K,J,I,DJJ1,DJJ2,DII1,DII2,NXMAXB9_,NYMAXB9_
-                CALL Deallocate_Array_IMAGEN
-                CALL Deallocate_Array_IMAGEN_
+                INCLUDE 'deallocate_arrays.inc'
                 STOP 'FATAL ERROR: LOK1'
               END IF
               IF(.NOT.INSIDE(J-DJJ1,1,NXMAXB9_,I-DII2,1,NYMAXB9_))THEN
                 WRITE(*,*) J0(K),FJ0(K),I0(K),FI0(K)
                 WRITE(*,*) K,J,I,DJJ1,DJJ2,DII1,DII2,NXMAXB9_,NYMAXB9_
-                CALL Deallocate_Array_IMAGEN
-                CALL Deallocate_Array_IMAGEN_
+                INCLUDE 'deallocate_arrays.inc'
                 STOP 'FATAL ERROR: LOK2'
               END IF
               IF(.NOT.INSIDE(J-DJJ2,1,NXMAXB9_,I-DII1,1,NYMAXB9_))THEN
                 WRITE(*,*) J0(K),FJ0(K),I0(K),FI0(K)
                 WRITE(*,*) K,J,I,DJJ1,DJJ2,DII1,DII2,NXMAXB9_,NYMAXB9_
-                CALL Deallocate_Array_IMAGEN
-                CALL Deallocate_Array_IMAGEN_
+                INCLUDE 'deallocate_arrays.inc'
                 STOP 'FATAL ERROR: LOK3'
               END IF
               IF(.NOT.INSIDE(J-DJJ2,1,NXMAXB9_,I-DII2,1,NYMAXB9_))THEN
                 WRITE(*,*) J0(K),FJ0(K),I0(K),FI0(K)
                 WRITE(*,*) K,J,I,DJJ1,DJJ2,DII1,DII2,NXMAXB9_,NYMAXB9_
-                CALL Deallocate_Array_IMAGEN
-                CALL Deallocate_Array_IMAGEN_
+                INCLUDE 'deallocate_arrays.inc'
                 STOP 'FATAL ERROR: LOK4'
               END IF
 !..............................................................................
@@ -3292,8 +3287,7 @@
           WRITE(*,101) 'NCOEFF.GT.MAXNCOEFF'
           WRITE(*,100) 'GX,GY,NCOEFF,MAXNCOEFF: '
           WRITE(*,*) GX,GY,NCOEFF,MAXNCOEFF
-          CALL Deallocate_Array_IMAGEN
-          CALL Deallocate_Array_IMAGEN_
+          INCLUDE 'deallocate_arrays.inc'
           STOP
         END IF
 ! duplicamos variables para evitar problemas con los COMMONs

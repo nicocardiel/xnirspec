@@ -32,7 +32,10 @@
         INTEGER I
         REAL SUM
 !------------------------------------------------------------------------------
-        IF(N.EQ.0) STOP 'FATAL ERROR: in function FMEAN1: N=0.'
+        IF(N.EQ.0)THEN
+          INCLUDE 'deallocate_arrays.inc'
+          STOP 'FATAL ERROR: in function FMEAN1: N=0.'
+        END IF
         SUM=0.
         DO I=1,N
           SUM=SUM+X(I)

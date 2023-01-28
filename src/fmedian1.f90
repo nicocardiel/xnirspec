@@ -32,7 +32,10 @@
 ! variables locales
         INTEGER NN
 !------------------------------------------------------------------------------
-        IF(N.EQ.0) STOP 'FATAL ERROR: in function FMEDIAN: N=0.'
+        IF(N.EQ.0)THEN
+          INCLUDE 'deallocate_arrays.inc'
+          STOP 'FATAL ERROR: in function FMEDIAN: N=0.'
+        END IF
         CALL ORDENA1F(N,X)
         NN=N/2
         IF(MOD(N,2).EQ.0)THEN

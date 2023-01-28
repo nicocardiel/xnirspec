@@ -48,9 +48,13 @@
         LOGICAL IFX(NMAX),IFXX(NMAX)
         LOGICAL LREPEAT
 !------------------------------------------------------------------------------
-        IF(N.EQ.0) STOP 'FATAL ERROR in function FMEAN2E: N=0.'
+        IF(N.EQ.0)THEN
+          INCLUDE 'deallocate_arrays.inc'
+          STOP 'FATAL ERROR in function FMEAN2E: N=0.'
+        END IF
         IF(N.GT.NMAX)THEN
           WRITE(*,101)'FATAL ERROR in function FMEAN2E: N too large.'
+          INCLUDE 'deallocate_arrays.inc'
           STOP
         END IF
 !

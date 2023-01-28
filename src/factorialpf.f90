@@ -31,10 +31,12 @@
 !------------------------------------------------------------------------------
         IF(N.LT.0)THEN
           WRITE(*,101)'FATAL ERROR: factorial(n<0)!'
+          INCLUDE 'deallocate_arrays.inc'
           STOP
         END IF
         IF(N.GT.30)THEN
           WRITE(*,101)'FATAL ERROR: factorial(n>30)!'
+          INCLUDE 'deallocate_arrays.inc'
           STOP
         END IF
         FACTORIALPF=1.D0

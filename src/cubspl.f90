@@ -74,6 +74,7 @@
           WRITE(*,100)'FATAL ERROR in subroutine CUBSPL: '
           WRITE(*,100)' no. of data points too small: '
           WRITE(*,*)N
+          INCLUDE 'deallocate_arrays.inc'
           STOP
         END IF
 ! verificamos que el numero de puntos no sea demasiado grande
@@ -81,6 +82,7 @@
           WRITE(*,100)'FATAL ERROR in subroutine CUBSPL: '
           WRITE(*,100)' no. of data points too large: '
           WRITE(*,*)N
+          INCLUDE 'deallocate_arrays.inc'
           STOP
         END IF
 ! verificamos que IMODE toma un valor posible
@@ -88,6 +90,7 @@
           WRITE(*,100)'FATAL ERROR in subroutine CUBSPL: '
           WRITE(*,100)' invalid IMODE value:'
           WRITE(*,*)IMODE
+          INCLUDE 'deallocate_arrays.inc'
           STOP
         END IF
 !------------------------------------------------------------------------------

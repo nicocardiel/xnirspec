@@ -121,8 +121,7 @@
             WRITE(*,*) NPEAKS,NMAXPEAKS
             WRITE(*,101) '=> NPEAKS > NMAXPEAKS in EXTLINE.'
             WRITE(*,101) '=> Redefine NMAXPEAKS parameter.'
-            CALL Deallocate_Array_IMAGEN
-            CALL Deallocate_Array_IMAGEN_
+            INCLUDE 'deallocate_arrays.inc'
             STOP
           END IF
           IF(LDEBUGLOCAL)THEN

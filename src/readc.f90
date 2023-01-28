@@ -45,7 +45,10 @@
               IF(INDEX(CVAL,CADENA(I:I)).EQ.0)THEN
                 WRITE(*,101) 'ERROR: invalid character(s). Try again.'
                 NERR=NERR+1
-                IF(NERR.GT.10) STOP 'FATAL ERROR: too many errors in READC.'
+                IF(NERR.GT.10)THEN
+                  INCLUDE 'deallocate_arrays.inc'
+                  STOP 'FATAL ERROR: too many errors in READC.'
+                END IF
                 GOTO 10
               END IF
             END DO
@@ -56,7 +59,10 @@
         RETURN
 20      WRITE(*,101) 'ERROR: invalid character(s). Try again.'
         NERR=NERR+1
-        IF(NERR.GT.10) STOP 'FATAL ERROR: too many errors in READC.'
+        IF(NERR.GT.10)THEN
+          INCLUDE 'deallocate_arrays.inc'
+          STOP 'FATAL ERROR: too many errors in READC.'
+        END IF
         GOTO 10
 100     FORMAT(A,$)
 101     FORMAT(A)

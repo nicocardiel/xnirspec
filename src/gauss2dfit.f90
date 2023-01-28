@@ -285,8 +285,7 @@
             END DO
           END DO
         ELSEIF(NBUFF.LT.0)THEN
-          CALL Deallocate_Array_IMAGEN
-          CALL Deallocate_Array_IMAGEN_
+          INCLUDE 'deallocate_arrays.inc'
           STOP 'FATAL ERROR: NBUFF.LT.0!'
         END IF
         IF(LSHOW)THEN

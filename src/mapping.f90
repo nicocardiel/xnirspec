@@ -650,15 +650,13 @@
         IF(NDELTAX.GT.NXMAX)THEN
           WRITE(*,101) '***FATAL ERROR***'
           WRITE(*,101) '=> Delta X > NXMAX'
-          CALL Deallocate_Array_IMAGEN
-          CALL Deallocate_Array_IMAGEN_
+          INCLUDE 'deallocate_arrays.inc'
           STOP
         END IF
         IF(NDELTAY.GT.NYMAX)THEN
           WRITE(*,101) '***FATAL ERROR***'
           WRITE(*,101) '=> Delta Y > NYMAX'
-          CALL Deallocate_Array_IMAGEN
-          CALL Deallocate_Array_IMAGEN_
+          INCLUDE 'deallocate_arrays.inc'
           STOP
         END IF
 !------------------------------------------------------------------------------

@@ -32,6 +32,7 @@
 !------------------------------------------------------------------------------
         IF(K.GT.N)THEN
           WRITE(*,101)'FATAL ERROR: in function COMBPF(N,K), K>N'
+          INCLUDE 'deallocate_arrays.inc'
           STOP
         END IF
         COMBPF=FACTORIALPF(N)/(FACTORIALPF(K)*FACTORIALPF(N-K))

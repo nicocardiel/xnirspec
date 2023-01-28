@@ -79,6 +79,7 @@
         IF(NP.LT.4)THEN
           WRITE(*,101)'FATAL ERROR: in subroutine GAUSCFIT.'
           WRITE(*,101)' No. of points for fit < 4'
+          INCLUDE 'deallocate_arrays.inc'
           STOP
         END IF
 !

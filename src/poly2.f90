@@ -16,6 +16,7 @@
           WRITE(*,100) '=> X3,Y3:'
           WRITE(*,*) X3,Y3
           WRITE(*,101) '=> X1=X2 in subroutine POLY2'
+          INCLUDE 'deallocate_arrays.inc'
           STOP
         END IF
 !

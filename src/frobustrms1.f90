@@ -48,7 +48,10 @@
         LOGICAL IFX(NMAX),IFXX(NMAX)
         LOGICAL LREPEAT
 !------------------------------------------------------------------------------
-        IF(N.LE.0) STOP 'FATAL ERROR: in function FROBUSTRMS1: N.LE.0'
+        IF(N.LE.0)THEN
+          INCLUDE 'deallocate_arrays.inc'
+          STOP 'FATAL ERROR: in function FROBUSTRMS1: N.LE.0'
+        END IF
 !
         IF(N.EQ.1)THEN
           FROBUSTRMS1=0.0

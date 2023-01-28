@@ -106,6 +106,7 @@
 !
         IF(U.LT.L)THEN
           WRITE(*,101)'FATAL ERROR: in subroutine BINSEARCH.'
+          INCLUDE 'deallocate_arrays.inc'
           STOP
         END IF
 !

@@ -14,7 +14,10 @@
         LOGICAL LECHO
         COMMON/BLKLECHO/LECHO
 !------------------------------------------------------------------------------
-        IF(N2.LT.N1) STOP 'ERROR: N2.LT.N1 in function: READILIM'
+        IF(N2.LT.N1)THEN
+          INCLUDE 'deallocate_arrays.inc'
+          STOP 'ERROR: N2.LT.N1 in function: READILIM'
+        END IF
         NERR=0
 10      L2=TRUELEN(CQUESTION)
         IF(L2.NE.0) WRITE(*,100) CQUESTION(1:L2)
@@ -65,7 +68,10 @@
 !------------------------------------------------------------------------------
 20      WRITE(*,101) 'ERROR: invalid character(s) found in number. Try again.'
         NERR=NERR+1
-22      IF(NERR.GT.10) STOP 'FATAL ERROR: too many errors in READILIM.'
+22      IF(NERR.GT.10)THEN
+          INCLUDE 'deallocate_arrays.inc'
+          STOP 'FATAL ERROR: too many errors in READILIM.'
+        END IF
         GOTO 10
 100     FORMAT(A,$)
 101     FORMAT(A)

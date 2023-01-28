@@ -36,6 +36,7 @@
             WRITE(*,100) 'FATAL ERROR: the file "'
             WRITE(*,100) FILEFITS(1:TRUELEN(FILEFITS))
             WRITE(*,101) '" does not exist.'
+            INCLUDE 'deallocate_arrays.inc'
             STOP
           END IF
           CALL FTOPEN(IUNIT,FILEFITS,IREADWRITE,BLOCKSIZE,ISTATUS)

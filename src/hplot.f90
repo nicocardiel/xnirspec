@@ -101,6 +101,7 @@
           L1=TRUEBEG(COMMAND)
           L2=TRUELEN(COMMAND)
           WRITE(*,101) COMMAND(L1:L2)
+          INCLUDE 'deallocate_arrays.inc'
           STOP
         END IF
 !------------------------------------------------------------------------------

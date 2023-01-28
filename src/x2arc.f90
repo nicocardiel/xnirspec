@@ -31,6 +31,7 @@
         IF(NDEG.LT.0)THEN
           WRITE(*,101) '***FATAL ERROR***'
           WRITE(*,101) '=> NDEG<0 in X2ARC'
+          INCLUDE 'deallocate_arrays.inc'
           STOP
         ELSEIF((NDEG.EQ.0).OR.(NDEG.EQ.1))THEN
           X0=XA+S*(XB-XA)

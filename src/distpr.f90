@@ -19,6 +19,7 @@
         IF(L.EQ.0.0)THEN
           WRITE(*,101) '***FATAL ERROR***'
           WRITE(*,101) '=> A=B in subroutine DISTPR'
+          INCLUDE 'deallocate_arrays.inc'
           STOP
         END IF
         R=((YA-YC)*(YA-YB)-(XA-XC)*(XB-XA))/L

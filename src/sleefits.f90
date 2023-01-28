@@ -94,9 +94,7 @@
           WRITE(*,100) 'FATAL ERROR: the file "'
           WRITE(*,100) FITSFILE(1:TRUELEN(FITSFILE))
           WRITE(*,101) '" does not exist.'
-          CALL Deallocate_Array_IMAGEN
-          CALL Deallocate_Array_IMAGEN_
-          CALL Deallocate_Array_LNULL
+          INCLUDE 'deallocate_arrays.inc'
           CALL Deallocate_Array_LNULL_
           STOP
         END IF
@@ -172,9 +170,7 @@
             WRITE(*,*) NAXIS_(0)
             WRITE(*,101) '=> NAXIS > 2'
             CALL FTCLOS(IUNIT,ISTATUS)
-            CALL Deallocate_Array_IMAGEN
-            CALL Deallocate_Array_IMAGEN_
-            CALL Deallocate_Array_LNULL
+            INCLUDE 'deallocate_arrays.inc'
             CALL Deallocate_Array_LNULL_
             STOP
           END IF
@@ -198,9 +194,7 @@
             WRITE(*,101) '* FATAL ERROR in subroutine LEEFITS:'
             WRITE(*,101) 'NAXIS(1) > NXMAX'
             CALL FTCLOS(IUNIT,ISTATUS)
-            CALL Deallocate_Array_IMAGEN
-            CALL Deallocate_Array_IMAGEN_
-            CALL Deallocate_Array_LNULL
+            INCLUDE 'deallocate_arrays.inc'
             CALL Deallocate_Array_LNULL_
             STOP
           END IF
@@ -211,9 +205,7 @@
             WRITE(*,101) '* FATAL ERROR in subroutine LEEFITS:'
             WRITE(*,101) 'NAXIS(1) > NYMAX'
             CALL FTCLOS(IUNIT,ISTATUS)
-            CALL Deallocate_Array_IMAGEN
-            CALL Deallocate_Array_IMAGEN_
-            CALL Deallocate_Array_LNULL
+            INCLUDE 'deallocate_arrays.inc'
             CALL Deallocate_Array_LNULL_
             STOP
           END IF
@@ -225,9 +217,7 @@
             WRITE(*,101) '* FATAL ERROR in subroutine LEEFITS:'
             WRITE(*,101) 'NAXIS(2) > NYMAX'
             CALL FTCLOS(IUNIT,ISTATUS)
-            CALL Deallocate_Array_IMAGEN
-            CALL Deallocate_Array_IMAGEN_
-            CALL Deallocate_Array_LNULL
+            INCLUDE 'deallocate_arrays.inc'
             CALL Deallocate_Array_LNULL_
             STOP
           END IF
@@ -238,9 +228,7 @@
             WRITE(*,101) '* FATAL ERROR in subroutine LEEFITS:'
             WRITE(*,101) 'NAXIS(2) > NXMAX'
             CALL FTCLOS(IUNIT,ISTATUS)
-            CALL Deallocate_Array_IMAGEN
-            CALL Deallocate_Array_IMAGEN_
-            CALL Deallocate_Array_LNULL
+            INCLUDE 'deallocate_arrays.inc'
             CALL Deallocate_Array_LNULL_
             STOP
           END IF
@@ -363,9 +351,7 @@
           WRITE(*,100) 'FATAL ERROR in subroutine LEEFITS: BITPIX ='
           WRITE(*,*) BITPIX
           CALL FTCLOS(IUNIT,ISTATUS)
-          CALL Deallocate_Array_IMAGEN
-          CALL Deallocate_Array_IMAGEN_
-          CALL Deallocate_Array_LNULL
+          INCLUDE 'deallocate_arrays.inc'
           CALL Deallocate_Array_LNULL_
           STOP
         END IF
@@ -426,9 +412,7 @@
           WRITE(*,100) '=> IROTATE='
           WRITE(*,*) IROTATE
           WRITE(*,101) '=> Invalid IROTATE in subroutine SLEEFITS.'
-          CALL Deallocate_Array_IMAGEN
-          CALL Deallocate_Array_IMAGEN_
-          CALL Deallocate_Array_LNULL
+          INCLUDE 'deallocate_arrays.inc'
           CALL Deallocate_Array_LNULL_
           STOP
         END IF

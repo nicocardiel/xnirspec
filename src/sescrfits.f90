@@ -73,8 +73,7 @@
           WRITE(*,101) '=> The file '
           WRITE(*,100) FITSFILE(1:L)
           WRITE(*,101) ' already exists.'
-          CALL Deallocate_Array_IMAGEN
-          CALL Deallocate_Array_IMAGEN_
+          INCLUDE 'deallocate_arrays.inc'
           STOP
         END IF
         IF((NAXIS(1,NCBUFF).EQ.768).AND.(NAXIS(2,NCBUFF).EQ.768))THEN
@@ -212,8 +211,7 @@
             WRITE(*,100) '=> subroutine ESCFITS: BITPIX ='
             WRITE(*,*) BITPIX
             CALL FTCLOS(IUNIT,ISTATUS)
-            CALL Deallocate_Array_IMAGEN
-            CALL Deallocate_Array_IMAGEN_
+            INCLUDE 'deallocate_arrays.inc'
             STOP
           END IF
 ! cerramos el fichero

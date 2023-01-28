@@ -226,6 +226,7 @@
               END IF
             END DO
             IF(LMIN.EQ.0)THEN
+              INCLUDE 'deallocate_arrays.inc'
               STOP 'FATAL ERROR: in subroutine BOUNDARY' !no debe pasar nunca
             ELSE
               DO I=1,NXYMAX
@@ -278,6 +279,7 @@
               END IF
             END DO
             IF(LMIN.EQ.0)THEN
+              INCLUDE 'deallocate_arrays.inc'
               STOP 'FATAL ERROR: in subroutine BOUNDARY' !no debe pasar nunca
             ELSE
               DO I=1,NXYMAX

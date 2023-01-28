@@ -96,6 +96,7 @@
         IF(LMIN.EQ.0)THEN
           WRITE(*,101) '***FATAL ERROR***'
           WRITE(*,101) '=> LMIN=0 in WHEREAMI.'
+          INCLUDE 'deallocate_arrays.inc'
           STOP
         END IF
 ! si estamos en un borde, no hay mucho que decidir; el problema es averiguar
@@ -182,6 +183,7 @@
         IF(LMIN.EQ.0)THEN
           WRITE(*,101) '***FATAL ERROR***'
           WRITE(*,101) '=> LMIN=0 in WHEREAMI.'
+          INCLUDE 'deallocate_arrays.inc'
           STOP
         END IF
 ! si estamos en un borde, no hay mucho que decidir; el problema es averiguar

@@ -442,8 +442,7 @@
                 ELSEIF(CMASK.EQ.'y')THEN
                 ELSE
                   WRITE(*,101) 'FATAL ERROR: unexpected CMASK value'
-                  CALL Deallocate_Array_IMAGEN
-                  CALL Deallocate_Array_IMAGEN_
+                  INCLUDE 'deallocate_arrays.inc'
                   STOP
                 END IF
                 IF(LZERO)THEN    !si hay algun error nulo, hacemos pesos de los
@@ -483,8 +482,7 @@
                     END DO
                   ELSE
                     WRITE(*,101) 'FATAL ERROR: invalid CWMODE'
-                    CALL Deallocate_Array_IMAGEN
-                    CALL Deallocate_Array_IMAGEN_
+                    INCLUDE 'deallocate_arrays.inc'
                     STOP
                   END IF
                 END IF

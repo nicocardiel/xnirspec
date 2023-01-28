@@ -39,9 +39,11 @@
         DOUBLE PRECISION X0,Y0
 !------------------------------------------------------------------------------
         IF(N.GT.NXYMAX)THEN
+          INCLUDE 'deallocate_arrays.inc'
           STOP 'FATAL ERROR: N.GT.NXYMAX in FITPOL'
         END IF
         IF(NDEG.GT.NDEGMAX)THEN
+          INCLUDE 'deallocate_arrays.inc'
           STOP 'FATAL ERROR: NDEG.GT.NDEGMAX in FITPOL'
         END IF
 !------------------------------------------------------------------------------

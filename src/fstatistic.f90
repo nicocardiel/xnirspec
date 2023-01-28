@@ -84,7 +84,10 @@
 !******************************************************************************
 !******************************************************************************
       FUNCTION GAMMP(A,X)
-      IF(X.LT.0..OR.A.LE.0.) STOP 'FATAL ERROR: PAUSE'
+      IF(X.LT.0..OR.A.LE.0.)THEN
+        INCLUDE 'deallocate_arrays.inc'
+        STOP 'FATAL ERROR: PAUSE'
+      END IF
       IF(X.LT.A+1.)THEN
         CALL GSER(GAMSER,A,X,GLN)
         GAMMP=GAMSER
@@ -96,7 +99,10 @@
       END
 !******************************************************************************
       FUNCTION GAMMQ(A,X)
-      IF(X.LT.0..OR.A.LE.0.) STOP 'FATAL ERROR: PAUSE'
+      IF(X.LT.0..OR.A.LE.0.)THEN
+        INCLUDE 'deallocate_arrays.inc'
+        STOP 'FATAL ERROR: PAUSE'
+      END IF
       IF(X.LT.A+1.)THEN
         CALL GSER(GAMSER,A,X,GLN)
         GAMMQ=1.-GAMSER
@@ -111,7 +117,10 @@
       PARAMETER (ITMAX=100,EPS=3.E-7)
       GLN=GAMMLN(A)
       IF(X.LE.0.)THEN
-        IF(X.LT.0.) STOP 'FATAL ERROR: PAUSE'
+        IF(X.LT.0.)THEN
+          INCLUDE 'deallocate_arrays.inc'
+          STOP 'FATAL ERROR: PAUSE'
+        END IF
         GAMSER=0.
         RETURN
       ENDIF
@@ -124,6 +133,7 @@
         SUM=SUM+DEL
         IF(ABS(DEL).LT.ABS(SUM)*EPS)GO TO 1
 11    CONTINUE
+      INCLUDE 'deallocate_arrays.inc'
       STOP 'FATAL ERROR: A too large, ITMAX too small'
 1     GAMSER=SUM*EXP(-X+A*LOG(X)-GLN)
       RETURN
@@ -154,6 +164,7 @@
           GOLD=G
         ENDIF
 11    CONTINUE
+      INCLUDE 'deallocate_arrays.inc'
       STOP 'FATAL ERROR: A too large, ITMAX too small'
 1     GAMMCF=EXP(-X+A*ALOG(X)-GLN)*G
       RETURN
@@ -177,7 +188,10 @@
 !******************************************************************************
       real FUNCTION BETAI(A,B,X)
       real a,b,x,gammln,betacf
-      IF(X.LT.0..OR.X.GT.1.) STOP 'FATAL ERROR: bad argument X in BETAI'
+      IF(X.LT.0..OR.X.GT.1.)THEN
+        INCLUDE 'deallocate_arrays.inc'
+        STOP 'FATAL ERROR: bad argument X in BETAI'
+      END IF
       IF(X.EQ.0..OR.X.EQ.1.)THEN
         BT=0.
       ELSE
@@ -222,6 +236,7 @@
         BZ=1.
         IF(ABS(AZ-AOLD).LT.EPS*ABS(AZ))GO TO 1
 11    CONTINUE
+      INCLUDE 'deallocate_arrays.inc'
       STOP 'FATAL ERROR: A or B too big, or ITMAX too small'
 1     BETACF=AZ
       RETURN

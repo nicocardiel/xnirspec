@@ -65,10 +65,12 @@
         NCOLORTEXT=0
         IF((N.GT.MAX_XBUTT*MAX_YBUTT).OR.(N.LT.1))THEN
           WRITE(*,110)'BUTTON NUMBER = ',N
+          INCLUDE 'deallocate_arrays.inc'
           STOP 'ERROR: invalid button number in SUBROUTINE BUTTON'
         END IF
         IF(LMODE.GT.5)THEN
           WRITE(*,110)'TYPE = ',LMODE
+          INCLUDE 'deallocate_arrays.inc'
           STOP 'ERROR: invalid button type in SUBROUTINE BUTTON'
         END IF
         IF(LMODE.LT.-1)THEN

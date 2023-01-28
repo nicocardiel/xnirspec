@@ -30,7 +30,10 @@
         REAL SUM,SUME,SUMW
         LOGICAL LNULL
 !------------------------------------------------------------------------------
-        IF(N.LE.0) STOP 'FATAL ERROR: in function FMEAN0: N.LE.0'
+        IF(N.LE.0)THEN
+          INCLUDE 'deallocate_arrays.inc'
+          STOP 'FATAL ERROR: in function FMEAN0: N.LE.0'
+        END IF
 !------------------------------------------------------------------------------
 ! chequeamos que no hay errores nulos
         LNULL=.FALSE.
