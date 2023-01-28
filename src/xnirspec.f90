@@ -8,9 +8,11 @@
         PROGRAM XNIRSPEC
         USE Dynamic_Array_IMAGEN
         USE Dynamic_Array_IMAGEN_
+        USE Dynamic_Array_LNULL
         IMPLICIT NONE
         INCLUDE 'interface_imagen.inc'
         INCLUDE 'interface_imagen_.inc'
+        INCLUDE 'interface_lnull.inc'
 ! parameters
         INCLUDE 'dimensions.inc'
         INCLUDE 'largest.inc'
@@ -178,7 +180,8 @@
         LOGICAL LEXIT                              !govern the main button loop
         LOGICAL LBEXIST                !button selected with keyboard is active
         LOGICAL LOGFILE,LOGFILERR             !govern the reading of a new file
-        LOGICAL LNULL(NXMAX,NYMAX,NMAXBUFF),ANYNULL !NaN, Infty, etc. in IMAGEN
+!delete LOGICAL LNULL(NXMAX,NYMAX,NMAXBUFF)         !NaN, Infty, etc. in IMAGEN
+        LOGICAL ANYNULL                             !NaN, Infty, etc. in IMAGEN
         LOGICAL LFIRSTPLOT                                  !next is first plot
         LOGICAL LSTACK                                          !activate stack
         LOGICAL LASK                  !generic logical variable to govern loops
@@ -197,7 +200,8 @@
 !delete COMMON/BLKIMAGEN1/IMAGEN             !imagen FITS leida en formato REAL
 !delete COMMON/BLKIMAGEN1_/IMAGEN_              !es global para ahorrar memoria
         COMMON/BLKIMAGEN2/NCBUFF                      !numero del buffer actual
-        COMMON/BLKLNULL/LNULL,ANYNULL   !mascara que indica si existen NaN, etc
+!delete COMMON/BLKLNULL/LNULL,ANYNULL   !mascara que indica si existen NaN, etc
+        COMMON/BLKANYNULL/ANYNULL                   !indica si existen NaN, etc
         COMMON/BLKNAXIS/NAXIS                                      !dimensiones
         COMMON/BLKNAXISFRAME/NAXISFRAME
         COMMON/BLKNSIZEFB9/NSIZEFB9
@@ -251,6 +255,7 @@
 !------------------------------------------------------------------------------
         CALL Initialize_Dynamic_Array_IMAGEN
         CALL Initialize_Dynamic_Array_IMAGEN_
+        CALL Initialize_Dynamic_Array_LNULL
 !------------------------------------------------------------------------------
 !------------------------------------------------------------------------------
 ! Note: the pattern of the frames in box-9 is the following:
@@ -307,6 +312,7 @@
           WRITE(*,101) 'FATAL ERROR: number of input arguments is too large'
           CALL Deallocate_Array_IMAGEN
           CALL Deallocate_Array_IMAGEN_
+          CALL Deallocate_Array_LNULL
           STOP
         END IF
 !       DO I=1,NIARG
@@ -327,6 +333,7 @@
           WRITE(*,101) 'FATAL ERROR: NXYMAX must be set to the MAX(NXMAX,NYMAX) value in configure.ac'
           CALL Deallocate_Array_IMAGEN
           CALL Deallocate_Array_IMAGEN_
+          CALL Deallocate_Array_LNULL
           STOP
         END IF
 !------------------------------------------------------------------------------
@@ -581,6 +588,7 @@
               WRITE(*,101) INFILE_
               CALL Deallocate_Array_IMAGEN
               CALL Deallocate_Array_IMAGEN_
+              CALL Deallocate_Array_LNULL
               STOP
             END IF
             NCBUFF=NEWBUFF
@@ -895,6 +903,7 @@
                   WRITE(*,101) 'FATAL ERROR: NAXIS(1).GT.NXMAX'
                   CALL Deallocate_Array_IMAGEN
                   CALL Deallocate_Array_IMAGEN_
+                  CALL Deallocate_Array_LNULL
                   STOP
                 END IF
                 IF(NAXIS(2,NEWBUFF).GT.NYMAX)THEN
@@ -903,6 +912,7 @@
                   WRITE(*,101) 'FATAL ERROR: NAXIS(2).GT.NYMAX'
                   CALL Deallocate_Array_IMAGEN
                   CALL Deallocate_Array_IMAGEN_
+                  CALL Deallocate_Array_LNULL
                   STOP
                 END IF
                 DO I=1,NAXIS(2,NEWBUFF)
@@ -2813,6 +2823,7 @@
         CALL PGEND
         CALL Deallocate_Array_IMAGEN
         CALL Deallocate_Array_IMAGEN_
+        CALL Deallocate_Array_LNULL
         STOP
 !------------------------------------------------------------------------------
 100     FORMAT(A,$)

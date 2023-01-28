@@ -14,9 +14,13 @@
         SUBROUTINE SLEEFITS(FITSFILE,LSHOW,IROTATE,NEWBUFF,LBOX9,IBUFF)
         USE Dynamic_Array_IMAGEN
         USE Dynamic_Array_IMAGEN_
+        USE Dynamic_Array_LNULL
+        USE Dynamic_Array_LNULL_
         IMPLICIT NONE
         INCLUDE 'interface_imagen.inc'
         INCLUDE 'interface_imagen_.inc'
+        INCLUDE 'interface_lnull.inc'
+        INCLUDE 'interface_lnull_.inc'
 ! subroutine arguments
         CHARACTER*(*) FITSFILE
         LOGICAL LSHOW
@@ -37,7 +41,8 @@
         LOGICAL LWAVECAL(NMAXBUFF)
         REAL STWV,DISP
         REAL AIRMASS,TIMEXPOS
-        LOGICAL LNULL(NXMAX,NYMAX,NMAXBUFF),ANYNULL
+!delete LOGICAL LNULL(NXMAX,NYMAX,NMAXBUFF)
+        LOGICAL ANYNULL
         INTEGER NAXIS(2,NMAXBUFF)
 ! variables locales
         INTEGER NEW_HDU,HDUTYPE
@@ -55,7 +60,7 @@
         CHARACTER*80 CLINEA
         REAL PHOTFLAM(NMAXBUFF),PHOTZPT(NMAXBUFF),EXPTIME(NMAXBUFF)
         LOGICAL EXTEND
-        LOGICAL LNULL_(NXYMAX,NXYMAX)
+!delete LOGICAL LNULL_(NXYMAX,NXYMAX)
         LOGICAL LOGFILE,LANYNULL
         LOGICAL LROW(NXYMAX)
         LOGICAL L_PHOTFLAM(NMAXBUFF),L_PHOTZPT(NMAXBUFF)
@@ -67,10 +72,13 @@
         COMMON/BLKWAVECAL1/CRPIX1,CRVAL1,CDELT1         !wavelength calibration
         COMMON/BLKWAVECAL2/LWAVECAL                     !wavelength calibration
         COMMON/BLKREDUCEME/STWV,DISP,AIRMASS,TIMEXPOS     !Reduceme header info
-        COMMON/BLKLNULL/LNULL,ANYNULL   !mascara que indica si existen NaN, etc
+!delete COMMON/BLKLNULL/LNULL,ANYNULL   !mascara que indica si existen NaN, etc
+        COMMON/BLKANYNULL/ANYNULL                   !indica si existen NaN, etc
         COMMON/BLKNAXIS/NAXIS                                      !dimensiones
         COMMON/BLK_HSTFLUX1/L_PHOTFLAM,L_PHOTZPT,L_EXPTIME !keywords with info
         COMMON/BLK_HSTFLUX2/PHOTFLAM,PHOTZPT,EXPTIME !concerning HST flux cal.
+!------------------------------------------------------------------------------
+        CALL Initialize_Dynamic_Array_LNULL_
 !------------------------------------------------------------------------------
 ! inicializamos variables
         ISTATUS=0               !controla posibles errores durante la ejecucion
@@ -88,6 +96,8 @@
           WRITE(*,101) '" does not exist.'
           CALL Deallocate_Array_IMAGEN
           CALL Deallocate_Array_IMAGEN_
+          CALL Deallocate_Array_LNULL
+          CALL Deallocate_Array_LNULL_
           STOP
         END IF
 ! localizamos un numero de unidad de fichero no utilizada
@@ -164,6 +174,8 @@
             CALL FTCLOS(IUNIT,ISTATUS)
             CALL Deallocate_Array_IMAGEN
             CALL Deallocate_Array_IMAGEN_
+            CALL Deallocate_Array_LNULL
+            CALL Deallocate_Array_LNULL_
             STOP
           END IF
         ELSEIF(NAXIS_(0).EQ.1)THEN
@@ -188,6 +200,8 @@
             CALL FTCLOS(IUNIT,ISTATUS)
             CALL Deallocate_Array_IMAGEN
             CALL Deallocate_Array_IMAGEN_
+            CALL Deallocate_Array_LNULL
+            CALL Deallocate_Array_LNULL_
             STOP
           END IF
         ELSE
@@ -199,6 +213,8 @@
             CALL FTCLOS(IUNIT,ISTATUS)
             CALL Deallocate_Array_IMAGEN
             CALL Deallocate_Array_IMAGEN_
+            CALL Deallocate_Array_LNULL
+            CALL Deallocate_Array_LNULL_
             STOP
           END IF
         END IF
@@ -211,6 +227,8 @@
             CALL FTCLOS(IUNIT,ISTATUS)
             CALL Deallocate_Array_IMAGEN
             CALL Deallocate_Array_IMAGEN_
+            CALL Deallocate_Array_LNULL
+            CALL Deallocate_Array_LNULL_
             STOP
           END IF
         ELSE
@@ -222,6 +240,8 @@
             CALL FTCLOS(IUNIT,ISTATUS)
             CALL Deallocate_Array_IMAGEN
             CALL Deallocate_Array_IMAGEN_
+            CALL Deallocate_Array_LNULL
+            CALL Deallocate_Array_LNULL_
             STOP
           END IF
         END IF
@@ -345,6 +365,8 @@
           CALL FTCLOS(IUNIT,ISTATUS)
           CALL Deallocate_Array_IMAGEN
           CALL Deallocate_Array_IMAGEN_
+          CALL Deallocate_Array_LNULL
+          CALL Deallocate_Array_LNULL_
           STOP
         END IF
 ! cerramos el fichero
@@ -406,12 +428,15 @@
           WRITE(*,101) '=> Invalid IROTATE in subroutine SLEEFITS.'
           CALL Deallocate_Array_IMAGEN
           CALL Deallocate_Array_IMAGEN_
+          CALL Deallocate_Array_LNULL
+          CALL Deallocate_Array_LNULL_
           STOP
         END IF
         IF(NANYNULLS.GT.0)THEN
           WRITE(*,100) 'Total number of ANYNULL pixels: '
           WRITE(*,*) NANYNULLS
         END IF
+        CALL Deallocate_Array_LNULL_
 !------------------------------------------------------------------------------
 100     FORMAT(A,$)
 101     FORMAT(A)

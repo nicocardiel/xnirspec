@@ -38,6 +38,8 @@ drawpolxy.f90 \
 drawpolyx.f90 \
 dynamic_array_imagen.f90 \
 dynamic_array_imagen_.f90 \
+dynamic_array_lnull.f90 \
+dynamic_array_lnull_.f90 \
 dynamic_array_pixel.f90 \
 expline.f90 \
 factorialpf.f90 \

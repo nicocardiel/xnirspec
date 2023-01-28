@@ -1,0 +1,9 @@
+INTERFACE
+  SUBROUTINE Initialize_Dynamic_Array_LNULL_
+  END SUBROUTINE Initialize_Dynamic_Array_LNULL_
+END INTERFACE
+INTERFACE
+  SUBROUTINE Deallocate_Array_LNULL_
+  END SUBROUTINE Deallocate_Array_LNULL_
+END INTERFACE
+
