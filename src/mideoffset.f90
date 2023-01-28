@@ -20,6 +20,7 @@
         REAL RANDOMNUMBER
 !
         INCLUDE 'dimensions.inc'
+        INCLUDE 'largest.inc'
 !
         INTEGER READI,READILIM
         INTEGER TRUEBEG,TRUELEN
@@ -355,7 +356,7 @@
               END DO
               CALL PGSVP(0.21,0.39,0.40,0.79)
               CALL PGWNAD(REAL(1)-0.6,REAL(NBOX_CENTROID)+0.6,REAL(1)-0.6,REAL(NBOX_CENTROID)+0.6)
-              CALL PGIMAG(IMAGEN_,NXMAX,NYMAX,1,NBOX_CENTROID,1,NBOX_CENTROID,FG,BG,TR)
+              CALL PGIMAG(IMAGEN_,NXYMAX,NXYMAX,1,NBOX_CENTROID,1,NBOX_CENTROID,FG,BG,TR)
               CALL PGBOX('BCTS',0.0,0,'BCTS',0.0,0)
               CALL PGSCI(7)
               CALL PGMTXT('T',0.5,0.5,0.5,'fit to averaged frame')

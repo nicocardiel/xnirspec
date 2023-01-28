@@ -12,6 +12,7 @@ IMPLICIT NONE
 
 ! Include dimensions
 INCLUDE 'dimensions.inc'
+INCLUDE 'largest.inc'
 
 ! Declare local variables
 INTEGER :: AllocateStatus
@@ -21,7 +22,7 @@ ALLOCATE (IMAGEN(NXMAX, NYMAX, NMAXBUFF), STAT = AllocateStatus)
 IF (AllocateStatus /= 0) STOP "*** Not enough memory defining the array IMAGEN ***"
 
 ! Allocate storage for array IMAGEN_
-ALLOCATE (IMAGEN_(NXMAX, NYMAX), STAT = AllocateStatus)
+ALLOCATE (IMAGEN_(NXYMAX, NXYMAX), STAT = AllocateStatus)
 IF (AllocateStatus /= 0) STOP "*** Not enough memory defining the array IMAGEN_ ***"
 
 END SUBROUTINE Initialize_Dynamic_Arrays

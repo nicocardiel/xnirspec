@@ -13,6 +13,7 @@
         PARAMETER (NBOXMAX=9)
 !
         INCLUDE 'dimensions.inc'
+        INCLUDE 'largest.inc'
 !
         INTEGER NBINMAX
         PARAMETER (NBINMAX=100)
@@ -662,7 +663,7 @@
               BG=BG_
               FG=FG_
               CALL HISTOGRAM(NEWBUFF1)
-              CALL PGIMAG(IMAGEN_,NXMAX,NYMAX,NX1,NX2,NY1,NY2,FG,BG,TR)
+              CALL PGIMAG(IMAGEN_,NXYMAX,NXYMAX,NX1,NX2,NY1,NY2,FG,BG,TR)
               CALL DRAWSEPB9(NIMA_STACK(NOPER),NQUA_STACK(NOPER),256)
               DO I=1,4*NFRAMES_
                 XP(2*(I-1)+1)=REAL(I)/4.
@@ -934,13 +935,13 @@
                 ELSE
                   WRITE(*,101) 'Displaying fits...'
                 END IF
-                CALL PGIMAG(IMAGEN_,NXMAX,NYMAX,NX1,NX2,NY1,NY2,FG,BG,TR)
+                CALL PGIMAG(IMAGEN_,NXYMAX,NXYMAX,NX1,NX2,NY1,NY2,FG,BG,TR)
                 CALL DRAWSEPB9(0,0,256)
                 CALL PGQWIN(XW1,XW2,YW1,YW2)
                 IF(LPOST(CPOST,CBASEPOST,NPOST,IDOLD,IDNEW))THEN
                   CALL PGENV(XW1,XW2,YW1,YW2,JUST,-2)
                   CALL PGBOX('IBCTSN',0.0,0,'IBCTSN',0.0,0)
-                  CALL PGIMAG(IMAGEN_,NXMAX,NYMAX,NX1,NX2,NY1,NY2,BG,FG,TR)
+                  CALL PGIMAG(IMAGEN_,NXYMAX,NXYMAX,NX1,NX2,NY1,NY2,BG,FG,TR)
                     CALL DRAWSEPB9(0,0,256)
                   CALL PGCLOS(IDNEW)
                   CALL PGSLCT(IDOLD)
@@ -1069,13 +1070,13 @@
             WRITE(*,*) I,YP((I-1)*2+1),YP(2*I)
           END DO
           WRITE(*,101) 'Displaying fitted mask regions...'
-          CALL PGIMAG(IMAGEN_,NXMAX,NYMAX,NX1,NX2,NY1,NY2,FG,BG,TR)
+          CALL PGIMAG(IMAGEN_,NXYMAX,NXYMAX,NX1,NX2,NY1,NY2,FG,BG,TR)
           CALL DRAWSEPB9(0,0,256)
           CALL PGQWIN(XW1,XW2,YW1,YW2)
           IF(LPOST(CPOST,CBASEPOST,NPOST,IDOLD,IDNEW))THEN
             CALL PGENV(XW1,XW2,YW1,YW2,JUST,-2)
             CALL PGBOX('IBCTSN',0.0,0,'IBCTSN',0.0,0)
-            CALL PGIMAG(IMAGEN_,NXMAX,NYMAX,NX1,NX2,NY1,NY2,BG,FG,TR)
+            CALL PGIMAG(IMAGEN_,NXYMAX,NXYMAX,NX1,NX2,NY1,NY2,BG,FG,TR)
               CALL DRAWSEPB9(0,0,256)
             CALL PGCLOS(IDNEW)
             CALL PGSLCT(IDOLD)
@@ -1391,13 +1392,13 @@
                 ELSE
                   WRITE(*,101) 'Displaying fits...'
                 END IF
-                CALL PGIMAG(IMAGEN_,NXMAX,NYMAX,NX1,NX2,NY1,NY2,FG,BG,TR)
+                CALL PGIMAG(IMAGEN_,NXYMAX,NXYMAX,NX1,NX2,NY1,NY2,FG,BG,TR)
                 CALL DRAWSEPB9(0,0,256)
                 CALL PGQWIN(XW1,XW2,YW1,YW2)
                 IF(LPOST(CPOST,CBASEPOST,NPOST,IDOLD,IDNEW))THEN
                   CALL PGENV(XW1,XW2,YW1,YW2,JUST,-2)
                   CALL PGBOX('IBCTSN',0.0,0,'IBCTSN',0.0,0)
-                  CALL PGIMAG(IMAGEN_,NXMAX,NYMAX,NX1,NX2,NY1,NY2,BG,FG,TR)
+                  CALL PGIMAG(IMAGEN_,NXYMAX,NXYMAX,NX1,NX2,NY1,NY2,BG,FG,TR)
                     CALL DRAWSEPB9(0,0,256)
                   CALL PGCLOS(IDNEW)
                   CALL PGSLCT(IDOLD)
@@ -1953,12 +1954,12 @@
             IMAGEN_(J,I)=FPIXUSED(J,I)
           END DO
         END DO
-        CALL PGIMAG(IMAGEN_,NXMAX,NYMAX,NX1,NX2,NY1,NY2,REAL(NFRAMES_),0.,TR)
+        CALL PGIMAG(IMAGEN_,NXYMAX,NXYMAX,NX1,NX2,NY1,NY2,REAL(NFRAMES_),0.,TR)
         CALL PGQWIN(XW1,XW2,YW1,YW2)
         IF(LPOST(CPOST,CBASEPOST,NPOST,IDOLD,IDNEW))THEN
           CALL PGENV(XW1,XW2,YW1,YW2,JUST,-2)
           CALL PGBOX('IBCTSN',0.0,0,'IBCTSN',0.0,0)
-          CALL PGIMAG(IMAGEN_,NXMAX,NYMAX,NX1,NX2,NY1,NY2,0.,9.,TR)
+          CALL PGIMAG(IMAGEN_,NXYMAX,NXYMAX,NX1,NX2,NY1,NY2,0.,9.,TR)
           CALL PGCLOS(IDNEW)
           CALL PGSLCT(IDOLD)
         END IF
