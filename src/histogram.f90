@@ -3,10 +3,12 @@
 ! Dibuja un histograma de la señal en el rectangulo definido por NX1,NX2,
 ! NY1,NY2, con limites en X entre BG y FG
         SUBROUTINE HISTOGRAM(NBUFF)
+        USE Dynamic_Array_IMAGEN
         IMPLICIT NONE
+        INCLUDE 'interface_imagen.inc'
+! subroutine argument
         INTEGER NBUFF
 !
-        INCLUDE 'dimensions.inc'
         INTEGER NBINMAX
         PARAMETER(NBINMAX=100)                 !numero de bins en el histograma
         INTEGER NDEGPOLYMAX
@@ -25,7 +27,8 @@
         INTEGER NDEGPOLY
         INTEGER ITER,ITERMAX
         REAL BG,FG
-        REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF),DBIN,DBIN2
+!delete REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
+        REAL DBIN,DBIN2
         REAL XPLOT(NBINMAX)
         REAL FPIX(NBINMAX)
         REAL YGAUSS(NBINMAX),AMP
@@ -42,7 +45,7 @@
         CHARACTER*50 CDUMMY
         LOGICAL LOOP
 !
-        COMMON/BLKIMAGEN1/IMAGEN
+!delete COMMON/BLKIMAGEN1/IMAGEN
         COMMON/BLKBGFG/BG,FG
         COMMON/BLKXYLIMPLOT/NX1,NX2,NY1,NY2
         COMMON/BLKESTADISTICA/FMEAN,FSIGMA,FMEDIAN,FMIN,FMAX

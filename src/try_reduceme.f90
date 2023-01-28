@@ -1,5 +1,8 @@
         SUBROUTINE TRY_REDUCEME(INFILE,ISTATUS,NAXIS_)
+        USE Dynamic_Array_IMAGEN_
         IMPLICIT NONE
+        INCLUDE 'interface_imagen_.inc'
+! subroutine arguments
         CHARACTER*(*) INFILE
         INTEGER ISTATUS
         INTEGER NAXIS_(0:2)
@@ -12,11 +15,11 @@
         INTEGER NSCAN,NCHAN
         REAL STWV,DISP
         REAL AIRMASS,TIMEXPOS
-        REAL IMAGEN_(NXYMAX,NXYMAX)
+!delete REAL IMAGEN_(NXYMAX,NXYMAX)
         CHARACTER*12 IDENTIFICATION
         CHARACTER*255 OBJECT,FITSFILE,COMMENT
 !
-        COMMON/BLKIMAGEN1_/IMAGEN_
+!delete COMMON/BLKIMAGEN1_/IMAGEN_
         COMMON/BLKREDUCEME/STWV,DISP,AIRMASS,TIMEXPOS
 !------------------------------------------------------------------------------
         ISTATUS=0 !de momento todo bien

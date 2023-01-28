@@ -2,7 +2,11 @@
 ! el offset que se mide al usar un mismo objeto en las dos imágenes
 !
         SUBROUTINE SHIFTIMAGE
+        USE Dynamic_Array_IMAGEN
+        USE Dynamic_Array_IMAGEN_
         IMPLICIT NONE
+        INCLUDE 'interface_imagen.inc'
+        INCLUDE 'interface_imagen_.inc'
 !
         INCLUDE 'dimensions.inc'
         INCLUDE 'largest.inc'
@@ -16,8 +20,8 @@
         INTEGER NAXIS1_,NAXIS2_
         INTEGER I,J,I1,J1,I2,J2
         INTEGER I0,J0
-        REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)                        !current image
-        REAL IMAGEN_(NXMAX,NYMAX)
+!delete REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)                        !current image
+!delete REAL IMAGEN_(NXMAX,NYMAX)
         REAL XC,YC                                              !mouse location
         REAL X0,Y0,SIGMAX,SIGMAY,BETA,AMP,CTE     !coefficients of centroid fit
         REAL EX0,EY0,ESIGMAX,ESIGMAY,EBETA,EAMP,ECTE !errors
@@ -28,9 +32,9 @@
         CHARACTER*50 CDUMMY
         LOGICAL LOOP
 ! common blocks
+!delete COMMON/BLKIMAGEN1/IMAGEN             !imagen FITS leida en formato REAL
+!delete COMMON/BLKIMAGEN1_/IMAGEN_              !es global para ahorrar memoria
         COMMON/BLKIMAGEN2/NCBUFF                      !numero del buffer actual
-        COMMON/BLKIMAGEN1/IMAGEN             !imagen FITS leida en formato REAL
-        COMMON/BLKIMAGEN1_/IMAGEN_              !es global para ahorrar memoria
         COMMON/BLKNAXIS/NAXIS
 !------------------------------------------------------------------------------
         I2=0 !avoid compilation warning

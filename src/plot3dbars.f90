@@ -6,13 +6,14 @@
 ! MM3D=.FALSE. limites automaticos (se devuelven como output en BG3D,FG3D)
 ! MM3D=.TRUE. limites fijos (se toman BG3D y FG3D como input)
         SUBROUTINE PLOT3DBARS(NC1,NC2,NS1,NS2,IMODE,MM3D,BG3D,FG3D)
+        USE Dynamic_Array_IMAGEN_
         IMPLICIT NONE
+        INCLUDE 'interface_imagen_.inc'
+! subroutine arguments
         INTEGER NC1,NC2,NS1,NS2
         INTEGER IMODE
         LOGICAL MM3D                           !si .FALSE., limites automaticos
         REAL BG3D,FG3D
-! parameters
-        INCLUDE 'dimensions.inc'
 ! functions
 !
         INTEGER I,J
@@ -20,7 +21,7 @@
         INTEGER NCOLOR
         INTEGER ICILO,ICIHI   !lowest and highest color index to use for images
         INTEGER OLD_FS
-        REAL IMAGEN_(NXMAX,NYMAX)
+!delete REAL IMAGEN_(NXMAX,NYMAX)
         REAL XMIN,XMAX,YMIN,YMAX,YMIN0,YMAX0,DX
         REAL XOFFSET,YOFFSET
         REAL X(5),Y(5),YB(4)
@@ -29,7 +30,7 @@
         REAL XV1,XV2,YV1,YV2
         CHARACTER*50 CDUMMY
 !
-        COMMON/BLKIMAGEN1_/IMAGEN_              !es global para ahorrar memoria
+!delete COMMON/BLKIMAGEN1_/IMAGEN_              !es global para ahorrar memoria
 !------------------------------------------------------------------------------
         CALL PGQCIR(ICILO, ICIHI)
 !------------------------------------------------------------------------------

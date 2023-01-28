@@ -4,12 +4,19 @@
 ! Si NBUFF=0, la estadistica se realiza sobre IMAGEN_(J,I) en lugar de 
 !             sobre IMAGEN(J,I,NBUFF)
         SUBROUTINE STATISTICB9(NFRAMES_,NBUFF,FMEAN,FSIGMA)
+        USE Dynamic_Array_IMAGEN
+        USE Dynamic_Array_IMAGEN_
+        USE Dynamic_Array_PIXEL
         IMPLICIT NONE
+        INCLUDE 'interface_imagen.inc'
+        INCLUDE 'interface_imagen_.inc'
+        INCLUDE 'interface_pixel.inc'
+! subroutine arguments
         INTEGER NFRAMES_
         INTEGER NBUFF
         REAL FMEAN,FSIGMA
 !
-        INCLUDE 'dimensions.inc'
+!       INCLUDE 'dimensions.inc'
 !
         INTEGER NBOXMAX
         PARAMETER (NBOXMAX=9)
@@ -19,12 +26,14 @@
         INTEGER I,J,K
         INTEGER NPIX,NF
         INTEGER DI(NBOXMAX),DJ(NBOXMAX)
-        REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF),PIXEL(NXMAX*NYMAX)
-        REAL IMAGEN_(NXMAX,NYMAX)
+!delete REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)PIXEL(NXMAX*NYMAX)
+!delete REAL IMAGEN_(NXMAX,NYMAX)
+!delete REAL PIXEL(NXMAX*NYMAX)
 !
-        COMMON/BLKIMAGEN1/IMAGEN
-        COMMON/BLKIMAGEN1_/IMAGEN_
+!delete COMMON/BLKIMAGEN1/IMAGEN
+!delete COMMON/BLKIMAGEN1_/IMAGEN_
 !------------------------------------------------------------------------------
+        CALL Initialize_Dynamic_Array_PIXEL
 ! Note: the pattern of the frames in box-9 is the following:
 !       6 9 4
 !       3 1 7
@@ -63,4 +72,6 @@
 !------------------------------------------------------------------------------
         FMEAN=FMEAN0(NPIX,PIXEL,FSIGMA)
 !------------------------------------------------------------------------------
+        CALL Deallocate_Array_PIXEL
+!
         END

@@ -2,7 +2,12 @@
 !******************************************************************************
 ! Subrutina para escribir una image FITS
         SUBROUTINE SESCRFITS(FITSFILE,NCBUFF,HDRFILE)
+        USE Dynamic_Array_IMAGEN
+        USE Dynamic_Array_IMAGEN_
         IMPLICIT NONE
+        INCLUDE 'interface_imagen.inc'
+        INCLUDE 'interface_imagen_.inc'
+! subroutine arguments
         CHARACTER*(*) FITSFILE
         INTEGER NCBUFF
         CHARACTER*(*) HDRFILE
@@ -26,8 +31,8 @@
         INTEGER N1,N2,NSKIP,NKEYS,NSPACE
         INTEGER DI(NBOXMAX),DJ(NBOXMAX)
         INTEGER READWRITE
-        REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
-        REAL IMAGEN_(NXYMAX,NXYMAX)
+!delete REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
+!delete REAL IMAGEN_(NXYMAX,NXYMAX)
         CHARACTER*1 CBOX9
         CHARACTER*2 CNIMAGE
         CHARACTER*80 RECORD
@@ -35,8 +40,8 @@
         LOGICAL LOGFILE
         LOGICAL SIMPLE,EXTEND
 !
-        COMMON/BLKIMAGEN1/IMAGEN
-        COMMON/BLKIMAGEN1_/IMAGEN_
+!delete COMMON/BLKIMAGEN1/IMAGEN
+!delete COMMON/BLKIMAGEN1_/IMAGEN_
         COMMON/BLKNAXIS/NAXIS
 !------------------------------------------------------------------------------
 ! Note: the pattern of the frames in box-9 is the following:
@@ -68,6 +73,8 @@
           WRITE(*,101) '=> The file '
           WRITE(*,100) FITSFILE(1:L)
           WRITE(*,101) ' already exists.'
+          CALL Deallocate_Array_IMAGEN
+          CALL Deallocate_Array_IMAGEN_
           STOP
         END IF
         IF((NAXIS(1,NCBUFF).EQ.768).AND.(NAXIS(2,NCBUFF).EQ.768))THEN
@@ -205,6 +212,8 @@
             WRITE(*,100) '=> subroutine ESCFITS: BITPIX ='
             WRITE(*,*) BITPIX
             CALL FTCLOS(IUNIT,ISTATUS)
+            CALL Deallocate_Array_IMAGEN
+            CALL Deallocate_Array_IMAGEN_
             STOP
           END IF
 ! cerramos el fichero

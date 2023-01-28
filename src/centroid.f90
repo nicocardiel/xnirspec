@@ -8,7 +8,12 @@
         SUBROUTINE CENTROID(NBUFF,CH,XC,YC,LGUESS, &
          X0_F,Y0_F,SIGMAX_F,SIGMAY_F,BETA_F,AMP_F,CTE_F, &
          EX0_F,EY0_F,ESIGMAX_F,ESIGMAY_F,EBETA_F,EAMP_F,ECTE_F,LSHOW)
+        USE Dynamic_Array_IMAGEN
+        USE Dynamic_Array_IMAGEN_
         IMPLICIT NONE
+        INCLUDE 'interface_imagen.inc'
+        INCLUDE 'interface_imagen_.inc'
+! subroutine arguments
         INTEGER NBUFF
         CHARACTER*1 CH
         REAL XC,YC
@@ -32,8 +37,8 @@
         INTEGER NSIMUL
         INTEGER NPFITX,NPFITY
         INTEGER IMODEG2D
-        REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
-        REAL IMAGEN_(NXMAX,NYMAX)
+!delete REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
+!delete REAL IMAGEN_(NXMAX,NYMAX)
         REAL BG,FG,BG_,FG_
         REAL XV1,XV2,YV1,YV2,XW1,XW2,YW1,YW2
         REAL OLD_CH
@@ -59,8 +64,8 @@
         CHARACTER*50 CDUMMY
         LOGICAL LEXIT
 !
-        COMMON/BLKIMAGEN1/IMAGEN             !imagen FITS leida en formato REAL
-        COMMON/BLKIMAGEN1_/IMAGEN_
+!delete COMMON/BLKIMAGEN1/IMAGEN             !imagen FITS leida en formato REAL
+!delete COMMON/BLKIMAGEN1_/IMAGEN_
         COMMON/BLKNAXIS/NAXIS
         COMMON/BLKDEFAULTS8/NBOX_CENTROID
         COMMON/BLKBGFG/BG,FG

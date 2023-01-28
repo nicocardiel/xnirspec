@@ -1,5 +1,5 @@
 #
-bin_PROGRAMS = xnirspec
+bin_PROGRAMS = xnirspec zzz_memory_test
 xnirspec_SOURCES = activebut.f90 \
 arclength.f90 \
 binsearch.f90 \
@@ -36,6 +36,9 @@ distpr.f90 \
 downhill.f90 \
 drawpolxy.f90 \
 drawpolyx.f90 \
+dynamic_array_imagen.f90 \
+dynamic_array_imagen_.f90 \
+dynamic_array_pixel.f90 \
 expline.f90 \
 factorialpf.f90 \
 fderi.f90 \
@@ -146,3 +149,6 @@ zoomhistog.f90 \
 zscale.f90
 
 xnirspec_LDADD = $(CFITSIO_LIBS) $(PGPLOT_LDFLAGS)
+
+zzz_memory_test_SOURCES = zzz_memory_test.f90
+

@@ -1,6 +1,8 @@
-
         SUBROUTINE MAPPING(LBOUNDARY,LMAPPING)
+        USE Dynamic_Array_IMAGEN
         IMPLICIT NONE
+        INCLUDE 'interface_imagen.inc'
+! subroutine arguments
         LOGICAL LBOUNDARY,LMAPPING
 !
         INCLUDE 'dimensions.inc'
@@ -38,7 +40,7 @@
         INTEGER NAXIS(2,NMAXBUFF)
         INTEGER NCBUFF
         INTEGER NEXTINFO
-        REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
+!delete REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
         REAL COEFFBL(20,NXYMAX),COEFFBA(20,NXYMAX)      !pol. coef. in boundary
         REAL X(NXYMAX),Y(NXYMAX),U(NXYMAX),V(NXYMAX)
         REAL XX,YY,UU,VV
@@ -74,7 +76,7 @@
         LOGICAL LBOUNDL,LBOUNDA
         LOGICAL LOGFILE,LOGFILERR
 !
-        COMMON/BLKIMAGEN1/IMAGEN             !imagen FITS leida en formato REAL
+!delete COMMON/BLKIMAGEN1/IMAGEN             !imagen FITS leida en formato REAL
         COMMON/BLKIMAGEN2/NCBUFF
         COMMON/BLKNAXIS/NAXIS
         COMMON/BLKBOUND1/NLINBL,NDEGBL,NDEGBL00
@@ -648,11 +650,15 @@
         IF(NDELTAX.GT.NXMAX)THEN
           WRITE(*,101) '***FATAL ERROR***'
           WRITE(*,101) '=> Delta X > NXMAX'
+          CALL Deallocate_Array_IMAGEN
+          CALL Deallocate_Array_IMAGEN_
           STOP
         END IF
         IF(NDELTAY.GT.NYMAX)THEN
           WRITE(*,101) '***FATAL ERROR***'
           WRITE(*,101) '=> Delta Y > NYMAX'
+          CALL Deallocate_Array_IMAGEN
+          CALL Deallocate_Array_IMAGEN_
           STOP
         END IF
 !------------------------------------------------------------------------------

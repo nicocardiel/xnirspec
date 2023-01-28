@@ -12,7 +12,12 @@
 
 !------------------------------------------------------------------------------
         SUBROUTINE SLEEFITS(FITSFILE,LSHOW,IROTATE,NEWBUFF,LBOX9,IBUFF)
+        USE Dynamic_Array_IMAGEN
+        USE Dynamic_Array_IMAGEN_
         IMPLICIT NONE
+        INCLUDE 'interface_imagen.inc'
+        INCLUDE 'interface_imagen_.inc'
+! subroutine arguments
         CHARACTER*(*) FITSFILE
         LOGICAL LSHOW
         INTEGER IROTATE
@@ -26,7 +31,8 @@
         INTEGER READI
         INTEGER TRUELEN
 ! variables globales (COMMONs)
-        REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
+!delete REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
+!delete REAL IMAGEN_(NXYMAX,NXYMAX)
         REAL CRPIX1(NMAXBUFF),CRVAL1(NMAXBUFF),CDELT1(NMAXBUFF)
         LOGICAL LWAVECAL(NMAXBUFF)
         REAL STWV,DISP
@@ -44,7 +50,6 @@
         INTEGER NKEYS,NSPACE,NFOUND
         INTEGER NAXIS_(0:3)                                !OJO: el limite es 2
         INTEGER NANYNULLS
-        REAL IMAGEN_(NXYMAX,NXYMAX)
         REAL FROW(NXYMAX)
         CHARACTER*50 COMMENT
         CHARACTER*80 CLINEA
@@ -57,8 +62,8 @@
         LOGICAL L_EXPTIME(NMAXBUFF)
         LOGICAL LERROR
 !
-        COMMON/BLKIMAGEN1/IMAGEN             !imagen FITS leida en formato REAL
-        COMMON/BLKIMAGEN1_/IMAGEN_              !es global para ahorrar memoria
+!delete COMMON/BLKIMAGEN1/IMAGEN             !imagen FITS leida en formato REAL
+!delete COMMON/BLKIMAGEN1_/IMAGEN_              !es global para ahorrar memoria
         COMMON/BLKWAVECAL1/CRPIX1,CRVAL1,CDELT1         !wavelength calibration
         COMMON/BLKWAVECAL2/LWAVECAL                     !wavelength calibration
         COMMON/BLKREDUCEME/STWV,DISP,AIRMASS,TIMEXPOS     !Reduceme header info
@@ -81,6 +86,8 @@
           WRITE(*,100) 'FATAL ERROR: the file "'
           WRITE(*,100) FITSFILE(1:TRUELEN(FITSFILE))
           WRITE(*,101) '" does not exist.'
+          CALL Deallocate_Array_IMAGEN
+          CALL Deallocate_Array_IMAGEN_
           STOP
         END IF
 ! localizamos un numero de unidad de fichero no utilizada
@@ -155,6 +162,8 @@
             WRITE(*,*) NAXIS_(0)
             WRITE(*,101) '=> NAXIS > 2'
             CALL FTCLOS(IUNIT,ISTATUS)
+            CALL Deallocate_Array_IMAGEN
+            CALL Deallocate_Array_IMAGEN_
             STOP
           END IF
         ELSEIF(NAXIS_(0).EQ.1)THEN
@@ -177,6 +186,8 @@
             WRITE(*,101) '* FATAL ERROR in subroutine LEEFITS:'
             WRITE(*,101) 'NAXIS(1) > NXMAX'
             CALL FTCLOS(IUNIT,ISTATUS)
+            CALL Deallocate_Array_IMAGEN
+            CALL Deallocate_Array_IMAGEN_
             STOP
           END IF
         ELSE
@@ -186,6 +197,8 @@
             WRITE(*,101) '* FATAL ERROR in subroutine LEEFITS:'
             WRITE(*,101) 'NAXIS(1) > NYMAX'
             CALL FTCLOS(IUNIT,ISTATUS)
+            CALL Deallocate_Array_IMAGEN
+            CALL Deallocate_Array_IMAGEN_
             STOP
           END IF
         END IF
@@ -196,6 +209,8 @@
             WRITE(*,101) '* FATAL ERROR in subroutine LEEFITS:'
             WRITE(*,101) 'NAXIS(2) > NYMAX'
             CALL FTCLOS(IUNIT,ISTATUS)
+            CALL Deallocate_Array_IMAGEN
+            CALL Deallocate_Array_IMAGEN_
             STOP
           END IF
         ELSE
@@ -205,6 +220,8 @@
             WRITE(*,101) '* FATAL ERROR in subroutine LEEFITS:'
             WRITE(*,101) 'NAXIS(2) > NXMAX'
             CALL FTCLOS(IUNIT,ISTATUS)
+            CALL Deallocate_Array_IMAGEN
+            CALL Deallocate_Array_IMAGEN_
             STOP
           END IF
         END IF
@@ -326,6 +343,8 @@
           WRITE(*,100) 'FATAL ERROR in subroutine LEEFITS: BITPIX ='
           WRITE(*,*) BITPIX
           CALL FTCLOS(IUNIT,ISTATUS)
+          CALL Deallocate_Array_IMAGEN
+          CALL Deallocate_Array_IMAGEN_
           STOP
         END IF
 ! cerramos el fichero
@@ -385,6 +404,8 @@
           WRITE(*,100) '=> IROTATE='
           WRITE(*,*) IROTATE
           WRITE(*,101) '=> Invalid IROTATE in subroutine SLEEFITS.'
+          CALL Deallocate_Array_IMAGEN
+          CALL Deallocate_Array_IMAGEN_
           STOP
         END IF
         IF(NANYNULLS.GT.0)THEN

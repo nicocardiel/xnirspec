@@ -2,7 +2,11 @@
 ! manipula imagenes (hasta un box-9)
 ! NFRAMES es el numero real de imagenes en el box-9
         SUBROUTINE OPERBOX9(NCBUFF)
+        USE Dynamic_Array_IMAGEN
+        USE Dynamic_Array_IMAGEN_
         IMPLICIT NONE
+        INCLUDE 'interface_imagen.inc'
+        INCLUDE 'interface_imagen_.inc'
         INTEGER NCBUFF
 !
         INTEGER NBOXMAX
@@ -67,8 +71,8 @@
         REAL EFOFFSETX_,EFOFFSETY_
         REAL FRACCION_PIXEL
         REAL FJ0(NBOXMAX),FI0(NBOXMAX)
-        REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
-        REAL IMAGEN_(NXMAX,NYMAX)
+!delete REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
+!delete REAL IMAGEN_(NXMAX,NYMAX)
         REAL PIXEL(9*4),EPIXEL(9*4),PIXELF(9*4)
         REAL PIXELVECINO(24)
         REAL FPIXUSED(NXMAXB9,NYMAXB9)
@@ -118,8 +122,8 @@
         LOGICAL LASK
         LOGICAL LECHO
 !
-        COMMON/BLKIMAGEN1/IMAGEN
-        COMMON/BLKIMAGEN1_/IMAGEN_
+!delete COMMON/BLKIMAGEN1/IMAGEN
+!delete COMMON/BLKIMAGEN1_/IMAGEN_
         COMMON/BLKNAXIS/NAXIS                                      !dimensiones
         COMMON/BLKNAXISFRAME/NAXISFRAME
         COMMON/BLKNSIZEFB9/NSIZEFB9
@@ -642,6 +646,8 @@
                 WRITE(*,100) 'NOPER, TYPEOPER_STACK: '
                 WRITE(*,*) NOPER,TYPEOPER_STACK(NOPER)
                 WRITE(*,101) 'FATAL ERROR: invalid operation type.'
+                CALL Deallocate_Array_IMAGEN
+                CALL Deallocate_Array_IMAGEN_
                 STOP
               END IF
 !
@@ -2243,7 +2249,11 @@
 !******************************************************************************
 ! La estadistica solo se realiza sobre los pixels no afectados por la mascara
         SUBROUTINE COMPHISTOFF(NHISTO,NXMAXB9_,NYMAXB9_,NEWBUFF,FMEAN,FSIGMA,NP)
+        USE Dynamic_Array_IMAGEN
+        USE Dynamic_Array_PIXEL
         IMPLICIT NONE
+        INCLUDE 'interface_imagen.inc'
+        INCLUDE 'interface_pixel.inc'
 !
         INCLUDE 'dimensions.inc'
 !
@@ -2260,15 +2270,16 @@
 !
         INTEGER I,J
         REAL FPIXUSED(NXMAXB9,NYMAXB9)
-        REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
-        REAL PIXEL(NXMAX*NYMAX)
+!delete REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
+!delete REAL PIXEL(NXMAX*NYMAX)
         LOGICAL MASKBOX9(NXMAXB9,NYMAXB9)
 !
-        COMMON/BLKIMAGEN1/IMAGEN
-        COMMON/BLKIMAGEN1_/PIXEL        !usamos este common para ahorra memoria
+!delete COMMON/BLKIMAGEN1/IMAGEN
+!delete COMMON/BLKIMAGEN1_/PIXEL        !usamos este common para ahorra memoria
         COMMON/BLKFPIXUSED/FPIXUSED
         COMMON/BLKMASKBOX9/MASKBOX9
 !------------------------------------------------------------------------------
+        CALL Initialize_Dynamic_Array_PIXEL
         NP=0
         DO I=1,NYMAXB9_
           DO J=1,NXMAXB9_
@@ -2292,17 +2303,21 @@
           FMEAN=FMEAN2(NP,PIXEL,3.0,FSIGMA)
         END IF
 !
+        CALL Deallocate_Array_PIXEL
+!
         END
 !
 !******************************************************************************
 !
         SUBROUTINE COMPHISTO(NHISTO,NXMAXB9_,NYMAXB9_,NEWBUFF,HMIN,DBIN,NPIX)
+        USE Dynamic_Array_IMAGEN
         IMPLICIT NONE
+        INCLUDE 'interface_imagen.inc'
 !
         INCLUDE 'dimensions.inc'
         INTEGER NBINMAX
         PARAMETER (NBINMAX=100)
-!
+! subroutine arguments
         INTEGER NHISTO
         INTEGER NXMAXB9_,NYMAXB9_
         INTEGER NEWBUFF
@@ -2315,10 +2330,10 @@
 !
         INTEGER I,J,K
         REAL FPIXUSED(NXMAXB9,NYMAXB9)
-        REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
+!delete REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
         LOGICAL MASKBOX9(NXMAXB9,NYMAXB9)
 !
-        COMMON/BLKIMAGEN1/IMAGEN
+!delete COMMON/BLKIMAGEN1/IMAGEN
         COMMON/BLKFPIXUSED/FPIXUSED
         COMMON/BLKMASKBOX9/MASKBOX9
 !------------------------------------------------------------------------------
@@ -2463,7 +2478,9 @@
 ! Si LASK=.FALSE., no pregunta nada (util cuando estamos generando el grafico
 ! en postscript)
         SUBROUTINE COMPMASK(NXMAXB9_,NYMAXB9_,NEWBUFF,FFSIGMANOR,TIMESSIGMA,FTAILS,CINTERACTIVE,LASK)
+        USE Dynamic_Array_IMAGEN
         IMPLICIT NONE
+        INCLUDE 'interface_imagen.inc'
 !
         INCLUDE 'dimensions.inc'
 !
@@ -2483,13 +2500,13 @@
         INTEGER NXYTOTAL
         REAL FPIXUSED(NXMAXB9,NYMAXB9)
         REAL PIXEL
-        REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
+!delete REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
         LOGICAL MASKBOX9(NXMAXB9,NYMAXB9) !mascara
         LOGICAL MASKBOX9_(NXMAXB9,NYMAXB9) !extension de la mascara
         LOGICAL PFOUND
         LOGICAL LECHO
 !
-        COMMON/BLKIMAGEN1/IMAGEN
+!delete COMMON/BLKIMAGEN1/IMAGEN
         COMMON/BLKMASKBOX9/MASKBOX9
         COMMON/BLKFPIXUSED/FPIXUSED
         COMMON/BLKLECHO/LECHO
@@ -2715,21 +2732,29 @@
               IF(.NOT.INSIDE(J-DJJ1,1,NXMAXB9_,I-DII1,1,NYMAXB9_))THEN
                 WRITE(*,*) J0(K),FJ0(K),I0(K),FI0(K)
                 WRITE(*,*) K,J,I,DJJ1,DJJ2,DII1,DII2,NXMAXB9_,NYMAXB9_
+                CALL Deallocate_Array_IMAGEN
+                CALL Deallocate_Array_IMAGEN_
                 STOP 'FATAL ERROR: LOK1'
               END IF
               IF(.NOT.INSIDE(J-DJJ1,1,NXMAXB9_,I-DII2,1,NYMAXB9_))THEN
                 WRITE(*,*) J0(K),FJ0(K),I0(K),FI0(K)
                 WRITE(*,*) K,J,I,DJJ1,DJJ2,DII1,DII2,NXMAXB9_,NYMAXB9_
+                CALL Deallocate_Array_IMAGEN
+                CALL Deallocate_Array_IMAGEN_
                 STOP 'FATAL ERROR: LOK2'
               END IF
               IF(.NOT.INSIDE(J-DJJ2,1,NXMAXB9_,I-DII1,1,NYMAXB9_))THEN
                 WRITE(*,*) J0(K),FJ0(K),I0(K),FI0(K)
                 WRITE(*,*) K,J,I,DJJ1,DJJ2,DII1,DII2,NXMAXB9_,NYMAXB9_
+                CALL Deallocate_Array_IMAGEN
+                CALL Deallocate_Array_IMAGEN_
                 STOP 'FATAL ERROR: LOK3'
               END IF
               IF(.NOT.INSIDE(J-DJJ2,1,NXMAXB9_,I-DII2,1,NYMAXB9_))THEN
                 WRITE(*,*) J0(K),FJ0(K),I0(K),FI0(K)
                 WRITE(*,*) K,J,I,DJJ1,DJJ2,DII1,DII2,NXMAXB9_,NYMAXB9_
+                CALL Deallocate_Array_IMAGEN
+                CALL Deallocate_Array_IMAGEN_
                 STOP 'FATAL ERROR: LOK4'
               END IF
 !..............................................................................
@@ -2766,10 +2791,11 @@
 ! stack, para poder asi tener una buena estimacion del r.m.s. esperado a partir
 ! de la ganancia, el ruido de lectura y el numero de coadds).
         SUBROUTINE DETAILB9(NBUFF,NBUFFORIGINAL,NIMSTAT)
+        USE Dynamic_Array_IMAGEN
         IMPLICIT NONE
+        INCLUDE 'interface_imagen.inc'
+! subroutine arguments
         INTEGER NBUFF,NBUFFORIGINAL,NIMSTAT
-!
-        INCLUDE 'dimensions.inc'
 !
         INTEGER NBOXMAX
         PARAMETER (NBOXMAX=9)
@@ -2794,7 +2820,7 @@
         REAL FMEANQ4(256),FSIGMAQ4(256)
         REAL FMEAN_,FSIGMA_
         REAL PIXEL(64),PIXELORIGINAL(64)
-        REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
+!delete REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
         REAL GAIN,RNOISE
         REAL XP1(256),YP1(256)
         REAL XP2(256),YP2(256)
@@ -2808,7 +2834,7 @@
         CHARACTER*50 CMEAN,CSIGMA
         LOGICAL SUBMASKBOX9(256,256,9)
 !
-        COMMON/BLKIMAGEN1/IMAGEN
+!delete COMMON/BLKIMAGEN1/IMAGEN
         COMMON/BLKSUBMASKBOX9/SUBMASKBOX9
 !------------------------------------------------------------------------------
 ! Note: the pattern of the frames in box-9 is the following:
@@ -3072,7 +3098,12 @@
 ! IMAGEN_(). En QMIN y QMAX retorna el maximo y el minimo en cada cuadrante (en
 ! este caso QMIN()=QMAX(), porque estamos ajustando una constante).
         SUBROUTINE SCALE_CONSTANT(NBUFF,NFRAMES_,NIMA,NQUA,QMIN,QMAX)
+        USE Dynamic_Array_IMAGEN
+        USE Dynamic_Array_IMAGEN_
         IMPLICIT NONE
+        INCLUDE 'interface_imagen.inc'
+        INCLUDE 'interface_imagen_.inc'
+! subroutine arguments
         INTEGER NBUFF
         INTEGER NFRAMES_
         INTEGER NIMA,NQUA
@@ -3081,21 +3112,19 @@
         INTEGER NBOXMAX
         PARAMETER (NBOXMAX=9)
 !
-        INCLUDE 'dimensions.inc'
-!
         REAL FMEDIAN1
 !
         INTEGER I,J,K,KK,NQUAD
         INTEGER I1(4),I2(4),J1(4),J2(4)
         INTEGER DI(NBOXMAX),DJ(NBOXMAX)
         REAL FMEDIAN
-        REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
-        REAL IMAGEN_(NXMAX,NYMAX)
+!delete REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
+!delete REAL IMAGEN_(NXMAX,NYMAX)
         REAL PIXEL(128*128)
         LOGICAL SUBMASKBOX9(256,256,9)
 !
-        COMMON/BLKIMAGEN1/IMAGEN
-        COMMON/BLKIMAGEN1_/IMAGEN_
+!delete COMMON/BLKIMAGEN1/IMAGEN
+!delete COMMON/BLKIMAGEN1_/IMAGEN_
         COMMON/BLKSUBMASKBOX9/SUBMASKBOX9
 !------------------------------------------------------------------------------
 ! Note: the pattern of the frames in box-9 is the following:
@@ -3180,8 +3209,12 @@
 ! cada cuadrante.
         SUBROUTINE SCALE_SURFACE(NBUFF,NFRAMES_,NIMA,NQUA,GX,GY, &
          FFSIGMANOR,TIMESSIGMA,LMEDIANA,YRMSTOL,LREFINE,QMIN,QMAX,XSOLOUT)
+        USE Dynamic_Array_IMAGEN
+        USE Dynamic_Array_IMAGEN_
         IMPLICIT NONE
-!
+        INCLUDE 'interface_imagen.inc'
+        INCLUDE 'interface_imagen_.inc'
+! subroutine arguments
         INTEGER NBOXMAX
         PARAMETER (NBOXMAX=9)
         INTEGER MAXNCOEFF
@@ -3198,8 +3231,6 @@
         REAL QMIN(36),QMAX(36)
         REAL XSOLOUT(MAXNCOEFF,36)
 !
-        INCLUDE 'dimensions.inc'
-!
         REAL YFUNK_SURFACE
         EXTERNAL YFUNK_SURFACE
 !
@@ -3212,8 +3243,8 @@
         INTEGER NEVAL
         INTEGER NBUFF_,GX_,GY_
         INTEGER NDISPLAY
-        REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
-        REAL IMAGEN_(NXMAX,NYMAX)
+!delete REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
+!delete REAL IMAGEN_(NXMAX,NYMAX)
         REAL X(128),Y(128)
         REAL A(MAXNCOEFF,MAXNCOEFF),B(MAXNCOEFF)
         REAL SCALEROW(MAXNCOEFF),XSOL(MAXNCOEFF)
@@ -3224,8 +3255,8 @@
         LOGICAL IFGOOD(128,128)
         LOGICAL LANY
 !
-        COMMON/BLKIMAGEN1/IMAGEN
-        COMMON/BLKIMAGEN1_/IMAGEN_
+!delete COMMON/BLKIMAGEN1/IMAGEN
+!delete COMMON/BLKIMAGEN1_/IMAGEN_
         COMMON/BLKSUBMASKBOX9/SUBMASKBOX9
         COMMON/BLKFUNKSURF1/NBUFF_,NQUAD,GX_,GY_,K
         COMMON/BLKFUNKSURF2/IFGOOD
@@ -3260,6 +3291,8 @@
           WRITE(*,101) 'NCOEFF.GT.MAXNCOEFF'
           WRITE(*,100) 'GX,GY,NCOEFF,MAXNCOEFF: '
           WRITE(*,*) GX,GY,NCOEFF,MAXNCOEFF
+          CALL Deallocate_Array_IMAGEN
+          CALL Deallocate_Array_IMAGEN_
           STOP
         END IF
 ! duplicamos variables para evitar problemas con los COMMONs
@@ -3459,7 +3492,11 @@
 !******************************************************************************
 !
         REAL FUNCTION YFUNK_SURFACE(XSOL)
+        USE Dynamic_Array_IMAGEN
+        USE Dynamic_Array_IMAGEN_
         IMPLICIT NONE
+        INCLUDE 'interface_imagen.inc'
+        INCLUDE 'interface_imagen_.inc'
 !
         INTEGER NBOXMAX
         PARAMETER (NBOXMAX=9)
@@ -3468,8 +3505,6 @@
 !
         REAL XSOL(MAXNCOEFF)
 !
-        INCLUDE 'dimensions.inc'
-!
         REAL FMEDIAN1
 !
         INTEGER I,J,L,M,L_,M_,KK
@@ -3477,15 +3512,15 @@
         INTEGER I1(4),I2(4),J1(4),J2(4)
         INTEGER NBUFF,NQUAD,GX,GY,K
         REAL FFACTOR
-        REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
-        REAL IMAGEN_(NXMAX,NYMAX)
+!delete REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
+!delete REAL IMAGEN_(NXMAX,NYMAX)
         REAL X(128),Y(128)
         REAL PIXEL(128*128)
         LOGICAL SUBMASKBOX9(256,256,9)
         LOGICAL IFGOOD(128,128)
 !
-        COMMON/BLKIMAGEN1/IMAGEN
-        COMMON/BLKIMAGEN1_/IMAGEN_
+!delete COMMON/BLKIMAGEN1/IMAGEN
+!delete COMMON/BLKIMAGEN1_/IMAGEN_
         COMMON/BLKSUBMASKBOX9/SUBMASKBOX9
         COMMON/BLKFUNKSURF1/NBUFF,NQUAD,GX,GY,K
         COMMON/BLKFUNKSURF2/IFGOOD
@@ -3558,24 +3593,25 @@
 ! asi sustraer luego la imagen al normalizar).
 ! La imagen de entrada es IMAGEN_(), y la de salida tambien.
         SUBROUTINE NORMSUMA(NFRAMES_,NIMA,NQUA)
+        USE Dynamic_Array_IMAGEN_
         IMPLICIT NONE
+        INCLUDE 'interface_imagen_.inc'
+! subroutine arguments
         INTEGER NFRAMES_
         INTEGER NIMA,NQUA
 !
         INTEGER NBOXMAX
         PARAMETER (NBOXMAX=9)
 !
-        INCLUDE 'dimensions.inc'
-!
         INTEGER I,J,K,NQUAD
         INTEGER I1(4),I2(4),J1(4),J2(4)
         INTEGER DI(NBOXMAX),DJ(NBOXMAX)
         INTEGER NSIZE
-        REAL IMAGEN_(NXMAX,NYMAX)
+!delete REAL IMAGEN_(NXMAX,NYMAX)
         REAL FACTOR
         DOUBLE PRECISION DMEAN
 !
-        COMMON/BLKIMAGEN1_/IMAGEN_
+!delete COMMON/BLKIMAGEN1_/IMAGEN_
 !------------------------------------------------------------------------------
 ! Note: the pattern of the frames in box-9 is the following:
 !       6 9 4
@@ -3629,24 +3665,25 @@
 ! la imagen al normalizar).
 ! La imagen de entrada es IMAGEN_(), y la de salida tambien.
         SUBROUTINE NORMDIVI(NFRAMES_,NIMA,NQUA)
+        USE Dynamic_Array_IMAGEN_
         IMPLICIT NONE
+        INCLUDE 'interface_imagen_.inc'
+! subroutine arguments
         INTEGER NFRAMES_
         INTEGER NIMA,NQUA
 !
         INTEGER NBOXMAX
         PARAMETER (NBOXMAX=9)
 !
-        INCLUDE 'dimensions.inc'
-!
         INTEGER I,J,K,NQUAD
         INTEGER I1(4),I2(4),J1(4),J2(4)
         INTEGER DI(NBOXMAX),DJ(NBOXMAX)
         INTEGER NSIZE
         REAL FACTOR
-        REAL IMAGEN_(NXMAX,NYMAX)
+!delete REAL IMAGEN_(NXMAX,NYMAX)
         DOUBLE PRECISION DMEAN
 !
-        COMMON/BLKIMAGEN1_/IMAGEN_
+!delete COMMON/BLKIMAGEN1_/IMAGEN_
 !------------------------------------------------------------------------------
 ! Note: the pattern of the frames in box-9 is the following:
 !       6 9 4
@@ -3709,13 +3746,14 @@
 ! es exacto, porque utiliza un promedio de medias y un promedio de sigmas, pero
 ! para determinar cortes de la imagen, es suficiente.
         SUBROUTINE GIVEME_BGFG(NFRAMES_,NIMA,NQUA,BG,FG)
+        USE Dynamic_Array_IMAGEN_
         IMPLICIT NONE
+        INCLUDE 'interface_imagen_.inc'
+! subroutine arguments
         INTEGER NFRAMES_
         INTEGER NIMA
         INTEGER NQUA
         REAL BG,FG
-!
-        INCLUDE 'dimensions.inc'
 !
         INTEGER NBOXMAX
         PARAMETER (NBOXMAX=9)
@@ -3725,9 +3763,9 @@
         INTEGER DI(NBOXMAX),DJ(NBOXMAX)
         INTEGER I1(4),I2(4),J1(4),J2(4)
         REAL FMEAN,FSIGMA,FMEDIAN,FMIN,FMAX
-        REAL IMAGEN_(NXMAX,NYMAX)
+!delete REAL IMAGEN_(NXMAX,NYMAX)
 !
-        COMMON/BLKIMAGEN1_/IMAGEN_
+!delete COMMON/BLKIMAGEN1_/IMAGEN_
         COMMON/BLKESTADISTICA/FMEAN,FSIGMA,FMEDIAN,FMIN,FMAX
 !------------------------------------------------------------------------------
 ! Note: the pattern of the frames in box-9 is the following:
@@ -3793,23 +3831,24 @@
 ! Calcula el BG y el FG en la imagen del buffer NBUFF, eliminando de la
 ! estadistica los pixels de la mascara
         SUBROUTINE BGFG_MASK(NFRAMES_,NBUFF,BG,FG)
+        USE Dynamic_Array_IMAGEN
         IMPLICIT NONE
+        INCLUDE 'interface_imagen.inc'
+! subroutine arguments
         INTEGER NFRAMES_
         INTEGER NBUFF
         REAL BG,FG
-!
-        INCLUDE 'dimensions.inc'
 !
         INTEGER NBOXMAX
         PARAMETER (NBOXMAX=9)
 !
         INTEGER I,J,K,KK
         INTEGER DI(NBOXMAX),DJ(NBOXMAX)
-        REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
+!delete REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
         DOUBLE PRECISION DMEAN,DSIGMA
         LOGICAL SUBMASKBOX9(256,256,9)
 !
-        COMMON/BLKIMAGEN1/IMAGEN
+!delete COMMON/BLKIMAGEN1/IMAGEN
         COMMON/BLKSUBMASKBOX9/SUBMASKBOX9
 !------------------------------------------------------------------------------
 ! Note: the pattern of the frames in box-9 is the following:

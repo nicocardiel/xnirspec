@@ -1,6 +1,9 @@
 ! Salva una imagen en formato REDUCEME
         SUBROUTINE SESCRREDU(OUTFILE,NCBUFF,LERR)
+        USE Dynamic_Array_IMAGEN
         IMPLICIT NONE
+        INCLUDE 'interface_imagen.inc'
+! subroutine arguments
         CHARACTER*(*) OUTFILE
         INTEGER NCBUFF
         LOGICAL LERR
@@ -15,7 +18,7 @@
         INTEGER NAXIS(2,NMAXBUFF)
         REAL STWV,DISP
         REAL AIRMASS,TIMEXPOS
-        REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
+!delete REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
         CHARACTER*12 IDENTIFICATION
         CHARACTER*50 CDUMMY
 !!!        CHARACTER*255 OBJECT
@@ -23,7 +26,7 @@
 !!!        CHARACTER*255 COMMENT
 !
         COMMON/BLKNAXIS/NAXIS
-        COMMON/BLKIMAGEN1/IMAGEN
+!delete COMMON/BLKIMAGEN1/IMAGEN
         COMMON/BLKREDUCEME/STWV,DISP,AIRMASS,TIMEXPOS
 !------------------------------------------------------------------------------
         WRITE(CDUMMY,*) STWV

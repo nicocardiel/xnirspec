@@ -1,5 +1,5 @@
 !------------------------------------------------------------------------------
-! Version 23-July-1998                                         File: gaussfit.f
+! Version 23-July-1998                                       File: gauss2dfit.f
 !------------------------------------------------------------------------------
 ! Copyright N. Cardiel & J. Gorgas, Departamento de Astrofisica
 ! Universidad Complutense de Madrid, 28040-Madrid, Spain
@@ -71,8 +71,11 @@
          X0_,Y0_,SIGMAX_,SIGMAY_,AMPX_,AMPY_,CTEX_,CTEY_, &
          AREA1,AREA2,AREA3,EAREA1,EAREA2,EAREA3, &
          YRMSTOL,NSIMUL,IMODE,LSHOW) 
-!
+        USE Dynamic_Array_IMAGEN
+        USE Dynamic_Array_IMAGEN_
         IMPLICIT NONE
+        INCLUDE 'interface_imagen.inc'
+        INCLUDE 'interface_imagen_.inc'
 !
         INTEGER NBUFF
         INTEGER IX1,IX2,IY1,IY2
@@ -103,8 +106,8 @@
         INTEGER NSEED
         INTEGER NPFITX,NPFITY
         INTEGER NEXTINFO
-        REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
-        REAL IMAGEN_(NXMAX,NYMAX)
+!delete REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
+!delete REAL IMAGEN_(NXMAX,NYMAX)
         REAL EEX0_,EEY0_
         REAL EESIGMAX_,EESIGMAY_
         REAL EEAMPX_,EEAMPY_
@@ -132,8 +135,8 @@
         EXTERNAL FUNKGSS2DA
         REAL FUNKGSS2DA
 !
-        COMMON/BLKIMAGEN1/IMAGEN
-        COMMON/BLKIMAGEN1_/IMAGEN_
+!delete COMMON/BLKIMAGEN1/IMAGEN
+!delete COMMON/BLKIMAGEN1_/IMAGEN_
         COMMON/BLKFIT2DG1/IX1_,IX2_,IY1_,IY2_
         COMMON/BLKFUNK2DY/CC
 !------------------------------------------------------------------------------
@@ -282,6 +285,8 @@
             END DO
           END DO
         ELSEIF(NBUFF.LT.0)THEN
+          CALL Deallocate_Array_IMAGEN
+          CALL Deallocate_Array_IMAGEN_
           STOP 'FATAL ERROR: NBUFF.LT.0!'
         END IF
         IF(LSHOW)THEN
@@ -430,18 +435,19 @@
 !******************************************************************************
 ! CTE=XX(1) AMP=XX(2) X0=XX(3) Y0=XX(4) SIGMAX=XX(5) SIGMAY=XX(6) BETA=XX(7)
         REAL FUNCTION FUNKGSS2D(XX)
+        USE Dynamic_Array_IMAGEN_
         IMPLICIT NONE
+        INCLUDE 'interface_imagen_.inc'
+! function argument
         REAL XX(7)
-!
-        INCLUDE 'dimensions.inc'
 !
         INTEGER IX1,IX2,IY1,IY2
         INTEGER I,J
-        REAL IMAGEN_(NXMAX,NYMAX)
+!delete REAL IMAGEN_(NXMAX,NYMAX)
         REAL FACTOR,FACTOR1,FACTOR2,FACTOR3
         REAL FF
 !
-        COMMON/BLKIMAGEN1_/IMAGEN_
+!delete COMMON/BLKIMAGEN1_/IMAGEN_
         COMMON/BLKFIT2DG1/IX1,IX2,IY1,IY2
 !------------------------------------------------------------------------------
         FUNKGSS2D=0.
@@ -467,18 +473,18 @@
 !******************************************************************************
 ! CTE=XX(1) AMP=XX(2) X0=XX(3) Y0=XX(4) SIGMAX=XX(5) SIGMAY=XX(6) BETA=XX(7)
         REAL FUNCTION FUNKGSS2DA(XX)
+        USE Dynamic_Array_IMAGEN_
         IMPLICIT NONE
+        INCLUDE 'interface_imagen_.inc'
         REAL XX(7)
-!
-        INCLUDE 'dimensions.inc'
 !
         INTEGER IX1,IX2,IY1,IY2
         INTEGER I,J
-        REAL IMAGEN_(NXMAX,NYMAX)
+!delete REAL IMAGEN_(NXMAX,NYMAX)
         REAL CC(7)
         REAL FF
 !
-        COMMON/BLKIMAGEN1_/IMAGEN_
+!delete COMMON/BLKIMAGEN1_/IMAGEN_
         COMMON/BLKFIT2DG1/IX1,IX2,IY1,IY2
         COMMON/BLKFUNK2DY/CC
 !------------------------------------------------------------------------------

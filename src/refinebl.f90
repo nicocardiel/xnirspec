@@ -2,7 +2,10 @@
 ! Nota: el polinomio de entrada en la subrutina es modificados a la salida.
 ! XMIN,XMAX: es el recorrido de la variable X que va a ser examinado.
         SUBROUTINE REFINEBL(NDEG,COEFF,XMIN,XMAX)
+        USE Dynamic_Array_IMAGEN
         IMPLICIT NONE
+        INCLUDE 'interface_imagen.inc'
+! subroutine arguments
         INTEGER NDEG
         REAL COEFF(NDEG+1)
         REAL XMIN,XMAX
@@ -17,7 +20,7 @@
         INTEGER NAXIS(2,NMAXBUFF)
         INTEGER NPEAKS
         INTEGER NCBUFF
-        REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
+!delete REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
         REAL TSIGMA
         REAL XPEAKS(NXYMAX),YPEAKS(NXYMAX),RPEAKS(NXYMAX)
         REAL XF(NXYMAX),YF(NXYMAX)
@@ -27,7 +30,7 @@
         LOGICAL LDEBUGLOCAL
         LOGICAL LFIT(NXYMAX)
 !
-        COMMON/BLKIMAGEN1/IMAGEN             !imagen FITS leida en formato REAL
+!delete COMMON/BLKIMAGEN1/IMAGEN             !imagen FITS leida en formato REAL
         COMMON/BLKIMAGEN2/NCBUFF
         COMMON/BLKNAXIS/NAXIS
         COMMON/BLKDEFAULTS2/NWIDTH

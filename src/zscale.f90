@@ -60,7 +60,12 @@
 !
 !------------------------------------------------------------------------------
         SUBROUTINE ZSCALE(NBUFF,NX1,NX2,NY1,NY2,Z1,Z2,FMEAN,FSIGMA)
+        USE Dynamic_Array_IMAGEN
+        USE Dynamic_Array_PIXEL
         IMPLICIT NONE
+        INCLUDE 'interface_imagen.inc'
+        INCLUDE 'interface_pixel.inc'
+! subroutine arguments
         INTEGER NBUFF
         INTEGER NX1,NX2,NY1,NY2
         REAL Z1,Z2
@@ -74,16 +79,17 @@
         INTEGER I,J
         INTEGER K,KK,KTOT
         INTEGER NPIXTOT
-        REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
-        REAL PIXEL(NXMAX*NYMAX)
+!delete REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
+!delete REAL PIXEL(NXMAX*NYMAX)
         REAL FSTEP
         REAL FMEDIAN
         REAL ZSLOPE
         LOGICAL LOOP
 !
-        COMMON/BLKIMAGEN1/IMAGEN
-        COMMON/BLKIMAGEN1_/PIXEL                !es global para ahorrar memoria
+!delete COMMON/BLKIMAGEN1/IMAGEN
+!delete COMMON/BLKIMAGEN1_/PIXEL                !es global para ahorrar memoria
 !------------------------------------------------------------------------------
+        CALL Initialize_Dynamic_Array_PIXEL
 ! generamos un array unidimensional con los valores de la imagen
         K=0
         DO I=NY1,NY2
@@ -98,6 +104,7 @@
         IF(NPIXTOT.EQ.1)THEN
           Z1=IMAGEN(NX1,NY1,NBUFF)-1.0
           Z2=IMAGEN(NX1,NY1,NBUFF)+1.0
+          CALL Deallocate_Array_PIXEL
           RETURN
         END IF
 ! si la imagen es grande, usamos como mucho NZMAX pixels
@@ -132,6 +139,8 @@
         WRITE(*,*) Z1
         WRITE(*,100) '>>> z2= '
         WRITE(*,*) Z2
+!
+        CALL Deallocate_Array_PIXEL
 !
 100     FORMAT(A,$)
         END

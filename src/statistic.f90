@@ -10,7 +10,12 @@
 ! Si LUSEMASK=.TRUE., entonces la estadistica se realiza sobre todos los pixels
 !             seleccionados que no tengan como valor MASKVALUE
         SUBROUTINE STATISTIC(NBUFF,NX1,NX2,NY1,NY2,LMEDIAN,LSHOW,LALL,MASKVALUE,LUSEMASK)
+        USE Dynamic_Array_IMAGEN
+        USE Dynamic_Array_IMAGEN_
         IMPLICIT NONE
+        INCLUDE 'interface_imagen.inc'
+        INCLUDE 'interface_imagen_.inc'
+! subroutine arguments        
         INTEGER NBUFF
         INTEGER NX1,NX2,NY1,NY2
         LOGICAL LMEDIAN,LSHOW,LALL
@@ -28,9 +33,9 @@
         INTEGER IFMIN,IFMAX,JFMIN,JFMAX
         INTEGER NPIX
         INTEGER IPIXEL(NXMAX*NYMAX), JPIXEL(NXMAX*NYMAX)
-        REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
+!delete REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
+!delete REAL IMAGEN_(NXMAX,NYMAX)
         REAL PIXEL(NXMAX*NYMAX),EPIXEL(NXMAX*NYMAX)
-        REAL IMAGEN_(NXMAX,NYMAX)
         REAL FMEAN,FSIGMA,FMEDIAN,FMIN,FMAX
         REAL EFMEAN
         REAL FMEANTSIGMA,FSIGMATSIGMA
@@ -41,8 +46,8 @@
         REAL FSIGMA_ROBUST
         REAL BG,FG
 !
-        COMMON/BLKIMAGEN1/IMAGEN
-        COMMON/BLKIMAGEN1_/IMAGEN_
+!delete COMMON/BLKIMAGEN1/IMAGEN
+!delete COMMON/BLKIMAGEN1_/IMAGEN_
         COMMON/BLKESTADISTICA/FMEAN,FSIGMA,FMEDIAN,FMIN,FMAX
         COMMON/BLKBGFG/BG,FG
 !------------------------------------------------------------------------------

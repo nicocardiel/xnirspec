@@ -1,7 +1,10 @@
 ! if LOVER=.TRUE. then overplot
 ! if LREVERSE=.TRUE. reverse BG and FG (useful for postscript plots)
         SUBROUTINE SUBLOOK(LOVER,NCBUFF,LREVERSE)
+        USE Dynamic_Array_IMAGEN
         IMPLICIT NONE
+        INCLUDE 'interface_imagen.inc'
+! subroutine arguments
         LOGICAL LOVER
         INTEGER NCBUFF
         LOGICAL LREVERSE
@@ -10,14 +13,14 @@
 !
         INTEGER JUST
         INTEGER NX1,NX2,NY1,NY2             !limits of current displayed region
-        REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
+!delete REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
         REAL BG,FG
         REAL TR(6)                          !auxiliary matrix for PGIMAG/PGGRAY
         CHARACTER*255 INFILE(NMAXBUFF)
         LOGICAL LDS9REG(NMAXBUFF)
         LOGICAL LASCREG(NMAXBUFF)
 ! common blocks
-        COMMON/BLKIMAGEN1/IMAGEN             !imagen FITS leida en formato REAL
+!delete COMMON/BLKIMAGEN1/IMAGEN             !imagen FITS leida en formato REAL
         COMMON/BLKBGFG/BG,FG
         COMMON/BLKJUST/JUST
         COMMON/BLKXYLIMPLOT/NX1,NX2,NY1,NY2

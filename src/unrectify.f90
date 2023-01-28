@@ -1,6 +1,9 @@
 ! Distorsiona una imagen
         SUBROUTINE UNRECTIFY(NEWBUFF)
+        USE Dynamic_Array_IMAGEN
         IMPLICIT NONE
+        INCLUDE 'interface_imagen.inc'
+! subroutine argument
         INTEGER NEWBUFF
 !
         INCLUDE 'dimensions.inc'
@@ -29,7 +32,7 @@
         INTEGER IRESAMPL
         REAL AIJ(NECUAMAX),BIJ(NECUAMAX)
         REAL AIJ_(NECUAMAX),BIJ_(NECUAMAX)
-        REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
+!delete REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
         REAL U,V,X,Y
         REAL U1,V1,U2,V2
         REAL X1,X2,X3,X4
@@ -41,7 +44,7 @@
         LOGICAL LERR
 !
         COMMON/BLKNAXIS/NAXIS
-        COMMON/BLKIMAGEN1/IMAGEN
+!delete COMMON/BLKIMAGEN1/IMAGEN
         COMMON/BLKIMAGEN2/NCBUFF
         COMMON/BLKMAPPING0/NMAP
         COMMON/BLKMAPPING1/AIJ,BIJ

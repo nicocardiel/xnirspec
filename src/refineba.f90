@@ -3,7 +3,10 @@
 ! X0 es un valor de X apropiado para buscar las intersecciones con los
 ! espectros del borde.
         SUBROUTINE REFINEBA(NDEG,COEFF,X0,FMEAN,FSIGMA)
+        USE Dynamic_Array_IMAGEN
         IMPLICIT NONE
+        INCLUDE 'interface_imagen.inc'
+! subroutine arguments
         INTEGER NDEG
         REAL COEFF(NDEG+1)
         REAL X0,FMEAN,FSIGMA
@@ -21,7 +24,7 @@
         INTEGER NAXIS(2,NMAXBUFF)
         INTEGER NPEAKS
         INTEGER NCBUFF
-        REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
+!delete REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
         REAL COEFFBL(20,NXYMAX)
         REAL TSIGMA
         REAL XPEAKS(NXYMAX),YPEAKS(NXYMAX),RPEAKS(NXYMAX)
@@ -36,7 +39,7 @@
         LOGICAL LDEBUGLOCAL
         LOGICAL LFIT(NXYMAX)
 !
-        COMMON/BLKIMAGEN1/IMAGEN             !imagen FITS leida en formato REAL
+!delete COMMON/BLKIMAGEN1/IMAGEN             !imagen FITS leida en formato REAL
         COMMON/BLKIMAGEN2/NCBUFF
         COMMON/BLKNAXIS/NAXIS
         COMMON/BLKBOUND1/NLINBL,NDEGBL,NDEGBL00

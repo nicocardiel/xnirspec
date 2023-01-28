@@ -3,7 +3,10 @@
 ! orientacion determinadas. Tambien realiza simulaciones de Monte Carlo para
 ! estimar el error.
         SUBROUTINE SLIT_APERTURE(NCBUFF)
+        USE Dynamic_Array_IMAGEN
         IMPLICIT NONE
+        INCLUDE 'interface_imagen.inc'
+! subroutine argument
         INTEGER NCBUFF
 !
         INCLUDE 'dimensions.inc'
@@ -29,7 +32,7 @@
         INTEGER NSIMUL
         INTEGER NSEED
         REAL XC,YC
-        REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
+!delete REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
         REAL XC_SLIT,YC_SLIT,ERR_XY_SLIT
         REAL WIDTH_SLIT,LENGTH_SLIT
         REAL PA_SLIT,OFFPA_SLIT,ERR_PA_SLIT
@@ -44,7 +47,7 @@
         LOGICAL MASKPIXEL(NXMAXB9,NYMAXB9)
         LOGICAL LOOP
 !
-        COMMON/BLKIMAGEN1/IMAGEN
+!delete COMMON/BLKIMAGEN1/IMAGEN
         COMMON/BLKNAXIS/NAXIS
         COMMON/BLKXYLIMPLOT/NX1,NX2,NY1,NY2
         COMMON/BLKMASKBOX9/MASKPIXEL !NOTE: aqui estamos usando la misma

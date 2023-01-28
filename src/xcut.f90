@@ -1,5 +1,8 @@
         SUBROUTINE XCUT(NCBUFF,IY1,IY2,SX)
+        USE Dynamic_Array_IMAGEN
         IMPLICIT NONE
+        INCLUDE 'interface_imagen.inc'
+!
         INCLUDE 'dimensions.inc'
         INTEGER NCBUFF
         INTEGER IY1,IY2
@@ -9,10 +12,10 @@
         INTEGER I,J
         INTEGER NAXIS(2,NMAXBUFF)
         REAL F
-        REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
+!delete REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
 !
         COMMON/BLKNAXIS/NAXIS
-        COMMON/BLKIMAGEN1/IMAGEN
+!delete COMMON/BLKIMAGEN1/IMAGEN
 !       COMMON/BLKIMAGEN2/NCBUFF
 !------------------------------------------------------------------------------
         IF(IY1.LE.IY2)THEN

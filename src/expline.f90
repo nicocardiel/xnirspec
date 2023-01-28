@@ -2,7 +2,10 @@
 ! espectrales.
 !!!     SUBROUTINE EXPLINE(XC,YC,COEFFBL00,COEFFBA00)
         SUBROUTINE EXPLINE(XC,COEFFBL00,COEFFBA00)
+        USE Dynamic_Array_IMAGEN
         IMPLICIT NONE
+        INCLUDE 'interface_imagen.inc'
+! subroutine arguments
 !!!     REAL XC,YC
         REAL XC
         REAL COEFFBL00(20),COEFFBA00(20)
@@ -45,7 +48,7 @@
         REAL XGRID,YGRID
         REAL XEXPECT,YEXPECT
         REAL XPEAKS(NXYMAX),YPEAKS(NXYMAX),ZPEAKS(NXYMAX)
-        REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
+!delete REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
         REAL XBUFPEAK(NMAXPEAKS,NXYMAX),YBUFPEAK(NMAXPEAKS,NXYMAX)
         REAL X0,Y0,DMIN,DIST
         REAL XX0(1),YY0(1)
@@ -60,7 +63,7 @@
         LOGICAL LINSIDE
         LOGICAL LUSE(NXYMAX)           !indica si la nueva linea se acepta o no
 !
-        COMMON/BLKIMAGEN1/IMAGEN             !imagen FITS leida en formato REAL
+!delete COMMON/BLKIMAGEN1/IMAGEN             !imagen FITS leida en formato REAL
         COMMON/BLKIMAGEN2/NCBUFF
         COMMON/BLKNAXIS/NAXIS
         COMMON/BLKXYLIMPLOT/NX1,NX2,NY1,NY2
@@ -118,6 +121,8 @@
             WRITE(*,*) NPEAKS,NMAXPEAKS
             WRITE(*,101) '=> NPEAKS > NMAXPEAKS in EXTLINE.'
             WRITE(*,101) '=> Redefine NMAXPEAKS parameter.'
+            CALL Deallocate_Array_IMAGEN
+            CALL Deallocate_Array_IMAGEN_
             STOP
           END IF
           IF(LDEBUGLOCAL)THEN

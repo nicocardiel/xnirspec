@@ -6,7 +6,9 @@
 ! cuando sumamos imagenes que contienen huecos y queremos que el numero de
 ! cuentas se conserve adecuadamente).
         SUBROUTINE COMBINE(NCBUFF)
+        USE Dynamic_Array_IMAGEN
         IMPLICIT NONE
+        INCLUDE 'interface_imagen.inc'
         INTEGER NCBUFF
 !
         INTEGER NBOXMAX
@@ -46,7 +48,7 @@
         INTEGER NPIXELSVECINOS
         INTEGER NEXTINFO
         INTEGER NX1,NX2,NY1,NY2
-        REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
+!delete REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
         REAL FPIXUSED(NXMAXB9,NYMAXB9)
         REAL FOFFSETX(NBOXMAX),FOFFSETY(NBOXMAX)
         REAL FOFFSETX_,FOFFSETY_
@@ -70,7 +72,7 @@
         LOGICAL LMORE
         LOGICAL LANYCR
 !
-        COMMON/BLKIMAGEN1/IMAGEN
+!delete COMMON/BLKIMAGEN1/IMAGEN
         COMMON/BLKNFRAMES/NFRAMES
         COMMON/BLKXYLIMPLOT/NX1,NX2,NY1,NY2
         COMMON/BLKNAXIS/NAXIS
@@ -440,6 +442,8 @@
                 ELSEIF(CMASK.EQ.'y')THEN
                 ELSE
                   WRITE(*,101) 'FATAL ERROR: unexpected CMASK value'
+                  CALL Deallocate_Array_IMAGEN
+                  CALL Deallocate_Array_IMAGEN_
                   STOP
                 END IF
                 IF(LZERO)THEN    !si hay algun error nulo, hacemos pesos de los
@@ -479,6 +483,8 @@
                     END DO
                   ELSE
                     WRITE(*,101) 'FATAL ERROR: invalid CWMODE'
+                    CALL Deallocate_Array_IMAGEN
+                    CALL Deallocate_Array_IMAGEN_
                     STOP
                   END IF
                 END IF

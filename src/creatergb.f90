@@ -1,5 +1,8 @@
         SUBROUTINE CREATERGB(NCBUFF)
+        USE Dynamic_Array_IMAGEN
         IMPLICIT NONE
+        INCLUDE 'interface_imagen.inc'
+! subroutine argument
         INTEGER NCBUFF
 !
         INCLUDE 'dimensions.inc'
@@ -18,7 +21,7 @@
         INTEGER ISYSTEM
         INTEGER NEXTINFO
         INTEGER NCOLOROUT
-        REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
+!delete REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
         REAL BG,FG
         REAL PIXELR,PIXELG,PIXELB
         REAL FRGB_R,FRGB_G,FRGB_B
@@ -32,7 +35,7 @@
         LOGICAL LOGFILE
         LOGICAL LOUTR,LOUTG,LOUTB
 !
-        COMMON/BLKIMAGEN1/IMAGEN             !imagen FITS leida en formato REAL
+!delete COMMON/BLKIMAGEN1/IMAGEN             !imagen FITS leida en formato REAL
         COMMON/BLKBGFG/BG,FG
         COMMON/BLKXYLIMPLOT/NX1,NX2,NY1,NY2
         COMMON/BLKRGBBUFF/NBUFF_R,NBUFF_G,NBUFF_B

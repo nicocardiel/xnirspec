@@ -3,6 +3,7 @@ syntax: glob
 
 src/*.dSYM
 src/*.o
+src/*.mod
 
 Makefile
 Makefile.in
@@ -23,4 +24,5 @@ src/dimensions.inc
 src/largest.inc
 src/sexpath.inc
 src/xnirspec
+src/zzz_memory_test
 stamp-h1

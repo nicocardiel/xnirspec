@@ -1,7 +1,10 @@
 ! Rectifica la imagen actual y la almacena en el buffer NEWBUFF. En caso
 ! necesario, tambien rectifica la imagen de errores.
         SUBROUTINE RECTIFY(NEWBUFF)
+        USE Dynamic_Array_IMAGEN
         IMPLICIT NONE
+        INCLUDE 'interface_imagen.inc'
+! subroutine argument
         INTEGER NEWBUFF
 !
         INCLUDE 'dimensions.inc'
@@ -23,7 +26,7 @@
         INTEGER NCOR
         INTEGER NEXTINFO
         INTEGER NCBUFF
-        REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
+!delete REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
         REAL AIJ(NECUAMAX),BIJ(NECUAMAX)
         REAL AIJ_(NECUAMAX),BIJ_(NECUAMAX)
         REAL X,Y,U,V
@@ -35,7 +38,7 @@
         LOGICAL LERR
 !
         COMMON/BLKNAXIS/NAXIS
-        COMMON/BLKIMAGEN1/IMAGEN
+!delete COMMON/BLKIMAGEN1/IMAGEN
         COMMON/BLKIMAGEN2/NCBUFF
         COMMON/BLKMAPPING0/NMAP
         COMMON/BLKMAPPING1/AIJ,BIJ

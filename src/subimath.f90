@@ -2,7 +2,11 @@
 ! calculadora
 !
         SUBROUTINE SUBIMATH
+        USE Dynamic_Array_IMAGEN
+        USE Dynamic_Array_PIXEL
         IMPLICIT NONE
+        INCLUDE 'interface_imagen.inc'
+        INCLUDE 'interface_pixel.inc'
 !
         INCLUDE 'dimensions.inc'
         INCLUDE 'largest.inc'
@@ -35,11 +39,11 @@
         INTEGER ISYSTEM
         INTEGER NX1_PLOT,NX2_PLOT,NY1_PLOT,NY2_PLOT
         INTEGER IKERNEL
-        REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
+!delete REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
         REAL CRPIX1(NMAXBUFF),CRVAL1(NMAXBUFF),CDELT1(NMAXBUFF)
-        REAL PIXEL(NXYMAX*NXYMAX) !OJO: para no consumir mas memoria, esta
-                                  !     variable utiliza el mismo common que
-                                  !     la variable IMAGEN_
+!delete REAL PIXEL(NXYMAX*NXYMAX) !OJO: para no consumir mas memoria, esta
+!                                 !     variable utiliza el mismo common que
+!                                 !     la variable IMAGEN_
         REAL XCUT(NXMAX),YCUT(NYMAX)
         REAL XCUT_ERR(NXMAX),YCUT_ERR(NYMAX)
         REAL XC,YC
@@ -69,8 +73,8 @@
         LOGICAL LFIT(NXYMAX)
         LOGICAL LOK
 !
-        COMMON/BLKIMAGEN1/IMAGEN             !imagen FITS leida en formato REAL
-        COMMON/BLKIMAGEN1_/PIXEL                !es global para ahorrar memoria
+!delete COMMON/BLKIMAGEN1/IMAGEN             !imagen FITS leida en formato REAL
+!delete COMMON/BLKIMAGEN1_/PIXEL                !es global para ahorrar memoria
         COMMON/BLKWAVECAL1/CRPIX1,CRVAL1,CDELT1         !wavelength calibration
         COMMON/BLKWAVECAL2/LWAVECAL                     !wavelength calibration
         COMMON/BLKNAXIS/NAXIS                                      !dimensiones
@@ -78,6 +82,7 @@
         COMMON/BLKDEFAULTS3/TSIGMA
         COMMON/BLKXYLIMPLOT/NX1_PLOT,NX2_PLOT,NY1_PLOT,NY2_PLOT
 !------------------------------------------------------------------------------
+        CALL Initialize_Dynamic_Array_PIXEL
 ! Note: the pattern of the frames in box-9 is the following:
 !       6 9 4
 !       3 1 7
@@ -1493,6 +1498,9 @@
                       ELSE
                         WRITE(*,101) '***FATAL ERROR***'
                         WRITE(*,101) '=> invalid CRMS value: '//CRMS
+                        CALL Deallocate_Array_IMAGEN
+                        CALL Deallocate_Array_IMAGEN_
+                        CALL Deallocate_Array_PIXEL
                         STOP
                       END IF
                       IMAGEN(J,I,NBUFF1)=FSIGMA
@@ -1506,6 +1514,9 @@
                     ELSE
                       WRITE(*,101) '***FATAL ERROR***'
                       WRITE(*,101) '=> invalid CFILT value: '//CFILT
+                      CALL Deallocate_Array_IMAGEN
+                      CALL Deallocate_Array_IMAGEN_
+                      CALL Deallocate_Array_PIXEL
                       STOP
                     END IF
                   END DO
@@ -1969,7 +1980,7 @@
           END DO
         END DO
         CALL RPGERASW(0.49,0.91,0.10,0.70,0)
-        RETURN
+        CALL Deallocate_Array_PIXEL
 !
 100     FORMAT(A,$)
 101     FORMAT(A)

@@ -1,12 +1,16 @@
 !******************************************************************************
-! Version 26-March-2002                (c) Nicolas Cardiel: cardiel@ucolick.org
+! Initial version 26-March-2002        (c) Nicolas Cardiel: cardiel@ucolick.org
 !                                                         ncl@astrax.fis.ucm.es
 !******************************************************************************
 ! g77 -o xnirspec *.o -L$PGPLOT_DIR -L$FITSIO_DIR -L/usr/X11/lib \
 ! -lpgplot -lcfitsio -lX11
 !
         PROGRAM XNIRSPEC
+        USE Dynamic_Array_IMAGEN
+        USE Dynamic_Array_IMAGEN_
         IMPLICIT NONE
+        INCLUDE 'interface_imagen.inc'
+        INCLUDE 'interface_imagen_.inc'
 ! parameters
         INCLUDE 'dimensions.inc'
         INCLUDE 'largest.inc'
@@ -108,8 +112,8 @@
         REAL BG,FG                              !image bacground and foreground
         REAL BG_,FG_
         REAL Z1,Z2                                       !ZSCALE al estilo Iraf
-        REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)                        !current image
-        REAL IMAGEN_(NXMAX,NYMAX)
+!delete REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)                        !current image
+!delete REAL IMAGEN_(NXMAX,NYMAX)
         REAL FMEAN,FSIGMA,FMEDIAN,FMIN,FMAX  !basic statistic of current region
         REAL FMEAN_,FSIGMA_
         REAL XCUTX(NXYMAX),YCUTX(NXYMAX)     !X cut
@@ -190,8 +194,8 @@
         LOGICAL LASCREG(NMAXBUFF)      !if .TRUE. overplot X,Y from binary FITS
         LOGICAL LWAVECAL(NMAXBUFF) !if .TRUE., image has wavelength calibration
 ! common blocks
-        COMMON/BLKIMAGEN1/IMAGEN             !imagen FITS leida en formato REAL
-        COMMON/BLKIMAGEN1_/IMAGEN_              !es global para ahorrar memoria
+!delete COMMON/BLKIMAGEN1/IMAGEN             !imagen FITS leida en formato REAL
+!delete COMMON/BLKIMAGEN1_/IMAGEN_              !es global para ahorrar memoria
         COMMON/BLKIMAGEN2/NCBUFF                      !numero del buffer actual
         COMMON/BLKLNULL/LNULL,ANYNULL   !mascara que indica si existen NaN, etc
         COMMON/BLKNAXIS/NAXIS                                      !dimensiones
@@ -243,6 +247,10 @@
         COMMON/BLKASCCOLS2/ASCCHEIGHT,ASCNUMBER
         COMMON/BLKWAVECAL1/CRPIX1,CRVAL1,CDELT1
         COMMON/BLKWAVECAL2/LWAVECAL
+!------------------------------------------------------------------------------
+!------------------------------------------------------------------------------
+        CALL Initialize_Dynamic_Array_IMAGEN
+        CALL Initialize_Dynamic_Array_IMAGEN_
 !------------------------------------------------------------------------------
 !------------------------------------------------------------------------------
 ! Note: the pattern of the frames in box-9 is the following:
@@ -297,6 +305,8 @@
           WRITE(*,100) 'Maximum number allowed...: '
           WRITE(*,*) NMAXBUFF/2
           WRITE(*,101) 'FATAL ERROR: number of input arguments is too large'
+          CALL Deallocate_Array_IMAGEN
+          CALL Deallocate_Array_IMAGEN_
           STOP
         END IF
 !       DO I=1,NIARG
@@ -315,6 +325,8 @@
           WRITE(*,100) 'NXYMAX..: '
           WRITE(*,*) NXYMAX
           WRITE(*,101) 'FATAL ERROR: NXYMAX must be set to the MAX(NXMAX,NYMAX) value in configure.ac'
+          CALL Deallocate_Array_IMAGEN
+          CALL Deallocate_Array_IMAGEN_
           STOP
         END IF
 !------------------------------------------------------------------------------
@@ -567,6 +579,8 @@
             ELSE
               WRITE(*,101) 'FATAL ERROR: the following file does not exist:'
               WRITE(*,101) INFILE_
+              CALL Deallocate_Array_IMAGEN
+              CALL Deallocate_Array_IMAGEN_
               STOP
             END IF
             NCBUFF=NEWBUFF
@@ -879,12 +893,16 @@
                   WRITE(*,100) 'NAXIS(1), NXMAX: '
                   WRITE(*,*) NAXIS(1,NEWBUFF),NXMAX
                   WRITE(*,101) 'FATAL ERROR: NAXIS(1).GT.NXMAX'
+                  CALL Deallocate_Array_IMAGEN
+                  CALL Deallocate_Array_IMAGEN_
                   STOP
                 END IF
                 IF(NAXIS(2,NEWBUFF).GT.NYMAX)THEN
                   WRITE(*,100) 'NAXIS(2), NYMAX: '
                   WRITE(*,*) NAXIS(2,NEWBUFF),NYMAX
                   WRITE(*,101) 'FATAL ERROR: NAXIS(2).GT.NYMAX'
+                  CALL Deallocate_Array_IMAGEN
+                  CALL Deallocate_Array_IMAGEN_
                   STOP
                 END IF
                 DO I=1,NAXIS(2,NEWBUFF)
@@ -2793,6 +2811,8 @@
 !------------------------------------------------------------------------------
 ! Close graphic display and end program
         CALL PGEND
+        CALL Deallocate_Array_IMAGEN
+        CALL Deallocate_Array_IMAGEN_
         STOP
 !------------------------------------------------------------------------------
 100     FORMAT(A,$)

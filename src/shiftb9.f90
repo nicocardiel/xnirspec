@@ -4,7 +4,10 @@
 ! funcion de los offsets introducidos a traves de un fichero. De esta forma
 ! las imagenes individuales pueden sumarse posteriormente.
         SUBROUTINE SHIFTB9(NCBUFF)
+        USE Dynamic_Array_IMAGEN
         IMPLICIT NONE
+        INCLUDE 'interface_imagen.inc'
+! subroutine argument
         INTEGER NCBUFF
 !
         INTEGER NBOXMAX
@@ -33,7 +36,7 @@
         INTEGER NXMAXB9_,NYMAXB9_
         INTEGER NPIXREGION
         INTEGER NX1,NX2,NY1,NY2
-        REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
+!delete REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
         REAL FPIXUSED(NXMAXB9,NYMAXB9)
         REAL FOFFSETX(NBOXMAX),FOFFSETY(NBOXMAX)
         REAL FOFFSETX_,FOFFSETY_
@@ -48,7 +51,7 @@
         CHARACTER*80 COFFSETFILE
         LOGICAL LOGFILE
 !
-        COMMON/BLKIMAGEN1/IMAGEN
+!delete COMMON/BLKIMAGEN1/IMAGEN
         COMMON/BLKNFRAMES/NFRAMES
         COMMON/BLKXYLIMPLOT/NX1,NX2,NY1,NY2
         COMMON/BLKNAXIS/NAXIS
