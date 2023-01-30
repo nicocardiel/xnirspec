@@ -22,10 +22,14 @@ $ ./configure FC=gfortran-mp-12
 $ make
 $ sudo make install
 
+By default, the maximum dimensions of the images are set to 4300 x 4300. To
+allow different dimensions the code should be reinstalled defining the
+parameters NXMAX (equivalent to NAXIS1), NYMAX (equivalent to NAXIS2) and
+NXYMAX (the maximum value of NXMAX and NYMAX). For example:
+
+$ ./configure FC=gfortran-mp-12 NXMAX=6200 NYMAX=5000 NXYMAX=6200
+
 To include compatibility with SExtractor it is necessary to indicate the
 location of its executable:
 
-$ ./autogen.sh
 $ ./configure FC=gfortran-mp-12 SEXPATH=/usr/local/bin
-$ make
-$ sudo make install
