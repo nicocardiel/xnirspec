@@ -17,7 +17,15 @@ Webpage (source): https://github.com/nicocardiel/xnirspec
 
 Installation example (Mac OSX):
 
-$ autoreconf -s -i -f
+$ ./autogen.sh
+$ ./configure FC=gfortran-mp-12
+$ make
+$ sudo make install
+
+To include compatibility with SExtractor it is necessary to indicate the
+location of its executable:
+
+$ ./autogen.sh
 $ ./configure FC=gfortran-mp-12 SEXPATH=/usr/local/bin
 $ make
 $ sudo make install
