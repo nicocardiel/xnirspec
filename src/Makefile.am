@@ -155,10 +155,4 @@ xnirspec_LDADD = $(CFITSIO_LIBS) $(PGPLOT_LDFLAGS)
 
 zzz_memory_test_SOURCES = zzz_memory_test.f90
 
-CLEANFILES = \
-dynamic_array_imagen.mod \
-dynamic_array_imagen_.mod \
-dynamic_array_lnull.mod \
-dynamic_array_lnull_.mod \
-dynamic_array_pixel.mod \
-dynamic_arrays.mod
+CLEANFILES = *.mod

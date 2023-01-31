@@ -256,6 +256,12 @@
         CALL Initialize_Dynamic_Array_IMAGEN
         CALL Initialize_Dynamic_Array_IMAGEN_
         CALL Initialize_Dynamic_Array_LNULL
+        WRITE(*,100) 'info> shape of dynamic array IMAGEN :'
+        WRITE(*,*) shape(IMAGEN)
+        WRITE(*,100) 'info> shape of dynamic array LNULL  :'
+        WRITE(*,*) shape(LNULL)
+        WRITE(*,100) 'info> shape of dynamic array IMAGEN_:'
+        WRITE(*,*) shape(IMAGEN_)
 !------------------------------------------------------------------------------
 !------------------------------------------------------------------------------
 ! Note: the pattern of the frames in box-9 is the following:
@@ -300,8 +306,10 @@
           ASCREGFILE(I)='none'
         END DO
 !------------------------------------------------------------------------------
-        WRITE(*,101) 'Welcome to NIRSPEC'
-        WRITE(*,101) 'This is version 5.0'
+        WRITE(*,101) '*******************'
+        WRITE(*,101) 'Welcome to xnirspec'
+        WRITE(*,101) 'This is version 6.0'
+        WRITE(*,101) '-------------------'
 !
         NIARG=IARGC()
         IF(NIARG.GT.NMAXBUFF/2)THEN

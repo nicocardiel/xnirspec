@@ -80,7 +80,7 @@ write(*,*) 'rank:', rank(IMAGEN_)
 write(*,*) 'shape:', shape(IMAGEN_)
 write(*,*) 'total size: ', size(IMAGEN_)
 write(*,*) 'size along axis 1: ', size(IMAGEN, 1)
-write(*,*) 'size along axis 3: ', size(IMAGEN, 2)
+write(*,*) 'size along axis 2: ', size(IMAGEN, 2)
 
 CALL Modify_Arrays
 
