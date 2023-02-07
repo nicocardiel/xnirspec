@@ -1,7 +1,13 @@
 ! Ordena las lineas espectrales que definen el boundary
 !
         SUBROUTINE SORTLINES
+        USE Dynamic_Array_COEFFBL
+        USE Dynamic_Array_COEFFBA
+        USE Dynamic_Array_COEFFB_
         IMPLICIT NONE
+        INCLUDE 'interface_coeffbl.inc'
+        INCLUDE 'interface_coeffba.inc'
+        INCLUDE 'interface_coeffb_.inc'
 !
         INCLUDE 'largest.inc'
 !
@@ -11,8 +17,9 @@
         INTEGER NDEGBA00,NDEGBL00
         INTEGER NDEGB_(NXYMAX)
         INTEGER LSORT(NXYMAX)
-        REAL COEFFBL(20,NXYMAX),COEFFBA(20,NXYMAX)
-        REAL COEFFB_(20,NXYMAX)
+!delete REAL COEFFBL(20,NXYMAX)
+!delete REAL COEFFBA(20,NXYMAX)
+!delete REAL COEFFB_(20,NXYMAX)
         REAL XMINBL(NXYMAX),XMAXBL(NXYMAX)
         REAL YMINBL(NXYMAX),YMAXBL(NXYMAX)
         REAL XMINBA(NXYMAX),XMAXBA(NXYMAX)
@@ -23,10 +30,12 @@
 !
         COMMON/BLKBOUND1/NLINBL,NDEGBL,NDEGBL00
         COMMON/BLKBOUND1B/NLINBA,NDEGBA,NDEGBA00
-        COMMON/BLKBOUND2/COEFFBL
-        COMMON/BLKBOUND2B/COEFFBA
+!delete COMMON/BLKBOUND2/COEFFBL
+!delete COMMON/BLKBOUND2B/COEFFBA
         COMMON/BLKBOUND4/XMINBL,YMINBL,XMAXBL,YMAXBL
         COMMON/BLKBOUND5/XMINBA,YMINBA,XMAXBA,YMAXBA
+!------------------------------------------------------------------------------
+        CALL Initialize_Dynamic_Array_COEFFB_
 !------------------------------------------------------------------------------
 ! ordenamos BL usando YMAXBL
         IF(NLINBL.GT.0)THEN
@@ -111,5 +120,7 @@
             IF(NDEGBA(L).GT.NDEGBA00) NDEGBA00=NDEGBA(L)
           END DO
         END IF
+!------------------------------------------------------------------------------
+        CALL Deallocate_Array_COEFFB_
 !------------------------------------------------------------------------------
         END

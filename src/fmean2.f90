@@ -39,17 +39,33 @@
         PARAMETER(NMAX=NXMAX*NYMAX)
 !
         INTEGER I,NN
+        INTEGER :: AllocateStatus, DeAllocateStatus
         REAL SUM,SIGMA
-        LOGICAL IFX(NMAX),IFXX(NMAX)
+!delete LOGICAL IFX(NMAX),IFXX(NMAX)
+        LOGICAL, DIMENSION(:), ALLOCATABLE :: IFX
+        LOGICAL, DIMENSION(:), ALLOCATABLE :: IFXX
         LOGICAL LREPEAT
+!------------------------------------------------------------------------------
+        ALLOCATE (IFX(NMAX), STAT = AllocateStatus)
+        IF (AllocateStatus /= 0) STOP "*** Not enough memory defining the array IFX ***"
+        ALLOCATE (IFXX(NMAX), STAT = AllocateStatus)
+        IF (AllocateStatus /= 0) STOP "*** Not enough memory defining the array IFXX ***"
 !------------------------------------------------------------------------------
         IF(N.EQ.0)THEN
           INCLUDE 'deallocate_arrays.inc'
+          DEALLOCATE(IFX, STAT = DeAllocateStatus)
+          IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array IFX ***"
+          DEALLOCATE(IFXX, STAT = DeAllocateStatus)
+          IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array IFXX ***"
           STOP 'FATAL ERROR in function FMEAN2: N=0.'
         END IF
         IF(N.GT.NMAX)THEN
           WRITE(*,101)'FATAL ERROR in function FMEAN2: N too large.'
           INCLUDE 'deallocate_arrays.inc'
+          DEALLOCATE(IFX, STAT = DeAllocateStatus)
+          IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array IFX ***"
+          DEALLOCATE(IFXX, STAT = DeAllocateStatus)
+          IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array IFXX ***"
           STOP
         END IF
 !
@@ -66,7 +82,13 @@
           END IF
         END DO
         FMEAN2=SUM/REAL(NN)
-        IF(N.EQ.1) RETURN
+        IF(N.EQ.1)THEN
+          DEALLOCATE(IFX, STAT = DeAllocateStatus)
+          IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array IFX ***"
+          DEALLOCATE(IFXX, STAT = DeAllocateStatus)
+          IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array IFXX ***"
+          RETURN
+        END IF
 !
         SIGMA=0.
         IF(NN.GT.1)THEN
@@ -84,7 +106,13 @@
         DO I=1,N
           IF(IFX(I).NEQV.IFXX(I)) LREPEAT=.TRUE.
         END DO
-        IF(.NOT.LREPEAT) RETURN
+        IF(.NOT.LREPEAT)THEN
+          DEALLOCATE(IFX, STAT = DeAllocateStatus)
+          IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array IFX ***"
+          DEALLOCATE(IFXX, STAT = DeAllocateStatus)
+          IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array IFXX ***"
+          RETURN
+        END IF
 !
         DO I=1,N
           IFX(I)=IFXX(I)

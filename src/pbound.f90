@@ -1,6 +1,10 @@
 ! Dibuja la calibracion actual de la distorsion del espectro (boundary)
         SUBROUTINE PBOUND
+        USE Dynamic_Array_COEFFBL
+        USE Dynamic_Array_COEFFBA
         IMPLICIT NONE
+        INCLUDE 'interface_coeffbl.inc'
+        INCLUDE 'interface_coeffba.inc'
 !
         INCLUDE 'largest.inc'
 !
@@ -10,7 +14,7 @@
         INTEGER NDEGBL(NXYMAX),NDEGBA(NXYMAX)  !polynomial degrees for boundary
         INTEGER NDEGBL00,NDEGBA00
         INTEGER NLINBL,NLINBA                  !number of arc lines in boundary
-        REAL COEFFBL(20,NXYMAX),COEFFBA(20,NXYMAX)      !pol. coef. in boundary
+!delete REAL COEFFBL(20,NXYMAX),COEFFBA(20,NXYMAX)      !pol. coef. in boundary
         REAL XP(NXYMAX),YP(NXYMAX)
         REAL XMIN,XMAX,YMIN,YMAX
         REAL X0,Y0
@@ -22,8 +26,8 @@
 !
         COMMON/BLKBOUND1/NLINBL,NDEGBL,NDEGBL00
         COMMON/BLKBOUND1B/NLINBA,NDEGBA,NDEGBA00
-        COMMON/BLKBOUND2/COEFFBL
-        COMMON/BLKBOUND2B/COEFFBA
+!delete COMMON/BLKBOUND2/COEFFBL
+!delete COMMON/BLKBOUND2B/COEFFBA
         COMMON/BLKBOUND3/LBOUNDL,LBOUNDA
         COMMON/BLKBOUND4/XMINBL,YMINBL,XMAXBL,YMAXBL
         COMMON/BLKBOUND5/XMINBA,YMINBA,XMAXBA,YMAXBA

@@ -5,8 +5,10 @@
 ! las imagenes individuales pueden sumarse posteriormente.
         SUBROUTINE SHIFTB9(NCBUFF)
         USE Dynamic_Array_IMAGEN
+        USE Dynamic_Array_FPIXUSED
         IMPLICIT NONE
         INCLUDE 'interface_imagen.inc'
+        INCLUDE 'interface_fpixused.inc'
 ! subroutine argument
         INTEGER NCBUFF
 !
@@ -37,7 +39,7 @@
         INTEGER NPIXREGION
         INTEGER NX1,NX2,NY1,NY2
 !delete REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
-        REAL FPIXUSED(NXMAXB9,NYMAXB9)
+!delete REAL FPIXUSED(NXMAXB9,NYMAXB9)
         REAL FOFFSETX(NBOXMAX),FOFFSETY(NBOXMAX)
         REAL FOFFSETX_,FOFFSETY_
         REAL EFOFFSETX_,EFOFFSETY_
@@ -58,6 +60,8 @@
         COMMON/BLKNAXISFRAME/NAXISFRAME
         COMMON/BLKNSIZEFB9/NSIZEFB9
         COMMON/BLKESTADISTICA/FMEAN,FSIGMA,FMEDIAN,FMIN,FMAX
+!------------------------------------------------------------------------------
+        CALL Initialize_Dynamic_Array_FPIXUSED
 !------------------------------------------------------------------------------
 ! Note: the pattern of the frames in box-9 is the following:
 !       6 9 4
@@ -94,7 +98,10 @@
           COFFSETFILE(1:80)=READC('Name of the file with offsets (none=exit)','offsets.dat','@')
           L1=TRUEBEG(COFFSETFILE)
           L2=TRUELEN(COFFSETFILE)
-          IF(COFFSETFILE(L1:L2).EQ.'none') RETURN !permitimos escapar
+          IF(COFFSETFILE(L1:L2).EQ.'none')THEN
+            CALL Deallocate_Array_FPIXUSED
+            RETURN !permitimos escapar
+          END IF
           INQUIRE(FILE=COFFSETFILE(L1:L2),EXIST=LOGFILE)
           IF(.NOT.LOGFILE)THEN
             WRITE(*,101) 'ERROR: this file does not exist. Try again.'
@@ -116,6 +123,7 @@
           WRITE(*,101) 'ERROR: file with offsets contains too many lines (>9)'
           WRITE(*,100) 'Press <CR> to continue...'
           READ(*,*)
+          CALL Deallocate_Array_FPIXUSED
           RETURN
         END IF
         GOTO 5
@@ -135,6 +143,7 @@
           WRITE(*,101) ' with expected value.'
           WRITE(*,100) 'Press <CR> to continue...'
           READ(*,*)
+          CALL Deallocate_Array_FPIXUSED
           RETURN
         END IF
 ! proteccion #2
@@ -148,6 +157,7 @@
             WRITE(*,101) 'ERROR: invalid dimensions of individual frame'
             WRITE(*,100) 'Press <CR> to continue...'
             READ(*,*)
+            CALL Deallocate_Array_FPIXUSED
             RETURN
           END IF
         END DO
@@ -205,12 +215,14 @@
           WRITE(*,101) 'ERROR: X dimension > NXMAXB9'
           WRITE(*,100) 'Press <CR> to continue...'
           READ(*,*)
+          CALL Deallocate_Array_FPIXUSED
           RETURN
         END IF
         IF(NYMAXB9_.GT.NYMAXB9)THEN
           WRITE(*,101) 'ERROR: Y dimension > NYMAXB9'
           WRITE(*,100) 'Press <CR> to continue...'
           READ(*,*)
+          CALL Deallocate_Array_FPIXUSED
           RETURN
         END IF
 !------------------------------------------------------------------------------
@@ -372,6 +384,8 @@
 !
         WRITE(*,100) 'Press <CR> to return to initial buffer...'
         READ(*,*)
+!------------------------------------------------------------------------------
+        CALL Deallocate_Array_FPIXUSED
 !------------------------------------------------------------------------------
 100     FORMAT(A,$)
 101     FORMAT(A)

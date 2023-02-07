@@ -1,8 +1,10 @@
 ! resta el cielo en una imagen con distorsion
         SUBROUTINE SKYSUB(NEWBUFF1,NEWBUFF2)
         USE Dynamic_Array_IMAGEN
+        USE Dynamic_Arrays_SKYSUB
         IMPLICIT NONE
         INCLUDE 'interface_imagen.inc'
+        INCLUDE 'interface_skysub.inc'
 ! subroutine arguments
         INTEGER NEWBUFF1,NEWBUFF2
 !
@@ -38,17 +40,17 @@
         REAL AIJ(NECUAMAX),BIJ(NECUAMAX)
         REAL AIJ_(NECUAMAX),BIJ_(NECUAMAX)
 !delete REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
-        REAL XCUT(NXMAX*NOVERSAMPMAX)
+!delete REAL XCUT(NXMAX*NOVERSAMPMAX)
 !!!        REAL XCUT_ERR(NXMAX*NOVERSAMPMAX)
-        REAL XCUT2(NXMAX*NOVERSAMPMAX),XCUT2_ERR(NXMAX*NOVERSAMPMAX)
-        REAL YCUT(NYMAX*NOVERSAMPMAX),YCUT_ERR(NYMAX*NOVERSAMPMAX)
+!delete REAL XCUT2(NXMAX*NOVERSAMPMAX),XCUT2_ERR(NXMAX*NOVERSAMPMAX)
+!delete REAL YCUT(NYMAX*NOVERSAMPMAX),YCUT_ERR(NYMAX*NOVERSAMPMAX)
         REAL XC1,YC1,XC2,YC2
         REAL U1,V1,U2,V2
         REAL X1,X2,X3,X4
         REAL Y1,Y2,Y3,Y4
         REAL XORIG,YORIG
         REAL XCOR1(2,4),XCOR2(2,4),XCOM(2,MXCOR)
-        REAL XP(NXMAX*NOVERSAMPMAX)
+!delete REAL XP(NXMAX*NOVERSAMPMAX)
         REAL FAREA,FAREASUBPIXEL
 !!!        REAL FAREATOT
         REAL FOVERSAMP
@@ -67,6 +69,8 @@
         COMMON/BLKMAPPING3/SXMINGRID,SYMINGRID,SXMAXGRID,SYMAXGRID
         COMMON/BLKMAPPING4/SXMINEXTG,SYMINEXTG,SXMAXEXTG,SYMAXEXTG
 !------------------------------------------------------------------------------
+        CALL Initialize_Dynamic_Arrays_SKYSUB
+!------------------------------------------------------------------------------
         IF(NEWBUFF1.EQ.NCBUFF)THEN
           WRITE(*,101) '***ERROR***'
           WRITE(*,101) '=> in subroutine SKYSUB'
@@ -75,6 +79,7 @@
           WRITE(*,101) '=> NCBUFF and NEWBUFF1 must be different!'
           WRITE(*,100) '(press <CR> to continue...)'
           READ(*,*)
+          CALL Deallocate_Arrays_SKYSUB
           RETURN
         END IF
         IF(NEWBUFF2.EQ.NCBUFF)THEN
@@ -85,6 +90,7 @@
           WRITE(*,101) '=> NCBUFF and NEWBUFF2 must be different!'
           WRITE(*,100) '(press <CR> to continue...)'
           READ(*,*)
+          CALL Deallocate_Arrays_SKYSUB
           RETURN
         END IF
 !------------------------------------------------------------------------------
@@ -149,7 +155,10 @@
             K=K+1
           END IF
         END DO
-        IF(K.EQ.0) RETURN
+        IF(K.EQ.0)THEN
+          CALL Deallocate_Arrays_SKYSUB
+          RETURN
+        END IF
         NSCANSKY=K
         WRITE(*,100) '=> Number of sky spectra: '
         WRITE(*,*) NSCANSKY
@@ -204,7 +213,10 @@
             K=K+1
           END IF
         END DO
-        IF(K.EQ.0) RETURN
+        IF(K.EQ.0)THEN
+          CALL Deallocate_Arrays_SKYSUB
+          RETURN
+        END IF
         NSCANOBJ=K
         WRITE(*,100) '=> Number of object spectra: '
         WRITE(*,*) NSCANOBJ
@@ -669,6 +681,8 @@
           END DO
         END IF
         CALL SUBLOOK(.TRUE.,NCBUFF,.FALSE.)
+!------------------------------------------------------------------------------
+        CALL Deallocate_Arrays_SKYSUB
 !------------------------------------------------------------------------------
 100     FORMAT(A,$)
 101     FORMAT(A)

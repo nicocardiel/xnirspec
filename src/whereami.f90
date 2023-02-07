@@ -6,7 +6,12 @@
 ! NCOL1: si es distinto de -1, se dibuja el polinomios definido por COEFFBL00
 ! NCOL2: si es distinto de -1, se dibuja el polinomios definido por COEFFBA00
         SUBROUTINE WHEREAMI(XC,YC,COEFFBL00,COEFFBA00,NCOL1,NCOL2,LDEBUGLOCAL)
+        USE Dynamic_Array_COEFFBL
+        USE Dynamic_Array_COEFFBA
         IMPLICIT NONE
+        INCLUDE 'interface_coeffbl.inc'
+        INCLUDE 'interface_coeffba.inc'
+! subroutine parameters
         REAL XC,YC
         REAL COEFFBL00(20),COEFFBA00(20)   !coef. polinomio que pasa por XC, YC
         INTEGER NCOL1,NCOL2
@@ -31,7 +36,7 @@
         INTEGER NLINBL,NLINBA                  !number of arc lines in boundary
         INTEGER NDEGTRAS                        !grado del polinomio trasladado
         INTEGER NITER  !num. de iteraciones con los polinomios de segundo grado
-        REAL COEFFBL(20,NXYMAX),COEFFBA(20,NXYMAX)      !pol. coef. in boundary
+!delete REAL COEFFBL(20,NXYMAX),COEFFBA(20,NXYMAX)      !pol. coef. in boundary
         REAL COEFFP1(3),COEFFP2(3) !coeficientes de polinomios de segundo grado
         REAL COEFFTRAS(20)                 !coeficiente de polinomio trasladado
         REAL XMINBL(NXYMAX),XMAXBL(NXYMAX)
@@ -59,8 +64,8 @@
 !
         COMMON/BLKBOUND1/NLINBL,NDEGBL,NDEGBL00
         COMMON/BLKBOUND1B/NLINBA,NDEGBA,NDEGBA00
-        COMMON/BLKBOUND2/COEFFBL
-        COMMON/BLKBOUND2B/COEFFBA
+!delete COMMON/BLKBOUND2/COEFFBL
+!delete COMMON/BLKBOUND2B/COEFFBA
         COMMON/BLKBOUND4/XMINBL,YMINBL,XMAXBL,YMAXBL
         COMMON/BLKBOUND5/XMINBA,YMINBA,XMAXBA,YMAXBA
 !------------------------------------------------------------------------------

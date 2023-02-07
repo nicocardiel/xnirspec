@@ -43,18 +43,41 @@
         INTEGER I25,I50,I75
         INTEGER NEFF
         INTEGER NITER,NITERMAX
+        INTEGER :: AllocateStatus, DeAllocateStatus
         REAL FMEDIAN
-        REAL XEFF(NMAX)
-        LOGICAL IFX(NMAX),IFXX(NMAX)
+!delete REAL XEFF(NMAX)
+        REAL, DIMENSION(:), ALLOCATABLE :: XEFF
+!delete LOGICAL IFX(NMAX),IFXX(NMAX)
+        LOGICAL, DIMENSION(:), ALLOCATABLE :: IFX
+        LOGICAL, DIMENSION(:), ALLOCATABLE :: IFXX
         LOGICAL LREPEAT
+!------------------------------------------------------------------------------
+        ALLOCATE (XEFF(NMAX), STAT = AllocateStatus)
+        IF (AllocateStatus /= 0) STOP "*** Not enough memory defining the array IMAGEN ***"
+        ALLOCATE (IFX(NMAX), STAT = AllocateStatus)
+        IF (AllocateStatus /= 0) STOP "*** Not enough memory defining the array IFX ***"
+        ALLOCATE (IFXX(NMAX), STAT = AllocateStatus)
+        IF (AllocateStatus /= 0) STOP "*** Not enough memory defining the array IFXX ***"
 !------------------------------------------------------------------------------
         IF(N.LE.0)THEN
           INCLUDE 'deallocate_arrays.inc'
+          DEALLOCATE(XEFF, STAT = DeAllocateStatus)
+          IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array XEFF ***"
+          DEALLOCATE(IFX, STAT = DeAllocateStatus)
+          IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array IFX ***"
+          DEALLOCATE(IFXX, STAT = DeAllocateStatus)
+          IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array IFXX ***"
           STOP 'FATAL ERROR: in function FROBUSTRMS1: N.LE.0'
         END IF
 !
         IF(N.EQ.1)THEN
           FROBUSTRMS1=0.0
+          DEALLOCATE(XEFF, STAT = DeAllocateStatus)
+          IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array XEFF ***"
+          DEALLOCATE(IFX, STAT = DeAllocateStatus)
+          IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array IFX ***"
+          DEALLOCATE(IFXX, STAT = DeAllocateStatus)
+          IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array IFXX ***"
           RETURN
         END IF
 ! 
@@ -79,7 +102,15 @@
         I25=INT(0.25*FLOAT(NEFF)+0.5)
         I75=INT(0.75*FLOAT(NEFF)+0.5)
         FROBUSTRMS1=0.7413*(XEFF(I75)-XEFF(I25))
-        IF(NEFF.EQ.1) RETURN
+        IF(NEFF.EQ.1)THEN
+          DEALLOCATE(XEFF, STAT = DeAllocateStatus)
+          IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array XEFF ***"
+          DEALLOCATE(IFX, STAT = DeAllocateStatus)
+          IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array IFX ***"
+          DEALLOCATE(IFXX, STAT = DeAllocateStatus)
+          IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array IFXX ***"
+          RETURN
+        END IF
 !
         I50=INT(0.50*FLOAT(NEFF)+0.5)
         FMEDIAN=XEFF(I50)
@@ -92,12 +123,27 @@
         DO I=1,N
           IF(IFX(I).NEQV.IFXX(I)) LREPEAT=.TRUE.
         END DO
-        IF(.NOT.LREPEAT) RETURN
+        IF(.NOT.LREPEAT)THEN
+          DEALLOCATE(XEFF, STAT = DeAllocateStatus)
+          IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array XEFF ***"
+          DEALLOCATE(IFX, STAT = DeAllocateStatus)
+          IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array IFX ***"
+          DEALLOCATE(IFXX, STAT = DeAllocateStatus)
+          IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array IFXX ***"
+          RETURN
+        END IF
 !
         DO I=1,N
           IFX(I)=IFXX(I)
         END DO
         NITER=NITER+1
         IF(NITER.LT.NITERMAX) GOTO 10
+!
+        DEALLOCATE(XEFF, STAT = DeAllocateStatus)
+        IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array XEFF ***"
+        DEALLOCATE(IFX, STAT = DeAllocateStatus)
+        IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array IFX ***"
+        DEALLOCATE(IFXX, STAT = DeAllocateStatus)
+        IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array IFXX ***"
 !
         END

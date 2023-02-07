@@ -5,7 +5,16 @@ dynamic_array_imagen.f90 \
 dynamic_array_imagen_.f90 \
 dynamic_array_lnull.f90 \
 dynamic_array_lnull_.f90 \
+dynamic_array_ipixel.f90 \
+dynamic_array_jpixel.f90 \
 dynamic_array_pixel.f90 \
+dynamic_array_epixel.f90 \
+dynamic_array_coeffbl.f90 \
+dynamic_array_coeffba.f90 \
+dynamic_array_coeffba_.f90 \
+dynamic_array_coeffb_.f90 \
+dynamic_array_fpixused.f90 \
+dynamic_arrays_skysub.f90 \
 activebut.f90 \
 arclength.f90 \
 binsearch.f90 \

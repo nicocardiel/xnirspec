@@ -3,8 +3,14 @@
 !!!     SUBROUTINE EXPLINE(XC,YC,COEFFBL00,COEFFBA00)
         SUBROUTINE EXPLINE(XC,COEFFBL00,COEFFBA00)
         USE Dynamic_Array_IMAGEN
+        USE Dynamic_Array_COEFFBL
+        USE Dynamic_Array_COEFFBA
+        USE Dynamic_Array_COEFFBA_
         IMPLICIT NONE
         INCLUDE 'interface_imagen.inc'
+        INCLUDE 'interface_coeffbl.inc'
+        INCLUDE 'interface_coeffba.inc'
+        INCLUDE 'interface_coeffba_.inc'
 ! subroutine arguments
 !!!     REAL XC,YC
         REAL XC
@@ -34,6 +40,7 @@
         INTEGER NX1,NX2,NY1,NY2
         INTEGER NBUFPEAK(NMAXPEAKS)
         INTEGER NWIDTH
+        INTEGER :: AllocateStatus, DeAllocateStatus
         REAL COEFFBL00_(20),COEFFBA00_(20)
         REAL XP(NXYMAX),YP(NXYMAX),ZP(NXYMAX)
         REAL XMIN,XMAX,YMIN,YMAX
@@ -42,14 +49,16 @@
         REAL YMINBL(NXYMAX),YMAXBL(NXYMAX)
         REAL XMINBA(NXYMAX),XMAXBA(NXYMAX)
         REAL YMINBA(NXYMAX),YMAXBA(NXYMAX)
-        REAL COEFFBL(20,NXYMAX),COEFFBA(20,NXYMAX)      !pol. coef. in boundary
-        REAL COEFFBA_(20,NXYMAX)                    !pol. coef. in new boundary
+!delete REAL COEFFBL(20,NXYMAX),COEFFBA(20,NXYMAX)      !pol. coef. in boundary
+!delete REAL COEFFBA_(20,NXYMAX)                    !pol. coef. in new boundary
         REAL S
         REAL XGRID,YGRID
         REAL XEXPECT,YEXPECT
         REAL XPEAKS(NXYMAX),YPEAKS(NXYMAX),ZPEAKS(NXYMAX)
 !delete REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
-        REAL XBUFPEAK(NMAXPEAKS,NXYMAX),YBUFPEAK(NMAXPEAKS,NXYMAX)
+!delete REAL XBUFPEAK(NMAXPEAKS,NXYMAX),YBUFPEAK(NMAXPEAKS,NXYMAX)
+        REAL, DIMENSION(:, :), ALLOCATABLE :: XBUFPEAK
+        REAL, DIMENSION(:, :), ALLOCATABLE :: YBUFPEAK
         REAL X0,Y0,DMIN,DIST
         REAL XX0(1),YY0(1)
         REAL X0_(NXYMAX)
@@ -58,7 +67,8 @@
         REAL FMEAN,FSIGMA,FSIGMA0
         CHARACTER*1 CUPDATE,CCONT,CADD
         CHARACTER*50 CDUMMY
-        LOGICAL IFPEAKNEW(NMAXPEAKS,NXYMAX)
+!delete LOGICAL IFPEAKNEW(NMAXPEAKS,NXYMAX)
+        LOGICAL, DIMENSION(:, :), ALLOCATABLE :: IFPEAKNEW
         LOGICAL LDEBUGLOCAL
         LOGICAL LINSIDE
         LOGICAL LUSE(NXYMAX)           !indica si la nueva linea se acepta o no
@@ -69,12 +79,20 @@
         COMMON/BLKXYLIMPLOT/NX1,NX2,NY1,NY2
         COMMON/BLKBOUND1/NLINBL,NDEGBL,NDEGBL00
         COMMON/BLKBOUND1B/NLINBA,NDEGBA,NDEGBA00
-        COMMON/BLKBOUND2/COEFFBL
-        COMMON/BLKBOUND2B/COEFFBA
+!delete COMMON/BLKBOUND2/COEFFBL
+!delete COMMON/BLKBOUND2B/COEFFBA
         COMMON/BLKBOUND4/XMINBL,YMINBL,XMAXBL,YMAXBL
         COMMON/BLKBOUND5/XMINBA,YMINBA,XMAXBA,YMAXBA
         COMMON/BLKDEFAULTS1/NYFINDAL,NINLINE
         COMMON/BLKDEFAULTS2/NWIDTH
+!------------------------------------------------------------------------------
+        CALL Initialize_Dynamic_Array_COEFFBA_
+        ALLOCATE (XBUFPEAK(NMAXPEAKS,NXYMAX), STAT = AllocateStatus)
+        IF (AllocateStatus /= 0) STOP "*** Not enough memory defining the array XBUFPEAK ***"
+        ALLOCATE (YBUFPEAK(NMAXPEAKS,NXYMAX), STAT = AllocateStatus)
+        IF (AllocateStatus /= 0) STOP "*** Not enough memory defining the array YBUFPEAK ***"
+        ALLOCATE (IFPEAKNEW(NMAXPEAKS,NXYMAX), STAT = AllocateStatus)
+        IF (AllocateStatus /= 0) STOP "*** Not enough memory defining the array IFPEAKNEW ***"
 !------------------------------------------------------------------------------
         LDEBUGLOCAL=.TRUE.
 ! dibujamos linea en la direccion spectral
@@ -122,6 +140,13 @@
             WRITE(*,101) '=> NPEAKS > NMAXPEAKS in EXTLINE.'
             WRITE(*,101) '=> Redefine NMAXPEAKS parameter.'
             INCLUDE 'deallocate_arrays.inc'
+            CALL Deallocate_Array_COEFFBA_
+            DEALLOCATE(XBUFPEAK, STAT = DeAllocateStatus)
+            IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array XBUFPEAK ***"
+            DEALLOCATE(YBUFPEAK, STAT = DeAllocateStatus)
+            IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array YBUFPEAK ***"
+            DEALLOCATE(IFPEAKNEW, STAT = DeAllocateStatus)
+            IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array IFPEAKNEW ***"
             STOP
           END IF
           IF(LDEBUGLOCAL)THEN
@@ -143,7 +168,16 @@
           END DO
         END DO
         CCONT(1:1)=READC('Do you want to continue (y/n)','y','yn')
-        IF(CCONT.EQ.'n') RETURN
+        IF(CCONT.EQ.'n')THEN
+          CALL Deallocate_Array_COEFFBA_
+          DEALLOCATE(XBUFPEAK, STAT = DeAllocateStatus)
+          IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array XBUFPEAK ***"
+          DEALLOCATE(YBUFPEAK, STAT = DeAllocateStatus)
+          IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array YBUFPEAK ***"
+          DEALLOCATE(IFPEAKNEW, STAT = DeAllocateStatus)
+          IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array IFPEAKNEW ***"
+          RETURN
+        END IF
 !------------------------------------------------------------------------------
 ! Reconocemos las lineas. Para ello, vamos recorriendo los NYFINDAL espectros,
 ! comprobando si un nuevo pico (no utilizado anteriormente) tiene nuevas
@@ -308,7 +342,16 @@
         END DO
         WRITE(*,100) '=> final number of new lines..: '
         WRITE(*,*) I
-        IF(I.EQ.0) RETURN
+        IF(I.EQ.0)THEN
+          CALL Deallocate_Array_COEFFBA_
+          DEALLOCATE(XBUFPEAK, STAT = DeAllocateStatus)
+          IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array XBUFPEAK ***"
+          DEALLOCATE(YBUFPEAK, STAT = DeAllocateStatus)
+          IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array YBUFPEAK ***"
+          DEALLOCATE(IFPEAKNEW, STAT = DeAllocateStatus)
+          IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array IFPEAKNEW ***"
+          RETURN
+        END IF
 !------------------------------------------------------------------------------
 ! si nos gusta el resultado, podemos actualizar las lineas BA que definen
 ! el boundary
@@ -330,6 +373,14 @@
           WRITE(*,101) '=> RESET shrinking/stretching'
           WRITE(*,*)
         END IF
+!------------------------------------------------------------------------------
+        CALL Deallocate_Array_COEFFBA_
+        DEALLOCATE(XBUFPEAK, STAT = DeAllocateStatus)
+        IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array XBUFPEAK ***"
+        DEALLOCATE(YBUFPEAK, STAT = DeAllocateStatus)
+        IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array YBUFPEAK ***"
+        DEALLOCATE(IFPEAKNEW, STAT = DeAllocateStatus)
+        IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array IFPEAKNEW ***"
 !------------------------------------------------------------------------------
 100     FORMAT(A,$)
 101     FORMAT(A)

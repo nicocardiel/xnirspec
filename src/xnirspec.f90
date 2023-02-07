@@ -9,10 +9,14 @@
         USE Dynamic_Array_IMAGEN
         USE Dynamic_Array_IMAGEN_
         USE Dynamic_Array_LNULL
+        USE Dynamic_Array_COEFFBL
+        USE Dynamic_Array_COEFFBA
         IMPLICIT NONE
         INCLUDE 'interface_imagen.inc'
         INCLUDE 'interface_imagen_.inc'
         INCLUDE 'interface_lnull.inc'
+        INCLUDE 'interface_coeffbl.inc'
+        INCLUDE 'interface_coeffba.inc'
 ! parameters
         INCLUDE 'dimensions.inc'
         INCLUDE 'largest.inc'
@@ -45,7 +49,7 @@
         INTEGER NDEGBL(NXYMAX),NDEGBA(NXYMAX)  !polynomial degrees for boundary
         INTEGER NDEGBL00,NDEGBA00                 !maximum of NDEGBL and NDEGBA
         INTEGER NLINBL,NLINBA            !number of BL and BA lines in boundary
-        REAL COEFFBL(20,NXYMAX),COEFFBA(20,NXYMAX)      !pol. coef. in boundary
+!delete REAL COEFFBL(20,NXYMAX),COEFFBA(20,NXYMAX)      !pol. coef. in boundary
         REAL XMINBL(NXYMAX),XMAXBL(NXYMAX)
         REAL YMINBL(NXYMAX),YMAXBL(NXYMAX)
         REAL XMINBA(NXYMAX),XMAXBA(NXYMAX)
@@ -213,8 +217,8 @@
         COMMON/BLKINFILE/INFILE
         COMMON/BLKBOUND1/NLINBL,NDEGBL,NDEGBL00
         COMMON/BLKBOUND1B/NLINBA,NDEGBA,NDEGBA00
-        COMMON/BLKBOUND2/COEFFBL
-        COMMON/BLKBOUND2B/COEFFBA
+!delete COMMON/BLKBOUND2/COEFFBL
+!delete COMMON/BLKBOUND2B/COEFFBA
         COMMON/BLKBOUND3/LBOUNDL,LBOUNDA
         COMMON/BLKBOUND4/XMINBL,YMINBL,XMAXBL,YMAXBL
         COMMON/BLKBOUND5/XMINBA,YMINBA,XMAXBA,YMAXBA
@@ -256,12 +260,18 @@
         CALL Initialize_Dynamic_Array_IMAGEN
         CALL Initialize_Dynamic_Array_IMAGEN_
         CALL Initialize_Dynamic_Array_LNULL
+        CALL Initialize_Dynamic_Array_COEFFBL
+        CALL Initialize_Dynamic_Array_COEFFBA
         WRITE(*,100) 'info> shape of dynamic array IMAGEN :'
         WRITE(*,*) shape(IMAGEN)
         WRITE(*,100) 'info> shape of dynamic array LNULL  :'
         WRITE(*,*) shape(LNULL)
         WRITE(*,100) 'info> shape of dynamic array IMAGEN_:'
         WRITE(*,*) shape(IMAGEN_)
+        WRITE(*,100) 'info> shape of dynamic array COEFFBL:'
+        WRITE(*,*) shape(COEFFBL)
+        WRITE(*,100) 'info> shape of dynamic array COEFFBA:'
+        WRITE(*,*) shape(COEFFBA)
 !------------------------------------------------------------------------------
 !------------------------------------------------------------------------------
 ! Note: the pattern of the frames in box-9 is the following:

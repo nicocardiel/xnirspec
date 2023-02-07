@@ -12,9 +12,17 @@
         SUBROUTINE STATISTIC(NBUFF,NX1,NX2,NY1,NY2,LMEDIAN,LSHOW,LALL,MASKVALUE,LUSEMASK)
         USE Dynamic_Array_IMAGEN
         USE Dynamic_Array_IMAGEN_
+        USE Dynamic_Array_IPIXEL
+        USE Dynamic_Array_JPIXEL
+        USE Dynamic_Array_PIXEL
+        USE Dynamic_Array_EPIXEL
         IMPLICIT NONE
         INCLUDE 'interface_imagen.inc'
         INCLUDE 'interface_imagen_.inc'
+        INCLUDE 'interface_ipixel.inc'
+        INCLUDE 'interface_jpixel.inc'
+        INCLUDE 'interface_pixel.inc'
+        INCLUDE 'interface_epixel.inc'
 ! subroutine arguments        
         INTEGER NBUFF
         INTEGER NX1,NX2,NY1,NY2
@@ -32,10 +40,10 @@
         INTEGER I,J,K
         INTEGER IFMIN,IFMAX,JFMIN,JFMAX
         INTEGER NPIX
-        INTEGER IPIXEL(NXMAX*NYMAX), JPIXEL(NXMAX*NYMAX)
+!delete INTEGER IPIXEL(NXMAX*NYMAX), JPIXEL(NXMAX*NYMAX)
 !delete REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
 !delete REAL IMAGEN_(NXMAX,NYMAX)
-        REAL PIXEL(NXMAX*NYMAX),EPIXEL(NXMAX*NYMAX)
+!delete REAL PIXEL(NXMAX*NYMAX),EPIXEL(NXMAX*NYMAX)
         REAL FMEAN,FSIGMA,FMEDIAN,FMIN,FMAX
         REAL EFMEAN
         REAL FMEANTSIGMA,FSIGMATSIGMA
@@ -50,6 +58,11 @@
 !delete COMMON/BLKIMAGEN1_/IMAGEN_
         COMMON/BLKESTADISTICA/FMEAN,FSIGMA,FMEDIAN,FMIN,FMAX
         COMMON/BLKBGFG/BG,FG
+!------------------------------------------------------------------------------
+        CALL Initialize_Dynamic_Array_IPIXEL
+        CALL Initialize_Dynamic_Array_JPIXEL
+        CALL Initialize_Dynamic_Array_PIXEL
+        CALL Initialize_Dynamic_Array_EPIXEL
 !------------------------------------------------------------------------------
         EFMEAN=0.
         IF(LALL)THEN
@@ -283,6 +296,11 @@
             FMEDIAN=0.
           END IF
         END IF
+!------------------------------------------------------------------------------
+        CALL Deallocate_Array_IPIXEL
+        CALL Deallocate_Array_JPIXEL
+        CALL Deallocate_Array_PIXEL
+        CALL Deallocate_Array_EPIXEL
 !------------------------------------------------------------------------------
 100     FORMAT(A,$)
 101     FORMAT(A)

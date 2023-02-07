@@ -67,6 +67,7 @@
         INTEGER IDOLD,IDNEW,NPOST
         INTEGER JUST
         INTEGER IDUM
+        INTEGER :: AllocateStatus, DeAllocateStatus
         REAL FOFFSETX(NBOXMAX),FOFFSETY(NBOXMAX)
         REAL FOFFSETX_,FOFFSETY_
         REAL EFOFFSETX_,EFOFFSETY_
@@ -96,7 +97,8 @@
         REAL YRMSTOL1,YRMSTOL2,YRMSTOLFILL
         REAL QMIN(36),QMAX(36)
         REAL FMEDIAN_STACK(36,NOPERMAX_STACK)
-        REAL FCOEFF_STACK(MAXNCOEFF,36,NOPERMAX_STACK)
+!delete REAL FCOEFF_STACK(MAXNCOEFF,36,NOPERMAX_STACK)
+        REAL, DIMENSION(:, :, :), ALLOCATABLE :: FCOEFF_STACK
         REAL FFACTOR,X(128),Y(128),XSOL(MAXNCOEFF,36)
         REAL QMIN_STACK(36,NOPERMAX_STACK),QMAX_STACK(36,NOPERMAX_STACK)
         REAL XW1,XW2,YW1,YW2
@@ -117,7 +119,8 @@
         CHARACTER*80 COFFSETFILE
         LOGICAL LOGFILE
         LOGICAL MASKBOX9(NXMAXB9,NYMAXB9)
-        LOGICAL MASKBOX9_(NXMAXB9,NYMAXB9)
+!delete LOGICAL MASKBOX9_(NXMAXB9,NYMAXB9)
+        LOGICAL, DIMENSION(:, :), ALLOCATABLE :: MASKBOX9_
         LOGICAL SUBMASKBOX9(256,256,9)
         LOGICAL LANY,LANYCR
         LOGICAL LASK
@@ -139,6 +142,11 @@
         COMMON/BLKLECHO/LECHO
         COMMON/BLKB9POST1/CPOST,CBASEPOST
         COMMON/BLKB9POST2/NPOST,IDOLD
+!------------------------------------------------------------------------------
+        ALLOCATE (MASKBOX9_(NXMAXB9, NYMAXB9), STAT = AllocateStatus)
+        IF (AllocateStatus /= 0) STOP "*** Not enough memory defining array MAXKBOX9_ ***"
+        ALLOCATE (FCOEFF_STACK(MAXNCOEFF, 36, NOPERMAX_STACK), STAT = AllocateStatus)
+        IF (AllocateStatus /= 0) STOP "*** Not enough memory defining array FCOEFF_STACK ***"
 !------------------------------------------------------------------------------
 ! Note: the pattern of the frames in box-9 is the following:
 !       6 9 4
@@ -238,7 +246,13 @@
         LOGFILE=.FALSE.
         DO WHILE(.NOT.LOGFILE)
           COFFSETFILE(1:80)=READC('Name of the file with offsets (none=exit)','offsets.dat','@')
-          IF(COFFSETFILE.EQ.'none') RETURN !permitimos escapar
+          IF(COFFSETFILE.EQ.'none')THEN
+            DEALLOCATE(MASKBOX9_, STAT = DeAllocateStatus)
+            IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array MASKBOX9_ ***"
+            DEALLOCATE(FCOEFF_STACK, STAT = DeAllocateStatus)
+            IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array FCOEFF_STACK ***"
+            RETURN !permitimos escapar
+          END IF
           INQUIRE(FILE=COFFSETFILE,EXIST=LOGFILE)
           IF(.NOT.LOGFILE)THEN
             WRITE(*,101) 'ERROR: this file does not exist. Try again.'
@@ -260,6 +274,10 @@
           WRITE(*,101) 'ERROR: file with offsets contains too many lines (>9)'
           WRITE(*,100) 'Press <CR> to continue...'
           READ(*,*)
+          DEALLOCATE(MASKBOX9_, STAT = DeAllocateStatus)
+          IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array MASKBOX9_ ***"
+          DEALLOCATE(FCOEFF_STACK, STAT = DeAllocateStatus)
+          IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array FCOEFF_STACK ***"
           RETURN
         END IF
         GOTO 5
@@ -273,7 +291,13 @@
           WRITE(*,100) 'ERROR: number of frames does not correspond'
           WRITE(*,101) ' with expected value.'
           CCONT(1:1)=READC('Do you want to continue anyway (y/n)','n','yn')
-          IF(CCONT.EQ.'n') RETURN
+          IF(CCONT.EQ.'n')THEN
+            DEALLOCATE(MASKBOX9_, STAT = DeAllocateStatus)
+            IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array MASKBOX9_ ***"
+            DEALLOCATE(FCOEFF_STACK, STAT = DeAllocateStatus)
+            IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array FCOEFF_STACK ***"
+            RETURN
+          END IF
         END IF
 ! estimamos partes enteras y fraccionarias de los offsets, y determinamos la
 ! dimension maxima que vamos a necesitar para la imagen combinada
@@ -329,12 +353,20 @@
           WRITE(*,101) 'ERROR: X dimension > NXMAXB9'
           WRITE(*,100) 'Press <CR> to continue...'
           READ(*,*)
+          DEALLOCATE(MASKBOX9_, STAT = DeAllocateStatus)
+          IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array MASKBOX9_ ***"
+          DEALLOCATE(FCOEFF_STACK, STAT = DeAllocateStatus)
+          IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array FCOEFF_STACK ***"
           RETURN
         END IF
         IF(NYMAXB9_.GT.NYMAXB9)THEN
           WRITE(*,101) 'ERROR: Y dimension > NYMAXB9'
           WRITE(*,100) 'Press <CR> to continue...'
           READ(*,*)
+          DEALLOCATE(MASKBOX9_, STAT = DeAllocateStatus)
+          IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array MASKBOX9_ ***"
+          DEALLOCATE(FCOEFF_STACK, STAT = DeAllocateStatus)
+          IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array FCOEFF_STACK ***"
           RETURN
         END IF
 !------------------------------------------------------------------------------
@@ -359,6 +391,10 @@
             WRITE(*,100) 'Press <CR> to continue...'
             READ(*,*)
             IF(LECHO) WRITE(*,*)
+            DEALLOCATE(MASKBOX9_, STAT = DeAllocateStatus)
+            IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array MASKBOX9_ ***"
+            DEALLOCATE(FCOEFF_STACK, STAT = DeAllocateStatus)
+            IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array FCOEFF_STACK ***"
             RETURN
           END IF
         END IF
@@ -648,6 +684,10 @@
                 WRITE(*,*) NOPER,TYPEOPER_STACK(NOPER)
                 WRITE(*,101) 'FATAL ERROR: invalid operation type.'
                 INCLUDE 'deallocate_arrays.inc'
+                DEALLOCATE(MASKBOX9_, STAT = DeAllocateStatus)
+                IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array MASKBOX9_ ***"
+                DEALLOCATE(FCOEFF_STACK, STAT = DeAllocateStatus)
+                IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array FCOEFF_STACK ***"
                 STOP
               END IF
 !
@@ -808,6 +848,10 @@
           END IF
           IF(CCONT.EQ.'x')THEN
             CPOST='n'
+            DEALLOCATE(MASKBOX9_, STAT = DeAllocateStatus)
+            IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array MASKBOX9_ ***"
+            DEALLOCATE(FCOEFF_STACK, STAT = DeAllocateStatus)
+            IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array FCOEFF_STACK ***"
             RETURN
           END IF
           IF(CCONT.EQ.'n') CSCALE1='n'
@@ -1026,6 +1070,10 @@
           CCONT(1:1)=READC('Compute median sky for each frame (y/x)','y','yx')
           IF(CCONT.EQ.'x')THEN
             CPOST='n'
+            DEALLOCATE(MASKBOX9_, STAT = DeAllocateStatus)
+            IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array MASKBOX9_ ***"
+            DEALLOCATE(FCOEFF_STACK, STAT = DeAllocateStatus)
+            IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array FCOEFF_STACK ***"
             RETURN
           END IF
         END IF
@@ -1194,6 +1242,10 @@
               END DO
             END DO
             CPOST='n'
+            DEALLOCATE(MASKBOX9_, STAT = DeAllocateStatus)
+            IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array MASKBOX9_ ***"
+            DEALLOCATE(FCOEFF_STACK, STAT = DeAllocateStatus)
+            IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array FCOEFF_STACK ***"
             RETURN
           END IF
         ELSE
@@ -1266,6 +1318,10 @@
           END IF
           IF(CCONT.EQ.'x')THEN
             CPOST='n'
+            DEALLOCATE(MASKBOX9_, STAT = DeAllocateStatus)
+            IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array MASKBOX9_ ***"
+            DEALLOCATE(FCOEFF_STACK, STAT = DeAllocateStatus)
+            IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array FCOEFF_STACK ***"
             RETURN
           END IF
         ELSE
@@ -1486,11 +1542,19 @@
           END IF
           IF(CCONT.EQ.'x')THEN
             CPOST='n'
+            DEALLOCATE(MASKBOX9_, STAT = DeAllocateStatus)
+            IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array MASKBOX9_ ***"
+            DEALLOCATE(FCOEFF_STACK, STAT = DeAllocateStatus)
+            IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array FCOEFF_STACK ***"
             RETURN
           END IF
           IF(CCONT.EQ.'m')THEN
             CALL MIDEOFFSET(NFRAMES_,NEWBUFF1,NEWBUFF2,NEWBUFF3,NEWBUFF4,FOFFSETX,FOFFSETY)
             CPOST='n'
+            DEALLOCATE(MASKBOX9_, STAT = DeAllocateStatus)
+            IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array MASKBOX9_ ***"
+            DEALLOCATE(FCOEFF_STACK, STAT = DeAllocateStatus)
+            IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array FCOEFF_STACK ***"
             RETURN
           END IF
 ! decidimos si eliminamos pixels extran~os
@@ -2151,6 +2215,11 @@
         READ(*,*)
         IF(LECHO) WRITE(*,*)
 !------------------------------------------------------------------------------
+        DEALLOCATE(MASKBOX9_, STAT = DeAllocateStatus)
+        IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array MASKBOX9_ ***"
+        DEALLOCATE(FCOEFF_STACK, STAT = DeAllocateStatus)
+        IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array FCOEFF_STACK ***"
+!------------------------------------------------------------------------------
 100     FORMAT(A,$)
 101     FORMAT(A)
 200     FORMAT(79('-'))
@@ -2226,7 +2295,9 @@
         END DO
         CALL PGSCI(1)
 !------------------------------------------------------------------------------
-        IF((NIMA.EQ.0).AND.(NQUA.EQ.0)) RETURN
+        IF((NIMA.EQ.0).AND.(NQUA.EQ.0))THEN
+          RETURN
+        END IF
 !------------------------------------------------------------------------------
         CALL PGSCI(2)
         DO K=1,NBOXMAX
@@ -2498,11 +2569,13 @@
         INTEGER II,JJ,KK,LL
         INTEGER NPIX
         INTEGER NXYTOTAL
+        INTEGER :: AllocateStatus, DeAllocateStatus
         REAL FPIXUSED(NXMAXB9,NYMAXB9)
         REAL PIXEL
 !delete REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
         LOGICAL MASKBOX9(NXMAXB9,NYMAXB9) !mascara
-        LOGICAL MASKBOX9_(NXMAXB9,NYMAXB9) !extension de la mascara
+!delete LOGICAL MASKBOX9_(NXMAXB9,NYMAXB9) !extension de la mascara
+        LOGICAL, DIMENSION(:, :), ALLOCATABLE :: MASKBOX9_
         LOGICAL PFOUND
         LOGICAL LECHO
 !
@@ -2510,6 +2583,9 @@
         COMMON/BLKMASKBOX9/MASKBOX9
         COMMON/BLKFPIXUSED/FPIXUSED
         COMMON/BLKLECHO/LECHO
+!------------------------------------------------------------------------------
+        ALLOCATE (MASKBOX9_(NXMAXB9, NYMAXB9), STAT = AllocateStatus)
+        IF (AllocateStatus /= 0) STOP "*** Not enough memory defining array MAXKBOX9_ ***"
 !------------------------------------------------------------------------------
 ! Primer paso: calculamos mascara inicial.
 !------------------------------------------------------------------------------
@@ -2653,6 +2729,9 @@
             IF(.NOT.MASKBOX9_(J,I)) MASKBOX9(J,I)=.FALSE.
           END DO
         END DO
+!------------------------------------------------------------------------------
+        DEALLOCATE(MASKBOX9_, STAT = DeAllocateStatus)
+        IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array MASKBOX9_ ***"
 !------------------------------------------------------------------------------
 100     FORMAT(A,$)
         END
