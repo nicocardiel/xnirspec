@@ -368,7 +368,10 @@
           CALL PRINTERROR(ISTATUS)
         END IF
         ANYNULL=LANYNULL                  !basta que haya ocurrido una sola vez
-        IF(LBOX9) RETURN
+        IF(LBOX9)THEN
+          CALL Deallocate_Array_LNULL_
+          RETURN
+        END IF
 !------------------------------------------------------------------------------
 777     CONTINUE
 ! tratamos la orientacion de la imagen

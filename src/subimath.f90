@@ -1499,6 +1499,7 @@
                         WRITE(*,101) '***FATAL ERROR***'
                         WRITE(*,101) '=> invalid CRMS value: '//CRMS
                         INCLUDE 'deallocate_arrays.inc'
+                        CALL Deallocate_Array_PIXEL
                         STOP
                       END IF
                       IMAGEN(J,I,NBUFF1)=FSIGMA
@@ -1513,6 +1514,7 @@
                       WRITE(*,101) '***FATAL ERROR***'
                       WRITE(*,101) '=> invalid CFILT value: '//CFILT
                       INCLUDE 'deallocate_arrays.inc'
+                      CALL Deallocate_Array_PIXEL
                       STOP
                     END IF
                   END DO
