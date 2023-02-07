@@ -120,6 +120,10 @@
             CDELT1(NEWBUFF)=DISP
             WRITE(*,100) 'WARNING: reading file with REDUCEME format'
             GOTO 777
+          ELSE
+            WRITE(*,100) 'ERROR: REDUCEME format not found'
+            CALL Deallocate_Array_LNULL_
+            RETURN
           END IF
         END IF
 ! miramos si la imagen tiene extensiones y, en caso afirmativo, preguntamos

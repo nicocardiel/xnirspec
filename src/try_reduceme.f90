@@ -26,7 +26,11 @@
 !
         OPEN(88,FILE=INFILE,STATUS='OLD',FORM='UNFORMATTED')
         READ(88) IDENTIFICATION
-        IF(IDENTIFICATION.NE.'abcdefghijkl') RETURN
+        IF(IDENTIFICATION.NE.'abcdefghijkl')THEN
+          CLOSE(88)
+          ISTATUS=1
+          RETURN
+        END IF
         READ(88) NSCAN,NCHAN
         IF(NSCAN.GT.NYMAX)THEN
           WRITE(*,101) 'ERROR: NSCAN.GT.NYMAX'
