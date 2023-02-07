@@ -160,46 +160,49 @@
           WRITE(*,100) 'CFITSIO> BITPIX: '
           WRITE(*,*) BITPIX
         END IF
-! comprobamos que NAXIS=2
+! leemos NAXIS, NAXIS1 y NAXIS2
         CALL FTGKYJ(IUNIT,'NAXIS',NAXES,COMMENT,ISTATUS)
         IF(.NOT.LSHOW)THEN
           WRITE(*,100) 'CFITSIO> NAXIS : '
           WRITE(*,*) NAXES 
         END IF
-        IF(NAXES.GT.2)THEN
-          IF(NAXES.EQ.3)THEN
-            CALL FTGKNJ(IUNIT,'NAXIS',1,3,NAXIS_,NFOUND,ISTATUS)
-            IF(NAXIS_(3).NE.1)THEN
-              LERROR=.TRUE.
-            ELSE
-              WRITE(*,101) 'WARNING: NAXIS = 3. Reading anyway!'
-              LERROR=.FALSE.
-            END IF
-          ELSE
-            LERROR=.FALSE.
-          END IF
-          IF(LERROR)THEN
-            WRITE(*,101) '***FATAL ERROR***'
-            WRITE(*,100) '=> NAXIS='
-            WRITE(*,*) NAXES
-            WRITE(*,101) '=> NAXIS > 2'
-            CALL FTCLOS(IUNIT,ISTATUS)
-            INCLUDE 'deallocate_arrays.inc'
-            CALL Deallocate_Array_LNULL_
-            STOP
-          END IF
-        ELSEIF(NAXES.EQ.1)THEN
+        LERROR=.FALSE.
+        IF(NAXES.EQ.1)THEN
+          CALL FTGKYJ(IUNIT,'NAXIS1',NAXIS_(1),COMMENT,ISTATUS)
           NAXIS_(2)=1
+        ELSEIF(NAXES.EQ.2)THEN
+          CALL FTGKYJ(IUNIT,'NAXIS1',NAXIS_(1),COMMENT,ISTATUS)
+          CALL FTGKYJ(IUNIT,'NAXIS2',NAXIS_(2),COMMENT,ISTATUS)
+        ELSEIF(NAXES.EQ.3)THEN
+          CALL FTGKYJ(IUNIT,'NAXIS1',NAXIS_(1),COMMENT,ISTATUS)
+          CALL FTGKYJ(IUNIT,'NAXIS2',NAXIS_(2),COMMENT,ISTATUS)
+          CALL FTGKYJ(IUNIT,'NAXIS3',NAXIS_(3),COMMENT,ISTATUS)
+          IF(NAXIS_(3).EQ.1)THEN
+            WRITE(*,101) 'WARNING: NAXIS=3 with NAXIS3=1. Reading anyway!'
+          ELSE
+            LERROR=.TRUE.
+          END IF
+        ELSE
+          LERROR=.TRUE.
         END IF
-! leemos NAXIS1 y NAXIS2 [notar que el quinto parametro es NAXIS(1) en lugar
-! de NAXIS para asi recuperar NAXIS(1) y NAXIS(2)]
-        CALL FTGKNJ(IUNIT,'NAXIS',1,3,NAXIS_,NFOUND,ISTATUS)
+!
+        IF(LERROR)THEN
+          WRITE(*,101) '***FATAL ERROR***'
+          WRITE(*,100) '=> Invalid NAXIS='
+          WRITE(*,*) NAXES
+          CALL FTCLOS(IUNIT,ISTATUS)
+          INCLUDE 'deallocate_arrays.inc'
+          CALL Deallocate_Array_LNULL_
+          STOP
+        END IF
+!
         IF(.NOT.LSHOW)THEN
           WRITE(*,100) 'CFITSIO> NAXIS1: '
           WRITE(*,*) NAXIS_(1)
           WRITE(*,100) 'CFITSIO> NAXIS2: '
           WRITE(*,*) NAXIS_(2)
         END IF
+!
         IF((IROTATE.EQ.0).OR.(IROTATE.EQ.180).OR.(IROTATE.EQ.-180))THEN
           IF(NAXIS_(1).GT.NXMAX)THEN
             WRITE(*,100) 'NAXIS(1), NXMAX: '
