@@ -5,7 +5,7 @@
 ! subroutine arguments
         CHARACTER*(*) INFILE
         INTEGER ISTATUS
-        INTEGER NAXIS_(0:3)
+        INTEGER NAXIS_(3)
 !
         INCLUDE 'dimensions.inc'
         INCLUDE 'largest.inc'
@@ -62,7 +62,6 @@
           END DO
         END IF
         CLOSE(88)
-        NAXIS_(0)=2
         NAXIS_(1)=NCHAN
         NAXIS_(2)=NSCAN
         NAXIS_(3)=1

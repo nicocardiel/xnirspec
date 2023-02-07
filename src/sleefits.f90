@@ -53,7 +53,8 @@
         INTEGER ISTATUS,IREADWRITE,IUNIT
         INTEGER BLOCKSIZE,NULLVAL
         INTEGER NKEYS,NSPACE,NFOUND
-        INTEGER NAXIS_(0:3)                                !OJO: el limite es 2
+        INTEGER NAXES
+        INTEGER NAXIS_(3)                                  !OJO: el limite es 2
         INTEGER NANYNULLS
         REAL FROW(NXYMAX)
         CHARACTER*50 COMMENT
@@ -154,11 +155,20 @@
         END IF
 ! leemos BITPIX
         CALL FTGKYJ(IUNIT,'BITPIX',BITPIX,COMMENT,ISTATUS)
+        IF(.NOT.LSHOW)THEN
+          WRITE(*,*)
+          WRITE(*,100) 'CFITSIO> BITPIX: '
+          WRITE(*,*) BITPIX
+        END IF
 ! comprobamos que NAXIS=2
-        CALL FTGKYJ(IUNIT,'NAXIS',NAXIS_(0),COMMENT,ISTATUS)
-        IF(NAXIS_(0).GT.2)THEN
-          IF(NAXIS_(0).EQ.3)THEN
-            CALL FTGKNJ(IUNIT,'NAXIS',1,3,NAXIS_(1),NFOUND,ISTATUS)
+        CALL FTGKYJ(IUNIT,'NAXIS',NAXES,COMMENT,ISTATUS)
+        IF(.NOT.LSHOW)THEN
+          WRITE(*,100) 'CFITSIO> NAXIS : '
+          WRITE(*,*) NAXES 
+        END IF
+        IF(NAXES.GT.2)THEN
+          IF(NAXES.EQ.3)THEN
+            CALL FTGKNJ(IUNIT,'NAXIS',1,3,NAXIS_,NFOUND,ISTATUS)
             IF(NAXIS_(3).NE.1)THEN
               LERROR=.TRUE.
             ELSE
@@ -171,21 +181,20 @@
           IF(LERROR)THEN
             WRITE(*,101) '***FATAL ERROR***'
             WRITE(*,100) '=> NAXIS='
-            WRITE(*,*) NAXIS_(0)
+            WRITE(*,*) NAXES
             WRITE(*,101) '=> NAXIS > 2'
             CALL FTCLOS(IUNIT,ISTATUS)
             INCLUDE 'deallocate_arrays.inc'
             CALL Deallocate_Array_LNULL_
             STOP
           END IF
-        ELSEIF(NAXIS_(0).EQ.1)THEN
+        ELSEIF(NAXES.EQ.1)THEN
           NAXIS_(2)=1
         END IF
 ! leemos NAXIS1 y NAXIS2 [notar que el quinto parametro es NAXIS(1) en lugar
 ! de NAXIS para asi recuperar NAXIS(1) y NAXIS(2)]
-        CALL FTGKNJ(IUNIT,'NAXIS',1,2,NAXIS_(1),NFOUND,ISTATUS)
+        CALL FTGKNJ(IUNIT,'NAXIS',1,3,NAXIS_,NFOUND,ISTATUS)
         IF(.NOT.LSHOW)THEN
-          WRITE(*,*)
           WRITE(*,100) 'CFITSIO> NAXIS1: '
           WRITE(*,*) NAXIS_(1)
           WRITE(*,100) 'CFITSIO> NAXIS2: '
