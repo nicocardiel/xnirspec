@@ -52,6 +52,12 @@
           X(K)=DBLE(X_(K))
           Y(K)=DBLE(Y_(K))
         END DO
+! pasamos los coeficientes a doble precision (esta subrutina puede hacer ajuste
+! fijando el valor de algunos parametros que en ese caso no se ajustan, tomandose
+! el valor de los coeficientes de entrada)
+        DO I=1,NDEG+1
+          B(I)=DBLE(B_(I))
+        END DO
 !------------------------------------------------------------------------------
 ! numero de coeficientes a ajustar
         NCOEF=0
