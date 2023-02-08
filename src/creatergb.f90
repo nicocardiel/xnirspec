@@ -31,7 +31,8 @@
         CHARACTER*1 COVER
         CHARACTER*1 CLOGRGB
         CHARACTER*50 CDUMMY
-        CHARACTER*80 PPMFILE
+        CHARACTER*255 PPMFILE
+        CHARACTER*255 C255
         LOGICAL LOGFILE
         LOGICAL LOUTR,LOUTG,LOUTB
 !
@@ -46,7 +47,7 @@
         L1=0 !evita un warning the compilacion
         L2=0 !evita un warning the compilacion
         DO WHILE(LOGFILE)
-          PPMFILE(1:80)=READC('Output ppm file name','pgplot.ppm','@')
+          PPMFILE=READC('Output ppm file name','pgplot.ppm','@')
           L1=TRUEBEG(PPMFILE)
           L2=TRUELEN(PPMFILE)
           INQUIRE(FILE=PPMFILE(L1:L2),EXIST=LOGFILE)
@@ -55,7 +56,8 @@
               COVER='y' !no pedimos confirmacion en este caso
             ELSE
               WRITE(*,101) 'WARNING: this file already exist.'
-              COVER(1:1)=READC('Do you want to overwrite it (y/n)','y','yn')
+              C255=READC('Do you want to overwrite it (y/n)','y','yn')
+              COVER=C255(1:1)
             END IF
             IF(COVER.EQ.'y')THEN
               ISYSTEM=SYSTEMFUNCTION('rm '//PPMFILE(L1:L2))
@@ -89,13 +91,16 @@
         WRITE(CDUMMY,*) FRGB_B
         FRGB_B=READF('Factor to scale BLUE image',CDUMMY)
 !
-        CRGBSATUR(1:1)=READC('Are you using saturation correction',CRGBSATUR,'yn')
+        C255=READC('Are you using saturation correction',CRGBSATUR,'yn')
+        CRGBSATUR=C255(1:1)
 !
         NCOLOROUT=READILIM('Color number for region outside image (gray scale)','0',0,255)
 !
-        CENHANCE_RB(1:1)=READC('Enhance Blue and Red',CENHANCE_RB,'yn')
+        C255=READC('Enhance Blue and Red',CENHANCE_RB,'yn')
+        CENHANCE_RB=C255(1:1)
 !
-        CLOGRGB(1:1)=READC('Use a logarithmic scale',CLOGRGB,'yn')
+        C255=READC('Use a logarithmic scale',CLOGRGB,'yn')
+        CLOGRGB=C255(1:1)
         IF(CLOGRGB.EQ.'y')THEN
           WRITE(CDUMMY,*) FLOGRGB
           FLOGRGB=READF('Factor for logarithmic scale',CDUMMY)

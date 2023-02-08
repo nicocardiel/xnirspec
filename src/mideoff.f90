@@ -30,9 +30,10 @@
         REAL EFOFFSETX_,EFOFFSETY_
         REAL FJ0(NBOXMAX),FI0(NBOXMAX)
         CHARACTER*1 CPOST,CCONT
-        CHARACTER*50 CBASEPOST
         CHARACTER*50 CDUMMY
-        CHARACTER*80 COFFSETFILE
+        CHARACTER*255 CBASEPOST
+        CHARACTER*255 COFFSETFILE
+        CHARACTER*255 C255
         LOGICAL LOGFILE
 !
         COMMON/BLKNFRAMES/NFRAMES
@@ -45,7 +46,7 @@
 ! pedimos offsets
         LOGFILE=.FALSE.
         DO WHILE(.NOT.LOGFILE)
-          COFFSETFILE(1:80)=READC('Name of the file with offsets (none=exit)','offsets.dat','@')
+          COFFSETFILE=READC('Name of the file with offsets (none=exit)','offsets.dat','@')
           L1=TRUEBEG(COFFSETFILE)
           L2=TRUELEN(COFFSETFILE)
           IF(COFFSETFILE(L1:L2).EQ.'none') RETURN !permitimos escapar
@@ -82,7 +83,8 @@
           WRITE(*,*) NFRAMES(NCBUFF),NFRAMES_
           WRITE(*,100) 'ERROR: number of frames does not correspond'
           WRITE(*,101) ' with expected value.'
-          CCONT(1:1)=READC('Do you want to continue anyway with 9x256x256 mosaic (y/n)','y','yn')
+          C255=READC('Do you want to continue anyway with 9x256x256 mosaic (y/n)','y','yn')
+          CCONT=C255(1:1)
           IF(CCONT.EQ.'n') RETURN
           DO NF=1,NFRAMES_
             NAXISFRAME(1,NF,NCBUFF)=256
@@ -171,10 +173,11 @@
 !------------------------------------------------------------------------------
 ! indicamos si queremos generar imagenes en postscript
         WRITE(*,*)
-        CPOST(1:1)=READC('Create PostScript files (y/n)','n','yn')
+        C255=READC('Create PostScript files (y/n)','n','yn')
+        CPOST=C255(1:1)
 !!!        CPOST='n'
         IF(CPOST.EQ.'y')THEN
-          CBASEPOST(1:50)=READC('Base for postscript file names',CBASEPOST,'@')
+          CBASEPOST=READC('Base for postscript file names',CBASEPOST,'@')
           L1=TRUEBEG(CBASEPOST)
           L2=TRUELEN(CBASEPOST)
           WRITE(CDUMMY,*) NPOST+1

@@ -89,7 +89,8 @@
         CHARACTER*1 CCHANGE,CWEIGHT
         CHARACTER*5 CAXISX(9),CAXISY(9)
         CHARACTER*50 CBASEPOST,CDUMMY
-        CHARACTER*80 OUTFILE
+        CHARACTER*255 OUTFILE
+        CHARACTER*255 C255
         LOGICAL LOOP
         LOGICAL LOGFILE
         LOGICAL LOK
@@ -249,7 +250,8 @@
               END IF
             END DO
             IF(CH.EQ.'X')THEN
-              CCHANGE(1:1)=READC('[c]hange fitting parameters or e[x]it (c/x)','c','cx')
+              C255=READC('[c]hange fitting parameters or e[x]it (c/x)','c','cx')
+              CCHANGE(1:1)=C255(1:1)
               IF(CCHANGE.EQ.'x')THEN
                 RETURN
               END IF
@@ -1080,12 +1082,14 @@
           WRITE(*,100) 'Final OffsetsW> '
           WRITE(*,*) K,FOFFSETX_WM(K)+FOFFSETX(K),FOFFSETX_WS(K),FOFFSETY_WM(K)+FOFFSETY(K),FOFFSETY_WS(K)
         END DO
-        CSAVE(1:1)=READC('Save these measured offsets into a file (y/n)','n','yn')
+        C255=READC('Save these measured offsets into a file (y/n)','n','yn')
+        CSAVE=C255(1:1)
         IF(CSAVE.EQ.'y')THEN
-          CWEIGHT(1:1)=READC('Save [w]eighted or [u]nweighted fits (w/u)','w','wu')
+          C255=READC('Save [w]eighted or [u]nweighted fits (w/u)','w','wu')
+          CWEIGHT=C255(1:1)
           LOGFILE=.TRUE.
           DO WHILE(LOGFILE)
-            OUTFILE(1:80)=READC('Output file name','@','@')
+            OUTFILE=READC('Output file name','@','@')
             L1=TRUEBEG(OUTFILE)
             L2=TRUELEN(OUTFILE)
             INQUIRE(FILE=OUTFILE(L1:L2),EXIST=LOGFILE)

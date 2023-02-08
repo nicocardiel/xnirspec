@@ -65,6 +65,7 @@
         CHARACTER*1 CFILT,CAXIS,CFUN_OR_DER,CRMS
         CHARACTER*1 CKERNEL
         CHARACTER*50 CDUMMY
+        CHARACTER*255 C255
         LOGICAL LWAVECAL(NMAXBUFF)
         LOGICAL LDEFBUFF(NMAXBUFF)
         LOGICAL LEXIT,LCANCEL,LCONT,LASK
@@ -990,7 +991,8 @@
                 IF(LDIVZERO)THEN
                   WRITE(*,101) '***ERROR***'
                   WRITE(*,101) '=> Division by zero!'
-                  CZERO(1:1)=READC('e[x]it or [c]ontinue','c','xc')
+                  C255=READC('e[x]it or [c]ontinue','c','xc')
+                  CZERO=C255(1:1)
                   IF(CZERO.EQ.'c')THEN
                     FZERO=READF('Pixel value for infinity','0.0')
                     IF((NBUFF0.LE.NMAXBUFF/2).AND.(NBUFF1.LE.NMAXBUFF/2))THEN
@@ -1066,7 +1068,8 @@
               WRITE(*,101) 'r.m.s. is stored in the associated '
               WRITE(*,101) '  error buffer'
               WRITE(*,*)
-              CFILT(1:1)=READC('Option',CFILT,'0123456789kmxy')
+              C255=READC('Option',CFILT,'0123456789kmxy')
+              CFILT=C255(1:1)
 !
               NAXIS(1,NBUFF1)=NAXIS(1,NBUFF0)
               NAXIS(2,NBUFF1)=NAXIS(2,NBUFF0)
@@ -1092,7 +1095,8 @@
                 WRITE(*,101) '(2) traditional r.m.s. excluding points'
                 WRITE(*,101) '(3) robust r.m.s.'
                 WRITE(*,101) '(4) robust r.m.s. excluding points'
-                CRMS(1:1)=READC('Option',CRMS,'1234')
+                C255=READC('Option',CRMS,'1234')
+                CRMS=C255(1:1)
                 IF((CRMS.EQ.'2').OR.(CRMS.EQ.'4'))THEN
                   WRITE(CDUMMY,*) TSIGMA
                   TSIGMA=READF('Times sigma to exclude points',CDUMMY)
@@ -1103,7 +1107,8 @@
                 TSIGMA=READF('Times sigma to exclude points',CDUMMY)
               ELSEIF(CFILT.EQ.'3')THEN
               ELSEIF((CFILT.EQ.'4').OR.(CFILT.EQ.'5').OR.(CFILT.EQ.'6').OR.(CFILT.EQ.'7'))THEN
-                CAXIS(1:1)=READC('Axis direction (x/y)',CAXIS,'xy')
+                C255=READC('Axis direction (x/y)',CAXIS,'xy')
+                CAXIS=C255(1:1)
                 WRITE(CDUMMY,*) IWIDTH
                 IF(CAXIS.EQ.'x')THEN
                   IWIDTH=READILIM('Window width (pixels; odd)',CDUMMY,3,NAXIS(1,NBUFF0))
@@ -1127,7 +1132,8 @@
                     WRITE(CDUMMY,*) TSIGMA
                     TSIGMA=READF('Times sigma to exclude points',CDUMMY)
                   END IF
-                  CFUN_OR_DER(1:1)=READC('Function (1), derivative (2)',CFUN_OR_DER,'12')
+                  C255=READC('Function (1), derivative (2)',CFUN_OR_DER,'12')
+                  CFUN_OR_DER=C255(1:1)
                 END IF
               ELSEIF(CFILT.EQ.'8')THEN
                 THRESHOLD=READF('Threshold','@')
@@ -1198,7 +1204,8 @@
                 END DO
               ELSEIF(CFILT.EQ.'k')THEN
                 WRITE(*,101)'* Only sharpen kernel so far!'
-                CKERNEL=READC('kernel side (3, 5, 7 o 9)','3','3579')
+                C255=READC('kernel side (3, 5, 7 o 9)','3','3579')
+                CKERNEL=C255(1:1)
                 IF(CKERNEL.EQ.'3')THEN
                   IKERNEL=1
                 ELSEIF(CKERNEL.EQ.'5')THEN
@@ -1759,7 +1766,8 @@
                   IF(LDIVZERO)THEN
                     WRITE(*,101) '***ERROR***'
                     WRITE(*,101) '=> Division by zero!'
-                    CZERO(1:1)=READC('e[x]it or [c]ontinue','c','xc')
+                    C255=READC('e[x]it or [c]ontinue','c','xc')
+                    CZERO=C255(1:1)
                     IF(CZERO.EQ.'c')THEN
                       FZERO=READF('Pixel value for infinity','0.0')
                       IF(NBUFF0.LE.NMAXBUFF/2)THEN
@@ -1915,7 +1923,8 @@
                   IF(LDIVZERO)THEN
                     WRITE(*,101) '***ERROR***'
                     WRITE(*,101) '=> Division by zero!'
-                    CZERO(1:1)=READC('e[x]it or [c]ontinue','c','xc')
+                    C255=READC('e[x]it or [c]ontinue','c','xc')
+                    CZERO=C255(1:1)
                     IF(CZERO.EQ.'c')THEN
                       FZERO=READF('Pixel value for infinity','0.0')
                       IF(NBUFF0.LE.NMAXBUFF/2)THEN

@@ -46,10 +46,12 @@
 ! Variables locales
         INTEGER PGBAND,IDUM
         CHARACTER*1 CBUTTON,CPGPAGE
+        CHARACTER*255 C255
 !------------------------------------------------------------------------------
 !------------------------------------------------------------------------------
         IF(MODOTEXT_BUTT)THEN
-          CBUTTON(1:1)=READC('Are you pressing a button (y/n/#)','y','yn#')
+          C255=READC('Are you pressing a button (y/n/#)','y','yn#')
+          CBUTTON=C255(1:1)
           IF(CBUTTON.EQ.'y')THEN
             XC=0.
             YC=0.
@@ -57,12 +59,14 @@
           ELSEIF(CBUTTON.EQ.'n')THEN
             XC=READF('XC','@')
             YC=READF('YC','@')
-            CH(1:1)=READC('CH','A','@')
+            C255=READC('CH','A','@')
+            CH=C255(1:1)
           ELSEIF(CBUTTON.EQ.'#')THEN
             XC=0.
             YC=0.
             CH='A'         !caracter devuelto por el boton izquierdo del mouse
-            CPGPAGE(1:1)=READC('Do you want to insert a CALL PGPAGE (y/n)','y','yn')
+            C255=READC('Do you want to insert a CALL PGPAGE (y/n)','y','yn')
+            CPGPAGE=C255(1:1)
             IF(CPGPAGE.EQ.'y')CALL PGPAGE
           END IF
         ELSE

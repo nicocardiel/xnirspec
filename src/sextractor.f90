@@ -43,6 +43,7 @@
         CHARACTER*30 FITSFILE,CMASK
         CHARACTER*50 CDUMMY
         CHARACTER*255 REFFILE,SEXPATH_
+        CHARACTER*255 C255
         CHARACTER*1000 CLINEA
         LOGICAL L_X_IMAGE,L_Y_IMAGE
         LOGICAL L_XMIN_IMAGE,L_XMAX_IMAGE
@@ -127,13 +128,16 @@
           END IF
           WRITE(*,101) '(x) EXIT'
           IF(LOGCATFILE)THEN
-            COPC(1:1)=READC('Option (R/i/0..3/x)','x',CMASK)
+            C255=READC('Option (R/i/0..3/x)','x',CMASK)
+            COPC=C255(1:1)
           ELSE
-            COPC(1:1)=READC('Option (R/x)','x','Rx')
+            C255=READC('Option (R/x)','x','Rx')
+            COPC=C255(1:1)
           END IF
 !
         IF(COPC.EQ.'0')THEN
-          LPOSTSCRIPT=(READC('Create postscript file (y/n)','n','yn').EQ.'y')
+          C255=READC('Create postscript file (y/n)','n','yn')
+          LPOSTSCRIPT=(C255(1:1).EQ.'y')
         ELSE
           LPOSTSCRIPT=.FALSE.
         END IF
@@ -179,7 +183,8 @@
             ELSE
               WRITE(*,101) '> File default.sex exists. OK!'
             END IF
-            CREF(1:1)=READC('Are you running SExtractor in double-image mode (y/n)','n','yn')
+            C255=READC('Are you running SExtractor in double-image mode (y/n)','n','yn')
+            CREF=C255(1:1)
             IF(CREF.EQ.'y')THEN
               LOGFILE=.FALSE.
               DO WHILE(.NOT.LOGFILE)

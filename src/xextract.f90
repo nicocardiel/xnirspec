@@ -69,6 +69,7 @@
         CHARACTER*1 CH,COPTIMAL
         CHARACTER*1 CREFINE,CMORE,CFIT
         CHARACTER*50 CDUMMY
+        CHARACTER*255 C255
         LOGICAL LFIT(NXYMAX)
         LOGICAL LOOP,IFU(NXMAX)
         LOGICAL LERR
@@ -103,7 +104,8 @@
         CALL PGLINE(NXYMAX,XP,YP)
         CALL POLFIT(XP,YP,YP,NXYMAX,NMAP+1,0,COEFFLOCAL,CHISQR)
 !
-        CREFINE(1:1)=READC('Refine spectrum location','n','yn')
+        C255=READC('Refine spectrum location','n','yn')
+        CREFINE=C255(1:1)
 !------------------------------------------------------------------------------
         IF(CREFINE.EQ.'y')THEN
           WRITE(*,101) 'Select X-range...'
@@ -123,7 +125,8 @@
           CALL PGLINE(NXYMAX,XP,YP)
           CALL PGSCI(1)
 !
-          CMORE(1:1)=READC('Plot individual fits (y/n)','n','yn')
+          C255=READC('Plot individual fits (y/n)','n','yn')
+          CMORE=C255(1:1)
           WRITE(*,101) '* Fit types:'
           WRITE(*,101) '  (1) GAUSSFIT'
           WRITE(*,101) '  (2) GAUSSFITA'
@@ -132,7 +135,8 @@
           WRITE(*,101) '  (5) = (2) + (3)'
           WRITE(*,101) '  (6) = (1) + (3)'
           WRITE(*,101) '  (7) = (1) + (2) + (3)'
-          CFIT(1:1)=READC('Option','1','1234567')
+          C255=READC('Option','1','1234567')
+          CFIT=C255(1:1)
 !
           WRITE(CDUMMY,*) NWIDTH
           NWIDTH=READI('NWIDTH (must be odd)',CDUMMY)
@@ -228,7 +232,8 @@
               END IF
             END IF
             IF(CMORE.EQ.'y')THEN
-              CMORE(1:1)=READC('More plots (y/n)','y','yn')
+              C255=READC('More plots (y/n)','y','yn')
+              CMORE=C255(1:1)
             END IF
             CALL SHOWPERC(J1,J2,1,J,NEXTINFO)
           END DO
@@ -277,17 +282,22 @@
               END DO
               CALL SUBPLOTBIS(NXYMAX,1,NXYMAX,XP,YP,XP,YP,.FALSE.,.FALSE.,7,101,1.0)
             END IF
-            CMORE(1:1)=READC('Another fit (y/n)','n','yn')
+            C255=READC('Another fit (y/n)','n','yn')
+            CMORE=C255(1:1)
           END DO
 !
           IF(CFIT.EQ.'4')THEN
-            CFIT(1:1)=READC('Fit (0=None/1/2)','@','012')
+            C255=READC('Fit (0=None/1/2)','@','012')
+            CFIT=C255(1:1)
           ELSEIF(CFIT.EQ.'5')THEN
-            CFIT(1:1)=READC('Fit (0=None/2/3)','@','023')
+            C255=READC('Fit (0=None/2/3)','@','023')
+            CFIT=C255(1:1)
           ELSEIF(CFIT.EQ.'6')THEN
-            CFIT(1:1)=READC('Fit (0=None/1/3)','@','013')
+            C255=READC('Fit (0=None/1/3)','@','013')
+            CFIT=C255(1:1)
           ELSEIF(CFIT.EQ.'7')THEN
-            CFIT(1:1)=READC('Fit (0=None/1/2/3)','@','0123')
+            C255=READC('Fit (0=None/1/2/3)','@','0123')
+            CFIT=C255(1:1)
           END IF
 !
           IF(CFIT.EQ.'0')THEN
@@ -345,7 +355,8 @@
         CALL PGSCI(1)
         NEWBUFF=READILIM('New buffer# to store spectrum','@',1,NMAXBUFF)
         NEWSCAN=READILIM('New scan# to store spectrum','@',1,NYMAX)
-        COPTIMAL(1:1)=READC('Optimal extraction (y/n)','n','yn')
+        C255=READC('Optimal extraction (y/n)','n','yn')
+        COPTIMAL=C255(1:1)
         LERR=(NCBUFF.LE.NMAXBUFF/2).AND.(NEWBUFF.LE.NMAXBUFF/2)
         J1=SXMINGRID-SXMINEXTG
         J2=SXMAXGRID+SXMAXEXTG
@@ -629,7 +640,8 @@
           CALL PGSCI(2)
           CALL SPLFIT(NSPLFIT,XOPTIMAL,YOPTIMAL,NKNOTS,XKNOT,YRMSTOL,NXYMAX,XP,YP,XOPTIMAL(1),XOPTIMAL(NSPLFIT),FRMS,.TRUE.)
           CALL PGSCI(1)
-          CMORE(1:1)=READC('Another fit (y/n)','n','yn')
+          C255=READC('Another fit (y/n)','n','yn')
+          CMORE=C255(1:1)
           LOOP=(CMORE.EQ.'y')
         END DO
 !..............................................................................

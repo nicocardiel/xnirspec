@@ -167,7 +167,8 @@
         CHARACTER*1 CSPECIAL               !option in menu of special utilities
         CHARACTER*1 COFFSETS       !mode to compute offsets with list of images
         CHARACTER*20 CIXC,CWXC,CIYC,CSIGNAL!character strings to display cursor
-        CHARACTER*50 CDUMMY                             !dum character variable
+        CHARACTER*255 CDUMMY                            !dum character variable
+        CHARACTER*255 C255      !auxiliary variable to store READC return value
         CHARACTER*255 TTER                                    !graphics display
         CHARACTER*250 CLINBUT               !character string with accelerators
         CHARACTER*255 INFILE_,INFILEBOX9,ERRFILE       !generic input file name
@@ -275,9 +276,9 @@
         WRITE(*,*) shape(COEFFBL)
         WRITE(*,100) 'info> shape of dynamic array COEFFBA:'
         WRITE(*,*) shape(COEFFBA)
-        WRITE(*,100) 'info> shape of dynamic array XPB:'
+        WRITE(*,100) 'info> shape of dynamic array XPB    :'
         WRITE(*,*) shape(XPB)
-        WRITE(*,100) 'info> shape of dynamic array YPB:'
+        WRITE(*,100) 'info> shape of dynamic array YPB    :'
         WRITE(*,*) shape(YPB)
 !------------------------------------------------------------------------------
 !------------------------------------------------------------------------------
@@ -890,7 +891,8 @@
                 WRITE(*,101) '(g) compute from GAIN and RN'
                 WRITE(*,101) '(f) additional file'
                 IF(CINERR.EQ.'x') CINERR='0'
-                CINERR(1:1)=READC('Option',CINERR,'0gf')
+                C255=READC('Option',CINERR,'0gf')
+                CINERR=C255(1:1)
                 IF(CINERR.EQ.'g')THEN
                   WRITE(CDUMMY,*) GAIN_ARRAY
                   GAIN_ARRAY=READF(  'Gain........(e/ADU)',CDUMMY)
@@ -1210,10 +1212,12 @@
 !------------------------------------------------------------------------------
           ELSEIF(NB.EQ.2)THEN
             CALL BUTTON(NB,'[s]ave',5)
-            CSAVE(1:1)=READC('[f/F]its or [r]educeme format (f/F/r/x)',CSAVE,'fFrx')
+            C255=READC('[f/F]its or [r]educeme format (f/F/r/x)',CSAVE,'fFrx')
+            CSAVE=C255(1:1)
             IF(CSAVE.NE.'x')THEN
               IF(NCBUFF.LE.NMAXBUFF/2)THEN
-                CSAVEERR(1:1)=READC('Save error frame (y/n)',CSAVEERR,'yn')
+                C255=READC('Save error frame (y/n)',CSAVEERR,'yn')
+                CSAVEERR=C255(1:1)
               ELSE
                 CSAVEERR='n'
               END IF
@@ -1478,7 +1482,8 @@
                 WRITE(*,101) '(3) define BL boundary'
                 WRITE(*,101) '(4) define BA boundary'
                 WRITE(*,101) '(0) exit'
-                CDUM(1:1)=READC('Option','p','pdr01234')
+                C255=READC('Option','p','pdr01234')
+                CDUM=C255(1:1)
 !
                 IF(CDUM.EQ.'p')THEN
                   LSTACK=.FALSE.
@@ -1511,7 +1516,8 @@
                 ELSEIF(CDUM.EQ.'3')THEN
                   NDEG=READILIM('Polynomial degree','0',0,MIN0(19,NSTACK-1))
                   CALL DRAWPOLYX(NSTACK,XSTACK,YSTACK,NDEG,COEFF)
-                  CREFINE(1:1)=READC('Refine line fit (y/n)','y','yn')
+                  C255=READC('Refine line fit (y/n)','y','yn')
+                  CREFINE=C255(1:1)
                   IF(CREFINE.EQ.'y')THEN
                     CALL FINDMML(NSTACK,1,NSTACK,XSTACK,XMINFIT,XMAXFIT)
                     WRITE(CDUMMY,*) NWIDTH
@@ -1523,7 +1529,8 @@
                       WRITE(*,*) COEFF(K)
                     END DO
                   END IF
-                  CUPDATE(1:1)=READC('Update BL lines (y/n)','y','yn')
+                  C255=READC('Update BL lines (y/n)','y','yn')
+                  CUPDATE=C255(1:1)
                   IF(CUPDATE.EQ.'y')THEN
                     NLINBL=NLINBL+1
                     NDEGBL(NLINBL)=NDEG
@@ -1546,7 +1553,8 @@
                 ELSEIF(CDUM.EQ.'4')THEN
                   NDEG=READILIM('Polynomial degree','0',0,MIN0(19,NSTACK-1))
                   CALL DRAWPOLXY(NSTACK,XSTACK,YSTACK,NDEG,COEFF)
-                  CREFINE(1:1)=READC('Refine line fit (y/n)','y','yn')
+                  C255=READC('Refine line fit (y/n)','y','yn')
+                  CREFINE(1:1)=C255(1:1)
                   IF(CREFINE.EQ.'y')THEN
                     WRITE(CDUMMY,*) NWIDTH
                     NWIDTH=READILIM('No. of pixels to search for peaks (odd)',CDUMMY,3,NWIDTHMAX)
@@ -1557,7 +1565,8 @@
                       WRITE(*,*) COEFF(K)
                     END DO
                   END IF
-                  CUPDATE(1:1)=READC('Update BA lines (y/n)','y','yn')
+                  C255=READC('Update BA lines (y/n)','y','yn')
+                  CUPDATE=C255(1:1)
                   IF(CUPDATE.EQ.'y')THEN
                     NLINBA=NLINBA+1
                     NDEGBA(NLINBA)=NDEG
@@ -1611,7 +1620,8 @@
             IF(CH.EQ.'Q')THEN
               LEXIT=.TRUE.
             ELSE
-              CSURE(1:1)=READC('Do you really want to exit (y/n)','@','yn')
+              C255=READC('Do you really want to exit (y/n)','@','yn')
+              CSURE=C255(1:1)
               IF(CSURE.EQ.'y')THEN
                 LEXIT=.TRUE.
               ELSE
@@ -1958,7 +1968,8 @@
           ELSEIF(NB.EQ.24)THEN
             CALL BUTTON(NB,'[Cc]entroid',5)
             IF(CH.EQ.'C')THEN
-              COFFSET(1:1)=READC('Measure relative offsets in box-9 (y/n)','n','yn')
+              C255=READC('Measure relative offsets in box-9 (y/n)','n','yn')
+              COFFSET=C255(1:1)
             ELSE
               COFFSET='n'
             END IF
@@ -2184,7 +2195,8 @@
             WRITE(*,101) '(4) overplot ds9 regions'
             WRITE(*,101) '(5) overplot X,Y columns from ASCII file'
             WRITE(*,101) '(0) exit'
-            CSPECIAL(1:1)=READC('Option (0..5)','0','012345')
+            C255=READC('Option (0..5)','0','012345')
+            CSPECIAL=C255(1:1)
             IF(CSPECIAL.EQ.'0')THEN
             ELSEIF(CSPECIAL.EQ.'1')THEN
               CALL SEXTRACTOR(NCBUFF)
@@ -2283,7 +2295,8 @@
 !------------------------------------------------------------------------------
           ELSEIF(NB.EQ.30)THEN
             CALL BUTTON(NB,'offsets',5)
-            COFFSETS(1:1)=READC('Use [c]entroid or just c[u]rsor',COFFSETS,'cu')
+            C255=READC('Use [c]entroid or just c[u]rsor',COFFSETS,'cu')
+            COFFSETS=C255(1:1)
             LOGFILE=.FALSE.
             DO WHILE(.NOT.LOGFILE)
               FILELISTIN=READC('Input file name with list of FITS files','@','@')

@@ -80,6 +80,7 @@
         REAL YMINP,YMAXP,XMINP,XMAXP
         CHARACTER*1 CREF
         CHARACTER*20 CDUMMY
+        CHARACTER*255 C255
 !
         COMMON/BLKNSEED/NSEED
         COMMON/BLKFUNK1/NF
@@ -246,7 +247,8 @@
 ! ajuste
         IF(ND.EQ.2) RETURN
 ! Si se quiere refinamos el ajuste
-        CREF(1:1)=READC('Refine the fit (y/n)','n','yn')
+        C255=READC('Refine the fit (y/n)','n','yn')
+        CREF=C255(1:1)
         IF(CREF.EQ.'n')THEN
           if(lplots)then       !pintamos ajuste final en grueso para distinguir
               if(ncolor.gt.1) call pgsci(1)
@@ -268,7 +270,8 @@
         WRITE(*,100) '(W) Refine X and Y position-> all Knots'
         WRITE(*,101) ' (except first and last)'
         WRITE(*,101) '(0) Exit'
-        CREF(1:1)=READC('Option','0','0123Ww')
+        C255=READC('Option','0','0123Ww')
+        CREF=C255(1:1)
         IF(CREF.EQ.'w')CREF='W'
         IF(CREF.EQ.'0')THEN
           if(lplots)then       !pintamos ajuste final en grueso para distinguir

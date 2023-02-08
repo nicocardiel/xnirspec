@@ -75,8 +75,9 @@
         REAL EEX0,EEY0,EEAMP,EESIGMA
         REAL FMEAN,FSIGMA
         CHARACTER*1 CEXT,COPC,CH,CMORE
-        CHARACTER*50 CDUMMY
+        CHARACTER*255 CDUMMY
         CHARACTER*255 FILENAME
+        CHARACTER*255 C255
         LOGICAL LBOUNDL,LBOUNDA
         LOGICAL LOGFILE,LOGFILERR
 !
@@ -110,13 +111,17 @@
         END IF
         WRITE(*,101) '(x) exit'
         IF(LMAPPING.AND.LBOUNDARY)THEN
-          COPC(1:1)=READC('Option (l/s/t/c/x)','x','lstcx')
+          C255=READC('Option (l/s/t/c/x)','x','lstcx')
+          COPC=C255(1:1)
         ELSEIF(LMAPPING)THEN
-          COPC(1:1)=READC('Option (l/s/t/x)','x','lstx')
+          C255=READC('Option (l/s/t/x)','x','lstx')
+          COPC=C255(1:1)
         ELSEIF(LBOUNDARY)THEN
-          COPC(1:1)=READC('Option (l/c/x)','x','lcx')
+          C255=READC('Option (l/c/x)','x','lcx')
+          COPC=C255(1:1)
         ELSE
-          COPC(1:1)=READC('Option (l/x)','x','lx')
+          C255=READC('Option (l/x)','x','lx')
+          COPC=C255(1:1)
         END IF
 !------------------------------------------------------------------------------
         IF(COPC.EQ.'x')THEN
@@ -260,7 +265,8 @@
           END IF
           WRITE(CDUMMY,*) NWIDTH
           NWIDTH=READI('NWIDTH',CDUMMY)
-          CMORE(1:1)=READC('Plot individual fits (y/n)','n','yn')
+          C255=READC('Plot individual fits (y/n)','n','yn')
+          CMORE=C255(1:1)
           CH='A'
           DO WHILE(CH.NE.'X')
             WRITE(*,101) 'Click mouse in sky line...'
@@ -339,7 +345,8 @@
                   print*,'amp..: ',amp,eeamp
                   print*,'y0...: ',y0,eey0
                   IF(CMORE.EQ.'y')THEN
-                    CMORE(1:1)=READC('More plots (y/n)','y','yn')
+                    C255=READC('More plots (y/n)','y','yn')
+                    CMORE=C255(1:1)
                   END IF
                 END IF
                 CALL SHOWPERC(I1,I2,1,I,NEXTINFO)
@@ -665,7 +672,8 @@
         END IF
 !------------------------------------------------------------------------------
 ! si se desea, podemos extrapolar el grid
-        CEXT(1:1)=READC('Are you extrapolating the grid (y/n)','n','yn')
+        C255=READC('Are you extrapolating the grid (y/n)','n','yn')
+        CEXT=C255(1:1)
         IF(CEXT.EQ.'y')THEN
           SXMINEXTG=READILIM('No. of pixels (X<Xmin)','0',0,NXMAX-NDELTAX)
           SXMAXEXTG=READILIM('No. of pixels (X>Xmax)','0',0,NXMAX-NDELTAX-SXMINEXTG)

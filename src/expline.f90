@@ -67,6 +67,7 @@
         REAL FMEAN,FSIGMA,FSIGMA0
         CHARACTER*1 CUPDATE,CCONT,CADD
         CHARACTER*50 CDUMMY
+        CHARACTER*255 C255
 !delete LOGICAL IFPEAKNEW(NMAXPEAKS,NXYMAX)
         LOGICAL, DIMENSION(:, :), ALLOCATABLE :: IFPEAKNEW
         LOGICAL LDEBUGLOCAL
@@ -167,7 +168,8 @@
             IFPEAKNEW(I,NS)=.TRUE.
           END DO
         END DO
-        CCONT(1:1)=READC('Do you want to continue (y/n)','y','yn')
+        C255=READC('Do you want to continue (y/n)','y','yn')
+        CCONT=C255(1:1)
         IF(CCONT.EQ.'n')THEN
           CALL Deallocate_Array_COEFFBA_
           DEALLOCATE(XBUFPEAK, STAT = DeAllocateStatus)
@@ -329,7 +331,8 @@
             ELSE
               CCONT='n'
             END IF
-            CCONT(1:1)=READC('Are you using this last fit (y/n/a=auto)',CCONT,'yna')
+            C255=READC('Are you using this last fit (y/n/a=auto)',CCONT,'yna')
+            CCONT=C255(1:1)
             IF(CCONT.EQ.'a')THEN
               WRITE(CDUMMY,*) FSIGMA0
               FSIGMA0=READF('Sigma threshold',CDUMMY)
@@ -355,9 +358,11 @@
 !------------------------------------------------------------------------------
 ! si nos gusta el resultado, podemos actualizar las lineas BA que definen
 ! el boundary
-        CUPDATE(1:1)=READC('Do you want to update BA lines (y/n)','y','yn')
+        C255=READC('Do you want to update BA lines (y/n)','y','yn')
+        CUPDATE=C255(1:1)
         IF(CUPDATE.EQ.'y')THEN
-          CADD(1:1)=READC('[a]ppend to previous list or define [n]ew list','a','an')
+          C255=READC('[a]ppend to previous list or define [n]ew list','a','an')
+          CADD=C255(1:1)
           IF(CADD.EQ.'n') NLINBA=0
           DO L=1,NLINBA_
             IF(LUSE(L))THEN

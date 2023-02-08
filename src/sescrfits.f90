@@ -37,6 +37,7 @@
         CHARACTER*2 CNIMAGE
         CHARACTER*80 RECORD
         CHARACTER*255 INFILE,CLISTHEAD,INFILE_(NBOXMAX)
+        CHARACTER*255 C255
         LOGICAL LOGFILE
         LOGICAL SIMPLE,EXTEND
 !
@@ -78,7 +79,8 @@
         END IF
         IF((NAXIS(1,NCBUFF).EQ.768).AND.(NAXIS(2,NCBUFF).EQ.768))THEN
           WRITE(*,*)
-          CBOX9(1:1)=READC('Save 9 256x256 images (y/n)','y','yn')
+          C255=READC('Save 9 256x256 images (y/n)','y','yn')
+          CBOX9=C255(1:1)
           IF(CBOX9.EQ.'y')THEN
             LOGFILE=.FALSE.
             DO WHILE(.NOT.LOGFILE)

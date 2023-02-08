@@ -48,9 +48,10 @@
         REAL PIXEL(9*4),EPIXEL(9*4),PIXELF(9*4)
         REAL FMEAN,FSIGMA,FMEDIAN,FMIN,FMAX
         REAL BG,FG
-        CHARACTER*50 CDUMMY
-        CHARACTER*80 OUTFILE,ERRFILE,OUTFILEBASE
-        CHARACTER*80 COFFSETFILE
+        CHARACTER*255 CDUMMY
+        CHARACTER*255 OUTFILE,ERRFILE,OUTFILEBASE
+        CHARACTER*255 COFFSETFILE
+        CHARACTER*255 C255
         LOGICAL LOGFILE
 !
 !delete COMMON/BLKIMAGEN1/IMAGEN
@@ -95,7 +96,7 @@
 ! pedimos offsets
         LOGFILE=.FALSE.
         DO WHILE(.NOT.LOGFILE)
-          COFFSETFILE(1:80)=READC('Name of the file with offsets (none=exit)','offsets.dat','@')
+          COFFSETFILE=READC('Name of the file with offsets (none=exit)','offsets.dat','@')
           L1=TRUEBEG(COFFSETFILE)
           L2=TRUELEN(COFFSETFILE)
           IF(COFFSETFILE(L1:L2).EQ.'none')THEN
@@ -235,7 +236,7 @@
 ! indicamos el nombre base de los ficheros de salida
         LOGFILE=.TRUE.
         DO WHILE(LOGFILE)
-          OUTFILEBASE(1:80)=READC('Base name for output files','@','@')
+          OUTFILEBASE=READC('Base name for output files','@','@')
           LOGFILE=.FALSE.
           DO K=1,NFRAMES_
             IF(.NOT.LOGFILE)THEN

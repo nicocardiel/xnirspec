@@ -60,18 +60,21 @@
         INTEGER CI1,CI2
         CHARACTER*1 CBUT
         CHARACTER*255 TERMINAL,DEFDEV
+        CHARACTER*255 C255
         LOGICAL LOOP
 !------------------------------------------------------------------------------
         INQUIRE(FILE='.button_modoover',EXIST=MODOOVER_BUTT)
         CALL GRGENV('DEV',DEFDEV,LDEV)
 ! determinamos si los botones se muestran en modo texto
-        CBUT(1:1)=READC('Are you using graphic buttons............(y/n)','y','yn')
+        C255=READC('Are you using graphic buttons............(y/n)','y','yn')
+        CBUT=C255(1:1)
         MODOTEXT_BUTT=(CBUT.EQ.'n')
         IF(MODOTEXT_BUTT)THEN
           WRITE(*,*)
           WRITE(*,100)'WARNING: remember to enlarge the terminal width '
           WRITE(*,101)'to hold all the text-buttons.'
-          CBUT(1:1)=READC('Do you want to plot the buttons anyway...(y/n)','y','yn')
+          C255=READC('Do you want to plot the buttons anyway...(y/n)','y','yn')
+          CBUT=C255(1:1)
           MODOTEXT_PLOTBUTT=(CBUT.EQ.'y')
           WRITE(*,'(A)')'[1;1f[J'
         ELSE

@@ -37,6 +37,7 @@
         CHARACTER*1 COPC,CH,CSURE
         CHARACTER*50 CDUMX,CDUMY
         CHARACTER*255 FILENAME
+        CHARACTER*255 C255
         LOGICAL LOGFILE,LOGFILERR
         LOGICAL LBOUNDL,LBOUNDA
 !
@@ -62,12 +63,15 @@
         END IF
         WRITE(*,101) '(x) exit'
         IF(LBOUNDARY)THEN
-          COPC(1:1)=READC('Option','x','lsrd12x')
+          C255=READC('Option','x','lsrd12x')
+          COPC=C255(1:1)
         ELSE
           IF((NLINBA.EQ.0).AND.(NLINBL.GE.2))THEN
-            COPC(1:1)=READC('Option','x','lax')
+            C255=READC('Option','x','lax')
+            COPC=C255(1:1)
           ELSE
-            COPC(1:1)=READC('Option','x','lx')
+            C255=READC('Option','x','lx')
+            COPC=C255(1:1)
           END IF
         END IF
 !------------------------------------------------------------------------------
@@ -241,7 +245,8 @@
               CALL PGSCI(7)
               CALL PGLINE(NXYMAX,XP,YP)
               CALL PGSCI(1)
-              CSURE(1:1)=READC('Do you really want to eliminate this BL line','n','yn')
+              C255=READC('Do you really want to eliminate this BL line','n','yn')
+              CSURE=C255(1:1)
               IF(CSURE.EQ.'y')THEN
                 IF(LMIN.LT.NLINBL)THEN
                   DO L=LMIN,NLINBL-1
@@ -294,7 +299,8 @@
               CALL PGSCI(7)
               CALL PGLINE(NXYMAX,XP,YP)
               CALL PGSCI(1)
-              CSURE(1:1)=READC('Do you really want to eliminate this BA line','n','yn')
+              C255=READC('Do you really want to eliminate this BA line','n','yn')
+              CSURE=C255(1:1)
               IF(CSURE.EQ.'y')THEN
                 IF(LMIN.LT.NLINBA)THEN
                   DO L=LMIN,NLINBA-1

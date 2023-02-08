@@ -67,8 +67,9 @@
         REAL BG,FG
         REAL FERRORLIMIT
         CHARACTER*1 CREJECT,CWEIGHT,CWMODE,CMASK
-        CHARACTER*50 CDUMMY
-        CHARACTER*80 COFFSETFILE
+        CHARACTER*255 CDUMMY
+        CHARACTER*255 COFFSETFILE
+        CHARACTER*255 C255
         LOGICAL LOGFILE
         LOGICAL LZERO
         LOGICAL LMORE
@@ -124,7 +125,7 @@
 ! pedimos offsets
         LOGFILE=.FALSE.
         DO WHILE(.NOT.LOGFILE)
-          COFFSETFILE(1:80)=READC('Name of the file with offsets (none=exit)','offsets.dat','@')
+          COFFSETFILE=READC('Name of the file with offsets (none=exit)','offsets.dat','@')
           L1=TRUEBEG(COFFSETFILE)
           L2=TRUELEN(COFFSETFILE)
           IF(COFFSETFILE(L1:L2).EQ.'none')THEN
@@ -268,7 +269,8 @@
 !------------------------------------------------------------------------------
 ! decidimos si eliminamos pixels extran~os
         WRITE(*,*)
-        CREJECT(1:1)=READC('Reject hot/cool pixels (y/n)',CREJECT,'yn')
+        C255=READC('Reject hot/cool pixels (y/n)',CREJECT,'yn')
+        CREJECT=C255(1:1)
         IF(CREJECT.EQ.'y')THEN
 ! numero de pixels umbral para deteccion de pixels calientes
           WRITE(CDUMMY,*) FPIXELTHRESHOLDCR
@@ -276,11 +278,14 @@
         END IF
 !------------------------------------------------------------------------------
 ! decidimos si pesamos la imagen suma con los errores
-        CWEIGHT(1:1)=READC('Perform weighted sum (y/n)',CWEIGHT,'yn')
+        C255=READC('Perform weighted sum (y/n)',CWEIGHT,'yn')
+        CWEIGHT=C255(1:1)
         IF(CWEIGHT.EQ.'y')THEN
-          CWMODE(1:1)=READC('Weigth with [e]rrors or [s]ignal/noise','e','es')
+          C255=READC('Weigth with [e]rrors or [s]ignal/noise','e','es')
+          CWMODE=C255(1:1)
           WRITE(*,101) '* Note: data can be masked if error is below a given threshold error'
-          CMASK(1:1)=READC('Do you want to mask data (y/n)','y','yn')
+          C255=READC('Do you want to mask data (y/n)','y','yn')
+          CMASK=C255(1:1)
           IF(CMASK.EQ.'y')THEN
             FERRORLIMIT=READF('Threshold error to mask data','0.0')
           END IF

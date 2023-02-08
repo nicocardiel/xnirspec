@@ -114,9 +114,10 @@
         CHARACTER*1 CNOR_STACK(NOPERMAX_STACK),CSTACK
         CHARACTER*1 CSCALEOPER_STACK(NOPERMAX_STACK)
         CHARACTER*1 CPOST
-        CHARACTER*50 CDUMMY
-        CHARACTER*50 CBASEPOST
-        CHARACTER*80 COFFSETFILE
+        CHARACTER*255 CDUMMY
+        CHARACTER*255 CBASEPOST
+        CHARACTER*255 COFFSETFILE
+        CHARACTER*255 C255
         LOGICAL LOGFILE
         LOGICAL MASKBOX9(NXMAXB9,NYMAXB9)
 !delete LOGICAL MASKBOX9_(NXMAXB9,NYMAXB9)
@@ -245,7 +246,7 @@
 ! pedimos offsets
         LOGFILE=.FALSE.
         DO WHILE(.NOT.LOGFILE)
-          COFFSETFILE(1:80)=READC('Name of the file with offsets (none=exit)','offsets.dat','@')
+          COFFSETFILE=READC('Name of the file with offsets (none=exit)','offsets.dat','@')
           IF(COFFSETFILE.EQ.'none')THEN
             DEALLOCATE(MASKBOX9_, STAT = DeAllocateStatus)
             IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array MASKBOX9_ ***"
@@ -290,7 +291,8 @@
           WRITE(*,*) NFRAMES(NCBUFF),NFRAMES_
           WRITE(*,100) 'ERROR: number of frames does not correspond'
           WRITE(*,101) ' with expected value.'
-          CCONT(1:1)=READC('Do you want to continue anyway (y/n)','n','yn')
+          C255=READC('Do you want to continue anyway (y/n)','n','yn')
+          CCONT=C255(1:1)
           IF(CCONT.EQ.'n')THEN
             DEALLOCATE(MASKBOX9_, STAT = DeAllocateStatus)
             IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array MASKBOX9_ ***"
@@ -419,73 +421,89 @@
         WRITE(CDUMMY,*) NEWBUFF4
         NEWBUFF4=READILIM('Fourth auxiliary buffer # to store manipulated data..',CDUMMY,1,NMAXBUFF/2)
 !------------------------------------------------------------------------------
-        CINTERACTIVE(1:1)=READC('Run procedure in interactive mode (y/m/n)',CINTERACTIVE,'ynm')
+        C255=READC('Run procedure in interactive mode (y/m/n)',CINTERACTIVE,'ynm')
+        CINTERACTIVE=C255(1:1)
         IF(CINTERACTIVE.NE.'y')THEN
-          CSCALE1(1:1)=READC('Fit#1 [c]onstant, [s]urface or [n]one (c/s/n)',CSCALE1,'csn')
+          C255=READC('Fit#1 [c]onstant, [s]urface or [n]one (c/s/n)',CSCALE1,'csn')
+          CSCALE1=C255(1:1)
           IF(CSCALE1.EQ.'s')THEN
             WRITE(CDUMMY,*) GX1
             GX1=READILIM('Polynomial degree in X direction',CDUMMY,0,INT(SQRT(REAL(MAXNCOEFF)))-1)
             WRITE(CDUMMY,*) GY1
             GY1=READILIM('Polynomial degree in Y direction',CDUMMY,0,INT(SQRT(REAL(MAXNCOEFF)))-1)
-            CMEDIANA1(1:1)=READC('Refine fit minimizing median (y/n)',CMEDIANA1,'yn')
+            C255=READC('Refine fit minimizing median (y/n)',CMEDIANA1,'yn')
+            CMEDIANA1=C255(1:1)
             IF(CMEDIANA1.EQ.'y')THEN
               WRITE(CDUMMY,*) YRMSTOL1
               YRMSTOL1=READF('YRMSTOL for DOWNHILL',CDUMMY)
             END IF
-            CREFINE1(1:1)=READC('Refine fit removing deviating points (y/n)',CREFINE1,'yn')
+            C255=READC('Refine fit removing deviating points (y/n)',CREFINE1,'yn')
+            CREFINE1=C255(1:1)
           END IF
           IF(CSCALE1.NE.'n')THEN
-            CSCALE1OPER(1:1)=READC('[s]ubtract fit or [d]ivide by fit (s/d)',CSCALE1OPER,'sd')
+            C255=READC('[s]ubtract fit or [d]ivide by fit (s/d)',CSCALE1OPER,'sd')
+            CSCALE1OPER=C255(1:1)
             IF(CSCALE1OPER.EQ.'d')THEN
               WRITE(*,101) 'WARNING: normalization is recomended to preserve number of counts'
-              CNOR1(1:1)=READC('Normalize fit (y/n)','y','yn')
+              C255=READC('Normalize fit (y/n)','y','yn')
+              CNOR1=C255(1:1)
             ELSE
               CNOR1='n'
             END IF
           END IF
 !
-          CSCALE2(1:1)=READC('Fit#2 [c]onstant, [s]urface or [n]one (c/s/n)',CSCALE2,'csn')
+          C255=READC('Fit#2 [c]onstant, [s]urface or [n]one (c/s/n)',CSCALE2,'csn')
+          CSCALE2=C255(1:1)
           IF(CSCALE2.EQ.'s')THEN
             WRITE(CDUMMY,*) GX2
             GX2=READILIM('Polynomial degree in X direction',CDUMMY,0,INT(SQRT(REAL(MAXNCOEFF)))-1)
             WRITE(CDUMMY,*) GY2
             GY2=READILIM('Polynomial degree in Y direction',CDUMMY,0,INT(SQRT(REAL(MAXNCOEFF)))-1)
-            CMEDIANA2(1:1)=READC('Refine fit minimizing median (y/n)',CMEDIANA2,'yn')
+            C255=READC('Refine fit minimizing median (y/n)',CMEDIANA2,'yn')
+            CMEDIANA2=C255(1:1)
             IF(CMEDIANA2.EQ.'y')THEN
               WRITE(CDUMMY,*) YRMSTOL2
               YRMSTOL2=READF('YRMSTOL for DOWNHILL',CDUMMY)
             END IF
-            CREFINE2(1:1)=READC('Refine fit removing deviating points (y/n)',CREFINE2,'yn')
+            C255=READC('Refine fit removing deviating points (y/n)',CREFINE2,'yn')
+            CREFINE2=C255(1:1)
           END IF
           IF(CSCALE2.NE.'n')THEN
-            CSCALE2OPER(1:1)=READC('[s]ubtract fit or [d]ivide by fit (s/d)',CSCALE2OPER,'sd')
+            C255=READC('[s]ubtract fit or [d]ivide by fit (s/d)',CSCALE2OPER,'sd')
+            CSCALE2OPER=C255(1:1)
             IF(CSCALE2OPER.EQ.'d')THEN
               WRITE(*,101) 'WARNING: normalization is recomended to preserve number of counts'
-              CNOR2(1:1)=READC('Normalize fit (y/n)','y','yn')
+              C255=READC('Normalize fit (y/n)','y','yn')
+              CNOR2=C255(1:1)
             ELSE
               CNOR2='n'
             END IF
           END IF
 ! determinamos si en el calculo del cielo rellenamos las regines tapadas por
 ! la mascara
-          CFILL(1:1)=READC('Fill masked regions with 2D polynomial fits (y/n)',CFILL,'yn')
+          C255=READC('Fill masked regions with 2D polynomial fits (y/n)',CFILL,'yn')
+          CFILL=C255(1:1)
           IF(CFILL.EQ.'y')THEN
             WRITE(CDUMMY,*) GXFILL
             GXFILL=READILIM('Polynomial degree in X direction',CDUMMY,0,INT(SQRT(REAL(MAXNCOEFF)))-1)
             WRITE(CDUMMY,*) GYFILL
             GYFILL=READILIM('Polynomial degree in Y direction',CDUMMY,0,INT(SQRT(REAL(MAXNCOEFF)))-1)
-            CMEDIANAFILL(1:1)=READC('Refine fit minimizing median (y/n)',CMEDIANAFILL,'yn')
+            C255=READC('Refine fit minimizing median (y/n)',CMEDIANAFILL,'yn')
+            CMEDIANAFILL=C255(1:1)
             IF(CMEDIANAFILL.EQ.'y')THEN
               WRITE(CDUMMY,*) YRMSTOLFILL
               YRMSTOLFILL=READF('YRMSTOL for DOWNHILL',CDUMMY)
             END IF
-            CREFINEFILL(1:1)=READC('Refine fit removing deviating points (y/n)',CREFINEFILL,'yn')
+            C255=READC('Refine fit removing deviating points (y/n)',CREFINEFILL,'yn')
+            CREFINEFILL=C255(1:1)
           END IF
 ! decidimos si calculamos errores en el calculo del cielo
-          CERRSKY(1:1)=READC('Compute error in median sky (y/n)',CERRSKY,'yn')
+          C255=READC('Compute error in median sky (y/n)',CERRSKY,'yn')
+          CERRSKY=C255(1:1)
 ! decidimos si eliminamos pixels extran~os
           IF(CINTERACTIVE.EQ.'n')THEN
-            CREJECT(1:1)=READC('Reject hot/cool pixels (y/n)',CREJECT,'yn')
+            C255=READC('Reject hot/cool pixels (y/n)',CREJECT,'yn')
+            CREJECT=C255(1:1)
             IF(CREJECT.EQ.'y')THEN
 ! numero de pixels umbral para deteccion de pixels calientes
               WRITE(CDUMMY,*) FPIXELTHRESHOLDCR
@@ -516,10 +534,11 @@
 10      CONTINUE
 !------------------------------------------------------------------------------
         WRITE(*,*)
-        CPOST(1:1)=READC('Create PostScript files (y/n)','n','yn')
+        C255=READC('Create PostScript files (y/n)','n','yn')
+        CPOST=C255(1:1)
 !!!        CPOST='n'
         IF(CPOST.EQ.'y')THEN
-          CBASEPOST(1:50)=READC('Base for postscript file names',CBASEPOST,'@')
+          CBASEPOST=READC('Base for postscript file names',CBASEPOST,'@')
           WRITE(CDUMMY,*) NPOST+1
           NPOST=READI('Number of first pgplot????.ps file',CDUMMY)
           NPOST=NPOST-1
@@ -600,10 +619,12 @@
         WRITE(*,*) NOPER_STACK
         IF(NOPER_STACK.GT.0)THEN
           IF(CINTERACTIVE.EQ.'y')THEN
-            CSTACK(1:1)=READC('Apply operations in stack (y/n)',CSTACK,'yn')
+            C255=READC('Apply operations in stack (y/n)',CSTACK,'yn')
+            CSTACK=C255(1:1)
           END IF
           IF(CSTACK.EQ.'y')THEN
-            CPAUSE(1:1)=READC('Pause between intermediate plots (y/n)','n','yn')
+            C255=READC('Pause between intermediate plots (y/n)','n','yn')
+            CPAUSE=C255(1:1)
             WRITE(*,*)
             WRITE(*,101) 'Applying operations in stack...'
 !..............................................................................
@@ -818,7 +839,8 @@
 !------------------------------------------------------------------------------
 ! Estudio estadistico del ruido frente a la sen~al en cada subcuadrante.
         IF(CINTERACTIVE.EQ.'y')THEN
-          CCONT(1:1)=READC('Perform a detailed statistical analysis of any subquadrant (y/n)','n','yn')
+          C255=READC('Perform a detailed statistical analysis of any subquadrant (y/n)','n','yn')
+          CCONT=C255(1:1)
           IF(CCONT.EQ.'y')THEN
             IF(CCONT.EQ.'y')THEN
               NIMSTAT=10
@@ -842,9 +864,11 @@
 ! Scale quadrants
         IF(CINTERACTIVE.EQ.'y')THEN
           IF(CSCALE1.NE.'n')THEN
-            CCONT(1:1)=READC('Do you want to scale each quadrant (y/n/x)','y','ynx')
+            C255=READC('Do you want to scale each quadrant (y/n/x)','y','ynx')
+            CCONT=C255(1:1)
           ELSE
-            CCONT(1:1)=READC('Do you want to scale each quadrant (y/n/x)','n','ynx')
+            C255=READC('Do you want to scale each quadrant (y/n/x)','n','ynx')
+            CCONT=C255(1:1)
           END IF
           IF(CCONT.EQ.'x')THEN
             CPOST='n'
@@ -867,24 +891,29 @@
           LASK=.TRUE.
           DO WHILE(LASK)
             IF(CINTERACTIVE.EQ.'y')THEN
-              CSCALE1(1:1)=READC('Fit#1 [c]onstant, [s]urface or [n]one (c/s/n)',CSCALE1,'csn')
+              C255=READC('Fit#1 [c]onstant, [s]urface or [n]one (c/s/n)',CSCALE1,'csn')
+              CSCALE1=C255(1:1)
               IF(CSCALE1.EQ.'s')THEN
                 WRITE(CDUMMY,*) GX1
                 GX1=READILIM('Polynomial degree in X direction',CDUMMY,0,INT(SQRT(REAL(MAXNCOEFF)))-1)
                 WRITE(CDUMMY,*) GY1
                 GY1=READILIM('Polynomial degree in Y direction',CDUMMY,0,INT(SQRT(REAL(MAXNCOEFF)))-1)
-                CMEDIANA1(1:1)=READC('Refine fit minimizing median (y/n)',CMEDIANA1,'yn')
+                C255=READC('Refine fit minimizing median (y/n)',CMEDIANA1,'yn')
+                CMEDIANA1=C255(1:1)
                 IF(CMEDIANA1.EQ.'y')THEN
                   WRITE(CDUMMY,*) YRMSTOL1
                   YRMSTOL1=READF('YRMSTOL for DOWNHILL',CDUMMY)
                 END IF
-                CREFINE1(1:1)=READC('Refine fit removing deviating points (y/n)',CREFINE1,'yn')
+                C255=READC('Refine fit removing deviating points (y/n)',CREFINE1,'yn')
+                CREFINE1=C255(1:1)
               END IF
               IF(CSCALE1.NE.'n')THEN
-                CSCALE1OPER(1:1)=READC('[s]ubtract fit or [d]ivide by fit (s/d)',CSCALE1OPER,'sd')
+                C255=READC('[s]ubtract fit or [d]ivide by fit (s/d)',CSCALE1OPER,'sd')
+                CSCALE1OPER=C255(1:1)
                 IF(CSCALE1OPER.EQ.'d')THEN
                   WRITE(*,101) 'WARNING: normalization is recomended to preserve number of counts'
-                  CNOR1(1:1)=READC('Normalize fit (y/n)','y','yn')
+                  C255=READC('Normalize fit (y/n)','y','yn')
+                  CNOR1=C255(1:1)
                 ELSE
                   CNOR1='n'
                 END IF
@@ -900,7 +929,8 @@
                 WRITE(CDUMMY,*) NITER
                 NITER=READILIM('No. of iterations',CDUMMY,1,10)
                 IF(CINTERACTIVE.EQ.'y')THEN
-                  CPAUSE(1:1)=READC('Pause between intermediate plots (y/n)','n','yn')
+                  C255=READC('Pause between intermediate plots (y/n)','n','yn')
+                  CPAUSE=C255(1:1)
                 ELSE
                   CPAUSE='n'
                 END IF
@@ -1031,7 +1061,8 @@
                 END IF
               END DO
               IF(CINTERACTIVE.EQ.'y')THEN
-                CMORE(1:1)=READC('More fits (y/n)',CMORE,'yn')
+                C255=READC('More fits (y/n)',CMORE,'yn')
+                CMORE=C255(1:1)
                 LASK=(CMORE.EQ.'y')
               ELSE
                 LASK=.FALSE.
@@ -1044,7 +1075,8 @@
 !------------------------------------------------------------------------------
 ! Estudio estadistico del ruido frente a la sen~al en cada subcuadrante.
         IF((CINTERACTIVE.EQ.'y').AND.(CCONT.EQ.'y'))THEN
-          CCONT(1:1)=READC('Perform a detailed statistical analysis of any subquadrant (y/n)','n','yn')
+          C255=READC('Perform a detailed statistical analysis of any subquadrant (y/n)','n','yn')
+          CCONT=C255(1:1)
           IF(CCONT.EQ.'y')THEN
             IF(CCONT.EQ.'y')THEN
               NIMSTAT=10
@@ -1067,7 +1099,8 @@
 !------------------------------------------------------------------------------
 ! Median sky
         IF(CINTERACTIVE.EQ.'y')THEN
-          CCONT(1:1)=READC('Compute median sky for each frame (y/x)','y','yx')
+          C255=READC('Compute median sky for each frame (y/x)','y','yx')
+          CCONT=C255(1:1)
           IF(CCONT.EQ.'x')THEN
             CPOST='n'
             DEALLOCATE(MASKBOX9_, STAT = DeAllocateStatus)
@@ -1080,20 +1113,24 @@
 ! preguntamos si queremos rellenar regiones de la mascara con ajustes a 
 ! superficies polinomicas suaves
         IF(CINTERACTIVE.EQ.'y')THEN
-          CFILL(1:1)=READC('Fill masked regions with 2D polynomial fits (y/n)',CFILL,'yn')
+          C255=READC('Fill masked regions with 2D polynomial fits (y/n)',CFILL,'yn')
+          CFILL=C255(1:1)
           IF(CFILL.EQ.'y')THEN
             WRITE(CDUMMY,*) GXFILL
             GXFILL=READILIM('Polynomial degree in X direction',CDUMMY,0,INT(SQRT(REAL(MAXNCOEFF)))-1)
             WRITE(CDUMMY,*) GYFILL
             GYFILL=READILIM('Polynomial degree in Y direction',CDUMMY,0,INT(SQRT(REAL(MAXNCOEFF)))-1)
-            CMEDIANAFILL(1:1)=READC('Refine fit minimizing median (y/n)',CMEDIANAFILL,'yn')
+            C255=READC('Refine fit minimizing median (y/n)',CMEDIANAFILL,'yn')
+            CMEDIANAFILL=C255(1:1)
             IF(CMEDIANAFILL.EQ.'y')THEN
               WRITE(CDUMMY,*) YRMSTOLFILL
               YRMSTOLFILL=READF('YRMSTOL for DOWNHILL',CDUMMY)
             END IF
-            CREFINEFILL(1:1)=READC('Refine fit removing deviating points (y/n)',CREFINEFILL,'yn')
+            C255=READC('Refine fit removing deviating points (y/n)',CREFINEFILL,'yn')
+            CREFINEFILL=C255(1:1)
           END IF
-          CERRSKY(1:1)=READC('Compute error in median sky (y/n)',CERRSKY,'yn')
+          C255=READC('Compute error in median sky (y/n)',CERRSKY,'yn')
+          CERRSKY=C255(1:1)
         END IF
         IF(CFILL.EQ.'y')THEN
           CALL SCALE_SURFACE(NEWBUFF1,NFRAMES_,0,0,GXFILL,GYFILL,FFSIGMANOR(1),TIMESSIGMA(1), &
@@ -1233,7 +1270,8 @@
         END IF
 !------------------------------------------------------------------------------
         IF(CINTERACTIVE.EQ.'y')THEN
-          CCONT(1:1)=READC('Do you want to subtract median sky (y/n/x)','y','ynx')
+          C255=READC('Do you want to subtract median sky (y/n/x)','y','ynx')
+          CCONT=C255(1:1)
           IF(CCONT.EQ.'x')THEN
             DO I=NY1,NY2
               DO J=NX1,NX2
@@ -1288,7 +1326,8 @@
 !------------------------------------------------------------------------------
 ! Estudio estadistico del ruido frente a la sen~al en cada subcuadrante.
         IF(CINTERACTIVE.EQ.'y')THEN
-          CCONT(1:1)=READC('Perform a detailed statistical analysis of any subquadrant (y/n)','n','yn')
+          C255=READC('Perform a detailed statistical analysis of any subquadrant (y/n)','n','yn')
+          CCONT=C255(1:1)
           IF(CCONT.EQ.'y')THEN
             IF(CCONT.EQ.'y')THEN
               NIMSTAT=10
@@ -1312,9 +1351,11 @@
 ! Scale quadrants
         IF(CINTERACTIVE.EQ.'y')THEN
           IF(CSCALE2.NE.'n')THEN
-            CCONT(1:1)=READC('Do you want to scale each quadrant (y/n/x)','y','ynx')
+            C255=READC('Do you want to scale each quadrant (y/n/x)','y','ynx')
+            CCONT=C255(1:1)
           ELSE
-            CCONT(1:1)=READC('Do you want to scale each quadrant (y/n/x)','n','ynx')
+            C255=READC('Do you want to scale each quadrant (y/n/x)','n','ynx')
+            CCONT=C255(1:1)
           END IF
           IF(CCONT.EQ.'x')THEN
             CPOST='n'
@@ -1336,24 +1377,29 @@
           LASK=.TRUE.
           DO WHILE(LASK)
             IF(CINTERACTIVE.EQ.'y')THEN
-              CSCALE2(1:1)=READC('Fit#2 [c]onstant, [s]urface or [n]one (c/s/n)',CSCALE2,'csn')
+              C255=READC('Fit#2 [c]onstant, [s]urface or [n]one (c/s/n)',CSCALE2,'csn')
+              CSCALE2=C255(1:1)
               IF(CSCALE2.EQ.'s')THEN
                 WRITE(CDUMMY,*) GX2
                 GX2=READILIM('Polynomial degree in X direction',CDUMMY,0,INT(SQRT(REAL(MAXNCOEFF)))-1)
                 WRITE(CDUMMY,*) GY2
                 GY2=READILIM('Polynomial degree in Y direction',CDUMMY,0,INT(SQRT(REAL(MAXNCOEFF)))-1)
-                CMEDIANA2(1:1)=READC('Refine fit minimizing median (y/n)',CMEDIANA2,'yn')
+                C255=READC('Refine fit minimizing median (y/n)',CMEDIANA2,'yn')
+                CMEDIANA2=C255(1:1)
                 IF(CMEDIANA2.EQ.'y')THEN
                   WRITE(CDUMMY,*) YRMSTOL2
                   YRMSTOL2=READF('YRMSTOL for DOWNHILL',CDUMMY)
                 END IF
-                CREFINE2(1:1)=READC('Refine fit removing deviating points (y/n)',CREFINE2,'yn')
+                C255=READC('Refine fit removing deviating points (y/n)',CREFINE2,'yn')
+                CREFINE2=C255(1:1)
               END IF
               IF(CSCALE2.NE.'n')THEN
-                CSCALE2OPER(1:1)=READC('[s]ubtract fit or [d]ivide by fit (s/d)',CSCALE2OPER,'sd')
+                C255=READC('[s]ubtract fit or [d]ivide by fit (s/d)',CSCALE2OPER,'sd')
+                CSCALE2OPER=C255(1:1)
                 IF(CSCALE2OPER.EQ.'d')THEN
                   WRITE(*,101) 'WARNING: normalization is recomended to preserve number of counts'
-                  CNOR2(1:1)=READC('Normalize fit (y/n)','y','yn')
+                  C255=READC('Normalize fit (y/n)','y','yn')
+                  CNOR2=C255(1:1)
                 ELSE
                   CNOR2='n'
                 END IF
@@ -1369,7 +1415,8 @@
                 WRITE(CDUMMY,*) NITER
                 NITER=READILIM('No. of iterations',CDUMMY,1,10)
                 IF(CINTERACTIVE.EQ.'y')THEN
-                  CPAUSE(1:1)=READC('Pause between intermediate plots (y/n)','n','yn')
+                  C255=READC('Pause between intermediate plots (y/n)','n','yn')
+                  CPAUSE=C255(1:1)
                 ELSE
                   CPAUSE='n'
                 END IF
@@ -1500,7 +1547,8 @@
                 END IF
               END DO
               IF(CINTERACTIVE.EQ.'y')THEN
-                CMORE(1:1)=READC('More fits (y/n)',CMORE,'yn')
+                C255=READC('More fits (y/n)',CMORE,'yn')
+                CMORE=C255(1:1)
                 LASK=(CMORE.EQ.'y')
               ELSE
                 LASK=.FALSE.
@@ -1513,7 +1561,8 @@
 !------------------------------------------------------------------------------
 ! Estudio estadistico del ruido frente a la sen~al en cada subcuadrante.
         IF((CINTERACTIVE.EQ.'y').AND.(CCONT.EQ.'y'))THEN
-          CCONT(1:1)=READC('Perform a detailed statistical analysis of any subquadrant (y/n)','n','yn')
+          C255=READC('Perform a detailed statistical analysis of any subquadrant (y/n)','n','yn')
+          CCONT=C255(1:1)
           IF(CCONT.EQ.'y')THEN
             IF(CCONT.EQ.'y')THEN
               NIMSTAT=10
@@ -1536,7 +1585,8 @@
 !------------------------------------------------------------------------------
         IF((CINTERACTIVE.EQ.'y').OR.(CINTERACTIVE.EQ.'m'))THEN
           IF(CINTERACTIVE.EQ.'y')THEN
-            CCONT(1:1)=READC('Do you want to coadd images (y/m/x)','y','ymx')
+            C255=READC('Do you want to coadd images (y/m/x)','y','ymx')
+            CCONT=C255(1:1)
           ELSE
             CCONT='m'
           END IF
@@ -1559,7 +1609,8 @@
           END IF
 ! decidimos si eliminamos pixels extran~os
           WRITE(*,*)
-          CREJECT(1:1)=READC('Reject hot/cool pixels (y/n)',CREJECT,'yn')
+          C255=READC('Reject hot/cool pixels (y/n)',CREJECT,'yn')
+          CREJECT=C255(1:1)
           IF(CREJECT.EQ.'y')THEN
 ! numero de pixels umbral para deteccion de pixels calientes
             WRITE(CDUMMY,*) FPIXELTHRESHOLDCR
@@ -2107,10 +2158,12 @@
         WRITE(*,*) NM2
         IF(LANY)THEN
           WRITE(*,101) '>>> New mask is different.'
-          CCONT(1:1)=READC('Do you want to apply this new mask (y/n/p=previous)','y','ynp')
+          C255=READC('Do you want to apply this new mask (y/n/p=previous)','y','ynp')
+          CCONT=C255(1:1)
         ELSE
           WRITE(*,101) '>>> New mask is identical to previous mask'
-          CCONT(1:1)=READC('Do you want to apply this new mask anyway (y/n)','y','yn')
+          C255=READC('Do you want to apply this new mask anyway (y/n)','y','yn')
+          CCONT=C255(1:1)
         END IF
         IF(CCONT.EQ.'p')THEN
           DO I=1,NYMAXB9_
@@ -2121,78 +2174,95 @@
           CCONT='y'
         END IF
         IF(CCONT.EQ.'y')THEN
-          CCONT(1:1)=READC('Change parameters in new iteration (y/n)','n','yn')
+          C255=READC('Change parameters in new iteration (y/n)','n','yn')
+          CCONT=C255(1:1)
           IF(CCONT.EQ.'y')THEN
             WRITE(CDUMMY,*) FPIXELTHRESHOLD
             FPIXELTHRESHOLD=READF('Threshold in no. of pixels > Times_Sigma',CDUMMY)
             WRITE(CDUMMY,'(F8.6)') FTAILS
             FTAILS=READF('Factor to search for extended mask pixels (0 <= factor <= 1)',CDUMMY)
-            CINTERACTIVE(1:1)=READC('Run procedure in interactive mode (y/m/n)',CINTERACTIVE,'ymn')
+            C255=READC('Run procedure in interactive mode (y/m/n)',CINTERACTIVE,'ymn')
+            CINTERACTIVE=C255(1:1)
             IF(CINTERACTIVE.NE.'y')THEN
-              CSCALE1(1:1)=READC('Fit#1 [c]onstant, [s]urface or [n]one (c/s/n)',CSCALE1,'csn')
+              C255=READC('Fit#1 [c]onstant, [s]urface or [n]one (c/s/n)',CSCALE1,'csn')
+              CSCALE1=C255(1:1)
               IF(CSCALE1.EQ.'s')THEN
                 WRITE(CDUMMY,*) GX1
                 GX1=READILIM('Polynomial degree in X direction',CDUMMY,0,INT(SQRT(REAL(MAXNCOEFF)))-1)
                 WRITE(CDUMMY,*) GY1
                 GY1=READILIM('Polynomial degree in Y direction',CDUMMY,0,INT(SQRT(REAL(MAXNCOEFF)))-1)
-                CMEDIANA1(1:1)=READC('Refine fit minimizing median (y/n)',CMEDIANA1,'yn')
+                C255=READC('Refine fit minimizing median (y/n)',CMEDIANA1,'yn')
+                CMEDIANA1=C255(1:1)
                 IF(CMEDIANA1.EQ.'y')THEN
                   WRITE(CDUMMY,*) YRMSTOL1
                   YRMSTOL1=READF('YRMSTOL for DOWNHILL',CDUMMY)
                 END IF
-                CREFINE1(1:1)=READC('Refine fit removing deviating points (y/n)',CREFINE1,'yn')
+                C255=READC('Refine fit removing deviating points (y/n)',CREFINE1,'yn')
+                CREFINE1=C255(1:1)
               END IF
               IF(CSCALE1.NE.'n')THEN
-                CSCALE1OPER(1:1)=READC('[s]ubtract fit or [d]ivide by fit (s/d)',CSCALE1OPER,'sd')
+                C255=READC('[s]ubtract fit or [d]ivide by fit (s/d)',CSCALE1OPER,'sd')
+                CSCALE1OPER=C255(1:1)
                 IF(CSCALE1OPER.EQ.'d')THEN
                   WRITE(*,101) 'WARNING: normalization is recomended to preserve number of counts'
-                  CNOR1(1:1)=READC('Normalize fit (y/n)','y','yn')
+                  C255=READC('Normalize fit (y/n)','y','yn')
+                  CNOR1=C255(1:1)
                 ELSE
                   CNOR1='n'
                 END IF
               END IF
 !
-              CSCALE2(1:1)=READC('Fit#2 [c]onstant, [s]urface or [n]one (c/s/n)',CSCALE2,'csn')
+              C255=READC('Fit#2 [c]onstant, [s]urface or [n]one (c/s/n)',CSCALE2,'csn')
+              CSCALE2=C255(1:1)
               IF(CSCALE2.EQ.'s')THEN
               WRITE(CDUMMY,*) GX2
                 GX2=READILIM('Polynomial degree in X direction',CDUMMY,0,INT(SQRT(REAL(MAXNCOEFF)))-1)
                 WRITE(CDUMMY,*) GY2
                 GY2=READILIM('Polynomial degree in Y direction',CDUMMY,0,INT(SQRT(REAL(MAXNCOEFF)))-1)
-                CMEDIANA2(1:1)=READC('Refine fit minimizing median (y/n)',CMEDIANA2,'yn')
+                C255=READC('Refine fit minimizing median (y/n)',CMEDIANA2,'yn')
+                CMEDIANA2=C255(1:1)
                 IF(CMEDIANA2.EQ.'y')THEN
                   WRITE(CDUMMY,*) YRMSTOL2
                   YRMSTOL2=READF('YRMSTOL for DOWNHILL',CDUMMY)
                 END IF
-                CREFINE2(1:1)=READC('Refine fit removing deviating points (y/n)',CREFINE2,'yn')
+                C255=READC('Refine fit removing deviating points (y/n)',CREFINE2,'yn')
+                CREFINE2=C255(1:1)
               END IF
               IF(CSCALE2.NE.'n')THEN
-                CSCALE2OPER(1:1)=READC('[s]ubtract fit or [d]ivide by fit (s/d)',CSCALE2OPER,'sd')
+                C255=READC('[s]ubtract fit or [d]ivide by fit (s/d)',CSCALE2OPER,'sd')
+                CSCALE2OPER=C255(1:1)
                 IF(CSCALE2OPER.EQ.'d')THEN
                   WRITE(*,101) 'WARNING: normalization is recomended to preserve number of counts'
-                  CNOR2(1:1)=READC('Normalize fit (y/n)','y','yn')
+                  C255=READC('Normalize fit (y/n)','y','yn')
+                  CNOR2=C255(1:1)
                 ELSE
                   CNOR2='n'
                 END IF
               END IF
 !
-              CFILL(1:1)=READC('Fill masked regions with 2D polynomial fits (y/n)',CFILL,'yn')
+              C255=READC('Fill masked regions with 2D polynomial fits (y/n)',CFILL,'yn')
+              CFILL=C255(1:1)
               IF(CFILL.EQ.'y')THEN
                 WRITE(CDUMMY,*) GXFILL
                 GXFILL=READILIM('Polynomial degree in X direction',CDUMMY,0,INT(SQRT(REAL(MAXNCOEFF)))-1)
                 WRITE(CDUMMY,*) GYFILL
                 GYFILL=READILIM('Polynomial degree in Y direction',CDUMMY,0,INT(SQRT(REAL(MAXNCOEFF)))-1)
-                CMEDIANAFILL(1:1)=READC('Refine fit minimizing median (y/n)',CMEDIANAFILL,'yn')
+                C255=READC('Refine fit minimizing median (y/n)',CMEDIANAFILL,'yn')
+                CMEDIANAFILL=C255(1:1)
                 IF(CMEDIANAFILL.EQ.'y')THEN
                   WRITE(CDUMMY,*) YRMSTOLFILL
                   YRMSTOLFILL=READF('YRMSTOL for DOWNHILL',CDUMMY)
                 END IF
-                CREFINEFILL(1:1)=READC('Refine fit removing deviating points (y/n)',CREFINEFILL,'yn')
+                C255=READC('Refine fit removing deviating points (y/n)',CREFINEFILL,'yn')
+                CREFINEFILL=C255(1:1)
               END IF
-              CERRSKY(1:1)=READC('Compute error in median sky (y/n)',CERRSKY,'yn')
+              C255=READC('Compute error in median sky (y/n)',CERRSKY,'yn')
+              CERRSKY=C255(1:1)
 !
               IF(CINTERACTIVE.EQ.'n')THEN
                 WRITE(*,*)
-                CREJECT(1:1)=READC('Reject hot pixels (y/n)',CREJECT,'yn')
+                C255=READC('Reject hot pixels (y/n)',CREJECT,'yn')
+                CREJECT=C255(1:1)
                 IF(CREJECT.EQ.'y')THEN
                   WRITE(CDUMMY,*) FPIXELTHRESHOLDCR
                   FPIXELTHRESHOLDCR=READF('Threshold in no. of pixels > Times_Sigma for hot pixels',CDUMMY)
@@ -2203,7 +2273,8 @@
               WRITE(*,100) '>>> Total no. of operations in stack: '
               WRITE(*,*) NOPER_STACK
               IF(NOPER_STACK.GT.0)THEN
-                CSTACK(1:1)=READC('Apply operations in stack (y/n)',CSTACK,'yn')
+                C255=READC('Apply operations in stack (y/n)',CSTACK,'yn')
+                CSTACK=C255(1:1)
               END IF
             END IF
           END IF
@@ -2907,6 +2978,7 @@
         REAL OLD_CH
         CHARACTER*1 CPOST
         CHARACTER*50 CMEAN,CSIGMA
+        CHARACTER*255 C255
         LOGICAL SUBMASKBOX9(256,256,9)
 !
 !delete COMMON/BLKIMAGEN1/IMAGEN
@@ -2931,7 +3003,8 @@
         GAIN=READF('Gain (e/ADU)..........','@')
         RNOISE=READF('Readout Noise (ADU)...','@')
         NCOADDS=READI('No. of coadds.........','@')
-        CPOST(1:1)=READC('Create a Postscript plot (y/n)','n','yn')
+        C255=READC('Create a Postscript plot (y/n)','n','yn')
+        CPOST=C255(1:1)
 !------------------------------------------------------------------------------
         NK=0
         NK1=0
