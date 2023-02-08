@@ -998,7 +998,7 @@
             CFITOK='y'
           END IF
           IF(CFITOK.EQ.'y')THEN
-            IF(9*NBOX_CENTROID.LE.NXMAX/3)THEN
+            IF(9*NBOX_CENTROID.LE.INT(REAL(NXMAX)/3))THEN
               DO I=1,3*NBOX_CENTROID
                 DO J=1,3*NBOX_CENTROID
                   IMAGEN(J,I+NAXIS(2,NEWBUFF4),NEWBUFF4)=IMAGEN(J,I,NEWBUFF2)
