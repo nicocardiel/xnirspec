@@ -38,6 +38,7 @@
 ! dentro del grid definido por MAX_XBUTT y MAX_YBUTT
 !------------------------------------------------------------------------------
         INCLUDE 'button.inc'
+        INTEGER READI
 !------------------------------------------------------------------------------
 ! Variables locales
         INTEGER I

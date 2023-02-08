@@ -53,8 +53,8 @@
         COMMON/BUTTON9/MODOOVER_BUTT
 !------------------------------------------------------------------------------
 ! Miscellany
-        INTEGER TRUELEN,TRUEBEG
-        INTEGER READI
-        REAL READF
-        CHARACTER*255 READC
+!       INTEGER TRUELEN,TRUEBEG
+!       INTEGER READI
+!       REAL READF
+!       CHARACTER*255 READC
 !------------------------------------------------------------------------------

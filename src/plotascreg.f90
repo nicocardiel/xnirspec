@@ -15,7 +15,6 @@
         INTEGER ASCNUMBER(NMAXBUFF)
         REAL XMIN,XMAX,YMIN,YMAX
         REAL X,Y
-        REAL DX
         REAL ASCCHEIGHT(NMAXBUFF)                        !plot marks from ASCII
         CHARACTER*255 ASCREGFILE(NMAXBUFF)
         CHARACTER*255 CLINEA

@@ -57,6 +57,7 @@
 ! de plots. Subrutina copiada de codigo de PGENV de [TJP]
 !------------------------------------------------------------------------------
         INCLUDE 'button.inc'
+        INTEGER TRUELEN
 !------------------------------------------------------------------------------
 ! Variables locales
         CHARACTER*10 XOPTS,YOPTS

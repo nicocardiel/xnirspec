@@ -52,7 +52,7 @@
         INTEGER BITPIX
         INTEGER ISTATUS,IREADWRITE,IUNIT
         INTEGER BLOCKSIZE,NULLVAL
-        INTEGER NKEYS,NSPACE,NFOUND
+        INTEGER NKEYS,NSPACE
         INTEGER NAXES
         INTEGER NAXIS_(3)                                  !OJO: el limite es 2
         INTEGER NANYNULLS
