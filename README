@@ -18,7 +18,7 @@ Webpage (source): https://github.com/nicocardiel/xnirspec
 Installation example (Mac OSX):
 
 $ ./autogen.sh
-$ ./configure FC=gfortran-mp-12
+$ ./configure FC=gfortran-mp-12 FCFLAGS=-Wall
 $ make
 $ sudo make install
 
@@ -27,9 +27,9 @@ allow different dimensions the code should be reinstalled defining the
 parameters NXMAX (equivalent to NAXIS1), NYMAX (equivalent to NAXIS2) and
 NXYMAX (the maximum value of NXMAX and NYMAX). For example:
 
-$ ./configure FC=gfortran-mp-12 NXMAX=6200 NYMAX=5000 NXYMAX=6200
+$ ./configure FC=gfortran-mp-12 FCFLAGS=-Wall NXMAX=6200 NYMAX=5000 NXYMAX=6200
 
 To include compatibility with SExtractor it is necessary to indicate the
 location of its executable:
 
-$ ./configure FC=gfortran-mp-12 SEXPATH=/usr/local/bin
+$ ./configure FC=gfortran-mp-12 FCFLAGS=-Wall SEXPATH=/usr/local/bin
