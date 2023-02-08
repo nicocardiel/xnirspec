@@ -3,4 +3,5 @@ CALL Deallocate_Array_IMAGEN_
 CALL Deallocate_Array_LNULL
 CALL Deallocate_Array_COEFFBL
 CALL Deallocate_Array_COEFFBA
+CALL Deallocate_Arrays_XYPB
 

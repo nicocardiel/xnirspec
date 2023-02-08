@@ -11,12 +11,14 @@
         USE Dynamic_Array_LNULL
         USE Dynamic_Array_COEFFBL
         USE Dynamic_Array_COEFFBA
+        USE Dynamic_Arrays_XYPB
         IMPLICIT NONE
         INCLUDE 'interface_imagen.inc'
         INCLUDE 'interface_imagen_.inc'
         INCLUDE 'interface_lnull.inc'
         INCLUDE 'interface_coeffbl.inc'
         INCLUDE 'interface_coeffba.inc'
+        INCLUDE 'interface_xypb.inc'
 ! parameters
         INCLUDE 'dimensions.inc'
         INCLUDE 'largest.inc'
@@ -122,8 +124,8 @@
 !delete REAL IMAGEN_(NXMAX,NYMAX)
         REAL FMEAN,FSIGMA,FMEDIAN,FMIN,FMAX  !basic statistic of current region
         REAL FMEAN_,FSIGMA_
-        REAL XCUTX(NXYMAX),YCUTX(NXYMAX)     !X cut
-        REAL XP(NXYMAX),YP(NXYMAX)               !generic matrix for X or Y cut 
+        REAL XCUTX(NXYMAX),YCUTX(NXYMAX)     !X,Y cuts
+        REAL XP(NXYMAX),YP(NXYMAX)
         REAL XSTACK(NXYMAX),YSTACK(NXYMAX)      !coordinates of points in stack
         REAL COEFFBL00(20),COEFFBA00(20)
         REAL FSHIFT                                        !Y shift of BL lines
@@ -262,6 +264,7 @@
         CALL Initialize_Dynamic_Array_LNULL
         CALL Initialize_Dynamic_Array_COEFFBL
         CALL Initialize_Dynamic_Array_COEFFBA
+        CALL Initialize_Dynamic_Arrays_XYPB
         WRITE(*,100) 'info> shape of dynamic array IMAGEN :'
         WRITE(*,*) shape(IMAGEN)
         WRITE(*,100) 'info> shape of dynamic array LNULL  :'
@@ -272,6 +275,10 @@
         WRITE(*,*) shape(COEFFBL)
         WRITE(*,100) 'info> shape of dynamic array COEFFBA:'
         WRITE(*,*) shape(COEFFBA)
+        WRITE(*,100) 'info> shape of dynamic array XPB:'
+        WRITE(*,*) shape(XPB)
+        WRITE(*,100) 'info> shape of dynamic array YPB:'
+        WRITE(*,*) shape(YPB)
 !------------------------------------------------------------------------------
 !------------------------------------------------------------------------------
 ! Note: the pattern of the frames in box-9 is the following:

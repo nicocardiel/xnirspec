@@ -3,25 +3,33 @@
 ! K1,K2: (output) region sumada para hacer el corte
 ! XP,YP: corte calculado y dibujado
         SUBROUTINE PCUT(CAXIS,MODECUT,K1,K2,XP,YP)
+        USE Dynamic_Arrays_XYPB
         IMPLICIT NONE
-        CHARACTER*1 CAXIS
-        INTEGER MODECUT
+        INCLUDE 'interface_xypb.inc'
 !
         INCLUDE 'dimensions.inc'
         INCLUDE 'largest.inc'
+! subroutine parameters
+        CHARACTER*1 CAXIS
+        INTEGER MODECUT
+        INTEGER K1,K2
+        REAL XP(NXYMAX*NOVERSAMPMAX),YP(NXYMAX*NOVERSAMPMAX)
 !
         INTEGER I,J,L
-        INTEGER K1,K2
         INTEGER NX1,NX2,NY1,NY2
         INTEGER IX1,IX2,IY1,IY2
         INTEGER NCBUFF,NBUFF
         INTEGER NAXIS(2,NMAXBUFF)
+        INTEGER :: AllocateStatus, DeAllocateStatus
         REAL XC,YC
-        REAL XP(NXYMAX*NOVERSAMPMAX),YP(NXYMAX*NOVERSAMPMAX)
-        REAL YP_OVER(NXYMAX*NOVERSAMPMAX)
-        REAL XP_ERR(NXYMAX*NOVERSAMPMAX),YP_ERR(NXYMAX*NOVERSAMPMAX)
-        REAL XPB(NXYMAX*NOVERSAMPMAX,NMAXBUFF)
-        REAL YPB(NXYMAX*NOVERSAMPMAX,NMAXBUFF)
+!delete REAL YP_OVER(NXYMAX*NOVERSAMPMAX)
+!delete REAL XP_ERR(NXYMAX*NOVERSAMPMAX)
+!delete REAL YP_ERR(NXYMAX*NOVERSAMPMAX)
+        REAL, DIMENSION(:), ALLOCATABLE :: YP_OVER
+        REAL, DIMENSION(:), ALLOCATABLE :: XP_ERR
+        REAL, DIMENSION(:), ALLOCATABLE :: YP_ERR
+!delete REAL XPB(NXYMAX*NOVERSAMPMAX,NMAXBUFF)
+!delete REAL YPB(NXYMAX*NOVERSAMPMAX,NMAXBUFF)
         CHARACTER*1 CH
         CHARACTER*50 GLABEL
         LOGICAL LOVERCUTS,LOVERPLOT_USED
@@ -31,8 +39,15 @@
         COMMON/BLKIMAGEN2/NCBUFF
         COMMON/BLKXYLIMPLOT/NX1,NX2,NY1,NY2
         COMMON/BLKP_ALLBUFF_L/LPB
-        COMMON/BLKP_ALLBUFF_XY/XPB,YPB
+!delete COMMON/BLKP_ALLBUFF_XY/XPB,YPB
         COMMON/BLKLOVERCUTS/LOVERCUTS
+!------------------------------------------------------------------------------
+        ALLOCATE (YP_OVER(NXYMAX*NOVERSAMPMAX), STAT = AllocateStatus)
+        IF (AllocateStatus /= 0) STOP "*** Not enough memory defining the array YP_OVER ***"
+        ALLOCATE (XP_ERR(NXYMAX*NOVERSAMPMAX), STAT = AllocateStatus)
+        IF (AllocateStatus /= 0) STOP "*** Not enough memory defining the array XP_ERR ***"
+        ALLOCATE (YP_ERR(NXYMAX*NOVERSAMPMAX), STAT = AllocateStatus)
+        IF (AllocateStatus /= 0) STOP "*** Not enough memory defining the array YP_ERR ***"
 !------------------------------------------------------------------------------
         DO I=1,NXYMAX
           XP_ERR(I)=0.0
@@ -154,7 +169,15 @@
 !------------------------------------------------------------------------------
 ! si hay mas buffers con las mismas dimensiones, dibujamos cortes superpuestos
 ! (solo lo hacemos con los buffers de datos)
-        IF(.NOT.LOVERCUTS) RETURN
+        IF(.NOT.LOVERCUTS)THEN
+          DEALLOCATE(YP_OVER, STAT = DeAllocateStatus)
+          IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array YP_OVER ***"
+          DEALLOCATE(XP_ERR, STAT = DeAllocateStatus)
+          IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array XP_ERR ***"
+          DEALLOCATE(YP_ERR, STAT = DeAllocateStatus)
+          IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array YP_ERR ***"
+          RETURN
+        END IF
         LOVERPLOT_USED=.FALSE.
         DO NBUFF=1,NMAXBUFF/2
           IF(NBUFF.NE.NCBUFF)THEN
@@ -188,6 +211,13 @@
             CALL SUBPLOTBIS(NAXIS(2,NCBUFF),NY1,NY2,XP,YP,XP_ERR,YP_ERR,.FALSE.,.FALSE.,NCBUFF,201,1.0)
           END IF
         END IF
+!------------------------------------------------------------------------------
+        DEALLOCATE(YP_OVER, STAT = DeAllocateStatus)
+        IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array YP_OVER ***"
+        DEALLOCATE(XP_ERR, STAT = DeAllocateStatus)
+        IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array XP_ERR ***"
+        DEALLOCATE(YP_ERR, STAT = DeAllocateStatus)
+        IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array YP_ERR ***"
 !------------------------------------------------------------------------------
 100     FORMAT(A,$)
         END

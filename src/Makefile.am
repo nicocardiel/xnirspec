@@ -15,6 +15,7 @@ dynamic_array_coeffba_.f90 \
 dynamic_array_coeffb_.f90 \
 dynamic_array_fpixused.f90 \
 dynamic_arrays_skysub.f90 \
+dynamic_arrays_xypb.f90 \
 activebut.f90 \
 arclength.f90 \
 binsearch.f90 \

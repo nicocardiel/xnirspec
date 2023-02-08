@@ -1,5 +1,8 @@
         SUBROUTINE HPLOT(COMMAND)
+        USE Dynamic_Arrays_XYPB
         IMPLICIT NONE
+        INCLUDE 'interface_xypb.inc'
+! subroutine parameter
         CHARACTER*(*) COMMAND
 !
         INCLUDE 'dimensions.inc'
@@ -18,8 +21,8 @@
         REAL OLD_CH
         REAL XC,YC,XC1,XC2,YC1,YC2
         REAL CHLAST
-        REAL XPB(NXYMAX*NOVERSAMPMAX,NMAXBUFF)
-        REAL YPB(NXYMAX*NOVERSAMPMAX,NMAXBUFF)
+!delete REAL XPB(NXYMAX*NOVERSAMPMAX,NMAXBUFF)
+!delete REAL YPB(NXYMAX*NOVERSAMPMAX,NMAXBUFF)
         CHARACTER*1 CH
         CHARACTER*2 CBUFF
         CHARACTER*255 CLABX,CLABY,CLABG
@@ -32,7 +35,7 @@
         COMMON/BLKPCH/CHLAST
         COMMON/BLKPLABELS/CLABX,CLABY,CLABG
         COMMON/BLKP_ALLBUFF_L/LPB
-        COMMON/BLKP_ALLBUFF_XY/XPB,YPB
+!delete COMMON/BLKP_ALLBUFF_XY/XPB,YPB
 !------------------------------------------------------------------------------
 ! comenzamos buffering
         CALL PGBBUF
