@@ -27,6 +27,7 @@
         INTEGER NDEGPOLY
         INTEGER ITER,ITERMAX
         REAL BG,FG
+        REAL BGEFF, FGEFF
 !delete REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
         REAL DBIN,DBIN2
         REAL XPLOT(NBINMAX)
@@ -61,14 +62,17 @@
         DO K=1,NBIN
           NPIX(K)=0
         END DO
-        DBIN=(FG-BG)/REAL(NBIN)                            !anchura de cada bin
+        DBIN=(FG-BG)/REAL(NBIN)                              !initial bin width
+        BGEFF = BG-DBIN/2                                         !effective BG
+        FGEFF = FG+DBIN/2                                         !effective FG
+        DBIN=(FGEFF-BGEFF)/REAL(NBIN)                      !recompute bin width
         DO K=1,NBIN
-          XPLOT(K)=BG+(0.5+REAL(K-1))*DBIN                          !bin center
+          XPLOT(K)=BGEFF+(0.5+REAL(K-1))*DBIN                       !bin center
         END DO
 !
         DO I=NY1,NY2
           DO J=NX1,NX2
-            K=INT((IMAGEN(J,I,NBUFF)-BG)/DBIN)+1
+            K=INT((IMAGEN(J,I,NBUFF)-BGEFF)/DBIN)+1
             IF((K.GE.1).AND.(K.LE.NBIN)) NPIX(K)=NPIX(K)+1
           END DO
         END DO
