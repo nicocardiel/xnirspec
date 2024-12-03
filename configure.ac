@@ -19,11 +19,17 @@ OSNAME=`uname -s`
 case "$OSNAME" in
   Darwin*)
     AC_MSG_RESULT(Darwin)
-    LDFLAGS="$LDFLAGS -L/opt/local/lib"
+    MY_DIR="/opt/local/lib"
+    if test -d "$MY_DIR"; then
+      LDFLAGS="$LDFLAGS -L$MY_DIR"
+    fi
   ;;
   Linux*)
     AC_MSG_RESULT(Linux)
-    LDFLAGS="$LDFLAGS -L/usr/local/pgplot"
+    MY_DIR="/usr/local/pgplot"
+    if test -d "$MY_DIR"; then
+      LDFLAGS="$LDFLAGS -L$MY_DIR"
+    fi
   ;;
 esac
 
