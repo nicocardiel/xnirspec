@@ -21,9 +21,10 @@
 !
         INTEGER I,J,K,L,I1,I2,J1,J2,I0,J0
         INTEGER II,JJ
+        INTEGER ISTEPS,JSTEPS
         INTEGER NORIGEN,NB,NB_
         INTEGER NB_CANCEL,NB_EXIT
-        INTEGER NAXIS(2,NMAXBUFF)
+        INTEGER NAXIS(2,NMAXBUFF),NAXISDUM
         INTEGER NFRAMES(NMAXBUFF)
         INTEGER NMED1,NMED2
         INTEGER NQUAD0,NQUAD1
@@ -73,6 +74,7 @@
         LOGICAL IFCHAN(NXMAX),IFSCAN(NYMAX)
         LOGICAL LFIT(NXYMAX)
         LOGICAL LOK
+        LOGICAL LOOP
 !
 !delete COMMON/BLKIMAGEN1/IMAGEN             !imagen FITS leida en formato REAL
 !delete COMMON/BLKIMAGEN1_/PIXEL                !es global para ahorrar memoria
@@ -1057,6 +1059,7 @@
               WRITE(*,101) '(7) 1-D: 1,0,1,0,...,1,...,0,1,0,1 filter'
               WRITE(*,101) '(8) Set to zero below threshold'
               WRITE(*,101) '(9) Set to constant for data in a range'
+              WRITE(*,101) '(b) Bin and expand (preserves size)'
               WRITE(*,101) '(k) Apply predefined kernel'
               WRITE(*,101) '(m) Mathematical transformation'
               WRITE(*,101) '(x) Reverse image in the x direction'
@@ -1068,7 +1071,7 @@
               WRITE(*,101) 'r.m.s. is stored in the associated '
               WRITE(*,101) '  error buffer'
               WRITE(*,*)
-              C255=READC('Option',CFILT,'0123456789kmxy')
+              C255=READC('Option',CFILT,'0123456789bkmxy')
               CFILT=C255(1:1)
 !
               NAXIS(1,NBUFF1)=NAXIS(1,NBUFF0)
@@ -1141,10 +1144,75 @@
                 NEWCONSTANT=READF('New constant','@')
                 THRESHOLD1=READF('Mininum value for range','@')
                 THRESHOLD2=READF('Maximum value for range','@')
+              ELSEIF(CFILT.EQ.'b')THEN
+                C255=READC('Axis direction (x/y)',CAXIS,'xy')
+                CAXIS=C255(1:1)
+                IF(CAXIS.EQ.'x')THEN
+                  NAXISDUM=NX2-NX1+1
+                ELSE
+                  NAXISDUM=NY2-NY1+1
+                END IF
+                LOOP=.TRUE.
+                DO WHILE(LOOP)
+                  WRITE(*,100) 'Valid divisors of '
+                  WRITE(CDUMMY,*) NAXISDUM
+                  CALL RMBLANK(CDUMMY,CDUMMY,L)
+                  WRITE(*,101) CDUMMY(1:L)
+                  WRITE(*,100) '--> 1'
+                  DO I=2,NAXISDUM
+                    IF(MOD(NAXISDUM,I).EQ.0)THEN
+                      WRITE(*,100) ', '
+                      WRITE(CDUMMY,*) I
+                      CALL RMBLANK(CDUMMY,CDUMMY,L)
+                      WRITE(*,100) CDUMMY(1:L)
+                    END IF
+                  END DO
+                  WRITE(*,*)
+                  IWIDTH=READILIM('Binning (pixels)','@',1,NAXISDUM)
+                  IF(MOD(NAXISDUM,IWIDTH).EQ.0)THEN
+                    LOOP=.FALSE.
+                  ELSE
+                    WRITE(*,101) 'ERROR: not a valid divisor. Try again!'
+                  END IF
+                END DO
               END IF
 ! execute filter
               NEXTINFO=0
-              IF(CFILT.EQ.'x')THEN
+              IF(CFILT.EQ.'b')THEN
+                IF(CAXIS.EQ.'x')THEN
+                  DO I=NY1,NY2
+                    JSTEPS=(NX2-NX1+1)/IWIDTH
+                    DO JJ=1,JSTEPS
+                      J1=(JJ-1)*IWIDTH+NX1
+                      J2=J1+(IWIDTH-1)
+                      FDUMMY=0.0
+                      DO J=J1,J2
+                        FDUMMY=FDUMMY+IMAGEN(J,I,NBUFF0)
+                      END DO
+                      FDUMMY=FDUMMY/REAL(IWIDTH)
+                      DO J=J1,J2
+                        IMAGEN(J,I,NBUFF1)=FDUMMY
+                      END DO
+                    END DO
+                  END DO
+                ELSE
+                  DO J=NX1,NX2
+                    ISTEPS=(NY2-NY1+1)/IWIDTH
+                    DO II=1,ISTEPS
+                      I1=(II-1)*IWIDTH+NY1
+                      I2=I1+(IWIDTH-1)
+                      FDUMMY=0.0
+                      DO I=I1,I2
+                        FDUMMY=FDUMMY+IMAGEN(J,I,NBUFF0)
+                      END DO
+                      FDUMMY=FDUMMY/REAL(IWIDTH)
+                      DO I=I1,I2
+                        IMAGEN(J,I,NBUFF1)=FDUMMY
+                      END DO
+                    END DO
+                  END DO
+                END IF
+              ELSEIF(CFILT.EQ.'x')THEN
                 DO I=NY1,NY2
                   DO J=NX1,NX2
                     IMAGEN(J,I,NBUFF1)=IMAGEN(NX2+NX1-J,I,NBUFF0)
