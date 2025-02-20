@@ -33,6 +33,7 @@
         INCLUDE 'largest.inc'
 ! funciones auxiliares
         INTEGER READI
+        INTEGER READILIM
         INTEGER TRUELEN
 ! variables globales (COMMONs)
 !delete REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
@@ -54,7 +55,7 @@
         INTEGER BLOCKSIZE,NULLVAL
         INTEGER NKEYS,NSPACE
         INTEGER NAXES
-        INTEGER NAXIS_(3)                                  !OJO: el limite es 2
+        INTEGER NAXIS_(3),NAXIS3FIXED                      !OJO: el limite es 3
         INTEGER NANYNULLS
         REAL FROW(NXYMAX)
         CHARACTER*50 COMMENT
@@ -160,7 +161,7 @@
           WRITE(*,100) 'CFITSIO> BITPIX: '
           WRITE(*,*) BITPIX
         END IF
-! leemos NAXIS, NAXIS1 y NAXIS2
+! leemos NAXIS, NAXIS1, NAXIS2 y NAXIS3
         CALL FTGKYJ(IUNIT,'NAXIS',NAXES,COMMENT,ISTATUS)
         IF(.NOT.LSHOW)THEN
           WRITE(*,100) 'CFITSIO> NAXIS : '
@@ -170,17 +171,18 @@
         IF(NAXES.EQ.1)THEN
           CALL FTGKYJ(IUNIT,'NAXIS1',NAXIS_(1),COMMENT,ISTATUS)
           NAXIS_(2)=1
+          NAXIS_(3)=1
         ELSEIF(NAXES.EQ.2)THEN
           CALL FTGKYJ(IUNIT,'NAXIS1',NAXIS_(1),COMMENT,ISTATUS)
           CALL FTGKYJ(IUNIT,'NAXIS2',NAXIS_(2),COMMENT,ISTATUS)
+          NAXIS_(3)=1
         ELSEIF(NAXES.EQ.3)THEN
           CALL FTGKYJ(IUNIT,'NAXIS1',NAXIS_(1),COMMENT,ISTATUS)
           CALL FTGKYJ(IUNIT,'NAXIS2',NAXIS_(2),COMMENT,ISTATUS)
           CALL FTGKYJ(IUNIT,'NAXIS3',NAXIS_(3),COMMENT,ISTATUS)
           IF(NAXIS_(3).EQ.1)THEN
             WRITE(*,101) 'WARNING: NAXIS=3 with NAXIS3=1. Reading anyway!'
-          ELSE
-            LERROR=.TRUE.
+            NAXIS3FIXED=1
           END IF
         ELSE
           LERROR=.TRUE.
@@ -201,6 +203,13 @@
           WRITE(*,*) NAXIS_(1)
           WRITE(*,100) 'CFITSIO> NAXIS2: '
           WRITE(*,*) NAXIS_(2)
+          IF(NAXES.EQ.3)THEN
+            WRITE(*,100) 'CFITSIO> NAXIS3: '
+            WRITE(*,*) NAXIS_(3)
+          END IF
+        END IF
+        IF(NAXIS_(3).GT.1)THEN
+          NAXIS3FIXED=READILIM('Slice number along NAXIS3','@',1,NAXIS_(3))
         END IF
 !
         IF((IROTATE.EQ.0).OR.(IROTATE.EQ.180).OR.(IROTATE.EQ.-180))THEN
@@ -308,7 +317,7 @@
 ! leemos la imagen
         IF((BITPIX.EQ.8).OR.(BITPIX.EQ.16))THEN
           DO I=1,NAXIS_(2)
-            FIRSTPIX=(I-1)*NAXIS_(1)+1
+            FIRSTPIX=(NAXIS3FIXED-1)*(NAXIS_(1)*NAXIS_(2))+(I-1)*NAXIS_(1)+1
             CALL FTGPFJ(IUNIT,1,FIRSTPIX,NAXIS_(1),JROW(1),LROW(1),ANYNULL,ISTATUS)
             IF(ANYNULL)THEN
               DO J=1,NAXIS_(1)
@@ -329,7 +338,7 @@
           END DO
 !        ELSEIF(BITPIX.EQ.32)THEN
 !          DO I=1,NAXIS_(2)
-!            FIRSTPIX=(I-1)*NAXIS_(1)+1
+!            FIRSTPIX=(NAXIS3FIXED-1)*(NAXIS_(1)*NAXIS_(2))+(I-1)*NAXIS_(1)+1
 !            CALL FTGPFJ(IUNIT,1,FIRSTPIX,NAXIS_(1),JROW(1),LROW(1),
 !     +       ANYNULL,ISTATUS)
 !            DO J=1,NAXIS_(1)
@@ -344,7 +353,7 @@
 !          END DO
         ELSEIF((BITPIX.EQ.32).OR.(BITPIX.EQ.-32).OR.(BITPIX.EQ.-64))THEN
           DO I=1,NAXIS_(2)
-            FIRSTPIX=(I-1)*NAXIS_(1)+1
+            FIRSTPIX=(NAXIS3FIXED-1)*(NAXIS_(1)*NAXIS_(2))+(I-1)*NAXIS_(1)+1
             CALL FTGPFE(IUNIT,1,FIRSTPIX,NAXIS_(1),FROW(1),LROW(1),ANYNULL,ISTATUS)
             IF(ANYNULL)THEN
               DO J=1,NAXIS_(1)
