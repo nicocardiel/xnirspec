@@ -48,14 +48,15 @@
 ! variables locales
         INTEGER NEW_HDU,HDUTYPE
         INTEGER JROW(NXYMAX)
-        INTEGER I,J,L
+        INTEGER I,J,K,L
         INTEGER FIRSTPIX
         INTEGER BITPIX
         INTEGER ISTATUS,IREADWRITE,IUNIT
         INTEGER BLOCKSIZE,NULLVAL
         INTEGER NKEYS,NSPACE
         INTEGER NAXES
-        INTEGER NAXIS_(3),NAXIS3FIXED                      !OJO: el limite es 3
+        INTEGER NAXIS_(3)                                  !OJO: el limite es 3
+        INTEGER NAXIS3FIXED1,NAXIS3FIXED2
         INTEGER NANYNULLS
         REAL FROW(NXYMAX)
         CHARACTER*50 COMMENT
@@ -182,7 +183,8 @@
           CALL FTGKYJ(IUNIT,'NAXIS3',NAXIS_(3),COMMENT,ISTATUS)
           IF(NAXIS_(3).EQ.1)THEN
             WRITE(*,101) 'WARNING: NAXIS=3 with NAXIS3=1. Reading anyway!'
-            NAXIS3FIXED=1
+            NAXIS3FIXED1=1
+            NAXIS3FIXED2=1
           END IF
         ELSE
           LERROR=.TRUE.
@@ -209,7 +211,21 @@
           END IF
         END IF
         IF(NAXIS_(3).GT.1)THEN
-          NAXIS3FIXED=READILIM('Slice number along NAXIS3','@',1,NAXIS_(3))
+          WRITE(*,101) 'Select option to collapse data along NAXIS3:'
+          WRITE(*,101) '        0 : collapse whole 3D data cube'
+          WRITE(*,101) '       -1 : collapse slice range'
+          WRITE(*,101) ' <number> : read single slice <number>'
+          K=READILIM('Option','0',-1,NAXIS_(3))
+          IF(K.EQ.0)THEN
+            NAXIS3FIXED1=1
+            NAXIS3FIXED2=NAXIS_(3)
+          ELSEIF(K.EQ.-1)THEN
+            NAXIS3FIXED1=READILIM('Fist slice number','@',1,NAXIS_(3))
+            NAXIS3FIXED2=READILIM('Last slice number','@',NAXIS3FIXED1,NAXIS_(3))
+          ELSE
+            NAXIS3FIXED1=K
+            NAXIS3FIXED2=K
+          END IF
         END IF
 !
         IF((IROTATE.EQ.0).OR.(IROTATE.EQ.180).OR.(IROTATE.EQ.-180))THEN
@@ -315,61 +331,56 @@
           WRITE(*,*) CDELT1(NEWBUFF)
         END IF
 ! leemos la imagen
+        DO I=1,NAXIS_(2)
+          DO J=1,NAXIS_(1)
+            IMAGEN_(J,I)=0.0
+            LNULL_(J,I)=.FALSE.
+          END DO
+        END DO
         IF((BITPIX.EQ.8).OR.(BITPIX.EQ.16))THEN
-          DO I=1,NAXIS_(2)
-            FIRSTPIX=(NAXIS3FIXED-1)*(NAXIS_(1)*NAXIS_(2))+(I-1)*NAXIS_(1)+1
-            CALL FTGPFJ(IUNIT,1,FIRSTPIX,NAXIS_(1),JROW(1),LROW(1),ANYNULL,ISTATUS)
-            IF(ANYNULL)THEN
-              DO J=1,NAXIS_(1)
-                LNULL_(J,I)=LROW(J)
-                IF(LNULL_(J,I))THEN
-                  NANYNULLS=NANYNULLS+1
-                  IF(NANYNULLS.LT.10)THEN
-                    print*,j,i,jrow(j)
+          DO K=NAXIS3FIXED1,NAXIS3FIXED2
+            DO I=1,NAXIS_(2)
+              FIRSTPIX=(K-1)*(NAXIS_(1)*NAXIS_(2))+(I-1)*NAXIS_(1)+1
+              CALL FTGPFJ(IUNIT,1,FIRSTPIX,NAXIS_(1),JROW(1),LROW(1),ANYNULL,ISTATUS)
+              IF(ANYNULL)THEN
+                DO J=1,NAXIS_(1)
+                  LNULL_(J,I)=LNULL_(J,I).OR.LROW(J)
+                  IF(LNULL_(J,I))THEN
+                    NANYNULLS=NANYNULLS+1
+                    IF(NANYNULLS.LT.10)THEN
+                      print*,j,i,k,jrow(j)
+                    END IF
+                    JROW(J)=0
                   END IF
-                  JROW(J)=0
-                END IF
+                END DO
+                LANYNULL=.TRUE.
+              END IF
+              DO J=1,NAXIS_(1)
+                IMAGEN_(J,I)=IMAGEN_(J,I)+REAL(JROW(J))
               END DO
-              LANYNULL=.TRUE.
-            END IF
-            DO J=1,NAXIS_(1)
-              IMAGEN_(J,I)=REAL(JROW(J))
             END DO
           END DO
-!        ELSEIF(BITPIX.EQ.32)THEN
-!          DO I=1,NAXIS_(2)
-!            FIRSTPIX=(NAXIS3FIXED-1)*(NAXIS_(1)*NAXIS_(2))+(I-1)*NAXIS_(1)+1
-!            CALL FTGPFJ(IUNIT,1,FIRSTPIX,NAXIS_(1),JROW(1),LROW(1),
-!     +       ANYNULL,ISTATUS)
-!            DO J=1,NAXIS_(1)
-!              IMAGEN_(J,I)=REAL(JROW(J))
-!            END DO
-!            IF(ANYNULL)THEN
-!              DO J=1,NAXIS_(1)
-!                LNULL_(J,I)=LROW(J)
-!              END DO
-!              LANYNULL=.TRUE.
-!            END IF
-!          END DO
         ELSEIF((BITPIX.EQ.32).OR.(BITPIX.EQ.-32).OR.(BITPIX.EQ.-64))THEN
-          DO I=1,NAXIS_(2)
-            FIRSTPIX=(NAXIS3FIXED-1)*(NAXIS_(1)*NAXIS_(2))+(I-1)*NAXIS_(1)+1
-            CALL FTGPFE(IUNIT,1,FIRSTPIX,NAXIS_(1),FROW(1),LROW(1),ANYNULL,ISTATUS)
-            IF(ANYNULL)THEN
-              DO J=1,NAXIS_(1)
-                LNULL_(J,I)=LROW(J)
-                IF(LNULL_(J,I))THEN
-                  NANYNULLS=NANYNULLS+1
-                  IF(NANYNULLS.LT.10)THEN
-                    print*,j,i,frow(j)
+          DO K=NAXIS3FIXED1,NAXIS3FIXED2
+            DO I=1,NAXIS_(2)
+              FIRSTPIX=(K-1)*(NAXIS_(1)*NAXIS_(2))+(I-1)*NAXIS_(1)+1
+              CALL FTGPFE(IUNIT,1,FIRSTPIX,NAXIS_(1),FROW(1),LROW(1),ANYNULL,ISTATUS)
+              IF(ANYNULL)THEN
+                DO J=1,NAXIS_(1)
+                  LNULL_(J,I)=LNULL_(J,I).OR.LROW(J)
+                  IF(LNULL_(J,I))THEN
+                    NANYNULLS=NANYNULLS+1
+                    IF(NANYNULLS.LT.10)THEN
+                      print*,j,i,k,frow(j)
+                    END IF
+                    FROW(J)=0.0
                   END IF
-                  FROW(J)=0.0
-                END IF
+                END DO
+                LANYNULL=.TRUE.
+              END IF
+              DO J=1,NAXIS_(1)
+                IMAGEN_(J,I)=IMAGEN_(J,I)+FROW(J)
               END DO
-              LANYNULL=.TRUE.
-            END IF
-            DO J=1,NAXIS_(1)
-              IMAGEN_(J,I)=FROW(J)
             END DO
           END DO
         ELSE
@@ -447,6 +458,12 @@
         IF(NANYNULLS.GT.0)THEN
           WRITE(*,100) 'Total number of ANYNULL pixels: '
           WRITE(*,*) NANYNULLS
+          IF(NAXES.EQ.3)THEN
+            WRITE(*,101) 'WARNING: null values found!'
+            WRITE(*,101) 'WARNING: spaxel values set to zero for all the slices'
+            WRITE(*,100) 'Press <CR> to continue...'
+            READ(*,*)
+          END IF
         END IF
         CALL Deallocate_Array_LNULL_
 !------------------------------------------------------------------------------
