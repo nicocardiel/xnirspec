@@ -160,18 +160,20 @@
         CALL FTGKYJ(IUNIT,'BITPIX',BITPIX,COMMENT,ISTATUS)
         IF(.NOT.LSHOW)THEN
           WRITE(*,*)
-          IF(NEW_HDU.GT.1)THEN
+          IF(NEW_HDU.EQ.1)THEN
+            WRITE(*,101) 'CFITSIO> Primary HDU'
+          ELSE
             CALL FTGKYS(IUNIT,'EXTNAME',EXTNAME,COMMENT,ISTATUS)
             WRITE(*,100) 'CFITSIO> EXTNAME: '
             WRITE(*,101) EXTNAME
           ENDIF
-          WRITE(*,100) 'CFITSIO> BITPIX: '
+          WRITE(*,100) 'CFITSIO> BITPIX : '
           WRITE(*,*) BITPIX
         END IF
 ! leemos NAXIS, NAXIS1, NAXIS2 y NAXIS3
         CALL FTGKYJ(IUNIT,'NAXIS',NAXES,COMMENT,ISTATUS)
         IF(.NOT.LSHOW)THEN
-          WRITE(*,100) 'CFITSIO> NAXIS : '
+          WRITE(*,100) 'CFITSIO> NAXIS  : '
           WRITE(*,*) NAXES 
         END IF
         LERROR=.FALSE.
@@ -211,12 +213,12 @@
         END IF
 !
         IF(.NOT.LSHOW)THEN
-          WRITE(*,100) 'CFITSIO> NAXIS1: '
+          WRITE(*,100) 'CFITSIO> NAXIS1 : '
           WRITE(*,*) NAXIS_(1)
-          WRITE(*,100) 'CFITSIO> NAXIS2: '
+          WRITE(*,100) 'CFITSIO> NAXIS2 : '
           WRITE(*,*) NAXIS_(2)
           IF(NAXES.EQ.3)THEN
-            WRITE(*,100) 'CFITSIO> NAXIS3: '
+            WRITE(*,100) 'CFITSIO> NAXIS3 : '
             WRITE(*,*) NAXIS_(3)
           END IF
         END IF
@@ -333,11 +335,11 @@
           ISTATUS=0
         END IF
         IF(LWAVECAL(NEWBUFF))THEN
-          WRITE(*,100) 'CFITSIO> CRPIX1: '
+          WRITE(*,100) 'CFITSIO> CRPIX1 : '
           WRITE(*,*) CRPIX1(NEWBUFF)
-          WRITE(*,100) 'CFITSIO> CRVAL1: '
+          WRITE(*,100) 'CFITSIO> CRVAL1 : '
           WRITE(*,*) CRVAL1(NEWBUFF)
-          WRITE(*,100) 'CFITSIO> CDELT1: '
+          WRITE(*,100) 'CFITSIO> CDELT1 : '
           WRITE(*,*) CDELT1(NEWBUFF)
         END IF
 ! leemos la imagen
