@@ -142,6 +142,8 @@
           WRITE(*,101) '=> this file contains extensions'
           NEW_HDU=READI('Extension number to be read (1=primary)','1')
           CALL FTMAHD(IUNIT,NEW_HDU,HDUTYPE,ISTATUS)
+        ELSE
+          NEW_HDU=1
         END IF
 ! determinamos el numero de keywords en la cabecera y se muestran
         CALL FTGHSP(IUNIT,NKEYS,NSPACE,ISTATUS)
