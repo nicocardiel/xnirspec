@@ -80,6 +80,7 @@
         XMIN=BG
         XMAX=FG
         DX=XMAX-XMIN
+        IF(DX.LE.1.0E-6) DX=1.0E-6
         XMIN=XMIN-DX/20.
         XMAX=XMAX+DX/20.
 !

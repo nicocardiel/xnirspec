@@ -73,7 +73,7 @@
             CALL FINDMML(N,N1,N2,XP,XMIN,XMAX)
           END IF
           DX=XMAX-XMIN
-          IF(DX.EQ.0.0) DX=1.
+          IF(DX.LE.1.0E-6) DX=1.E-6
           XMIN=XMIN-DX/20.
           XMAX=XMAX+DX/20.
         END IF
@@ -91,7 +91,7 @@
             CALL FINDMML(N,N1,N2,YP,YMIN,YMAX)
           END IF
           DY=YMAX-YMIN
-          IF(DY.EQ.0.0) DY=1.
+          IF(DY.LE.1.0E-6) DY=1.0E-6
           YMIN=YMIN-DY/20.
           YMAX=YMAX+DY/20.
         END IF
