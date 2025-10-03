@@ -592,8 +592,9 @@
             INFILE_=CARG(NEWBUFF)(1:L1)
             INQUIRE(FILE=INFILE_,EXIST=LOGFILE)
             IF(LOGFILE)THEN
+              WRITE(*,*)
               WRITE(*,100) 'Reading file: '
-              WRITE(*,101) INFILE_
+              WRITE(*,101) INFILE_(1:TRUELEN(INFILE_))
               CALL SLEEFITS(INFILE_,.FALSE.,IROTATE,NEWBUFF,LBOX9,NEWBUFF)
               WRITE(*,101) ' ...OK!'
               IF(ANYNULL) THEN
@@ -955,7 +956,7 @@
                   CALL BUTTON(32,'combine',0)
                   CALL BUTTON(33,'shiftb9',0)
                   READ(11,101) INFILEBOX9
-                  WRITE(*,100) 'Reading file '
+                  WRITE(*,100) 'Reading file: '
                   WRITE(*,100) INFILEBOX9(1:TRUELEN(INFILEBOX9))
                   WRITE(*,100) '...'
                   CALL SLEEFITS(INFILEBOX9,.FALSE.,0,0,LBOX9,0)
@@ -1039,7 +1040,7 @@
                 CLOSE(11)
               ELSE
                 WRITE(*,100) 'Reading file: '
-                WRITE(*,101) INFILE_
+                WRITE(*,101) INFILE_(1:TRUELEN(INFILE_))
                 CALL SLEEFITS(INFILE_,.FALSE.,IROTATE,NEWBUFF,LBOX9,NEWBUFF)
                 WRITE(*,101) ' ...OK!'
                 IF(ANYNULL) THEN
@@ -1192,7 +1193,7 @@
                   END IF
                 END DO
                 WRITE(*,100) 'Reading file: '
-                WRITE(*,101) ERRFILE
+                WRITE(*,101) ERRFILE(1:TRUELEN(ERRFILE))
                 CALL SLEEFITS(ERRFILE,.FALSE.,IROTATE,NCBUFF+NMAXBUFF/2,LBOX9,0)
                 WRITE(*,101) ' ...OK!'
                 IF(ANYNULL) THEN
