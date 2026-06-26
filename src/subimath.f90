@@ -1,4 +1,4 @@
-! Version 06-July-2007
+! Version 26-June-2026
 ! calculadora
 !
         SUBROUTINE SUBIMATH
@@ -35,7 +35,7 @@
         INTEGER ICUT,IWIDTH
         INTEGER NBOX_X,NBOX_Y
         INTEGER NEXTINFO
-        INTEGER NDEGREE,NCOEF,NCOEFDER
+        INTEGER NDEGREE,NCOEF,NCOEFDER,NCOEFDER2
         INTEGER DI(9),DJ(9)
         INTEGER ISYSTEM
         INTEGER NX1_PLOT,NX2_PLOT,NY1_PLOT,NY2_PLOT
@@ -52,7 +52,7 @@
         REAL FSIGMA,TSIGMA
         REAL XF(NXMAX),YF(NYMAX)
         REAL COEF(20),CHISQR
-        REAL COEFDER(20)
+        REAL COEFDER(20),COEFDER2(20)
         REAL FACTOR,SUMFACTOR
         REAL XOFFSET,YOFFSET,FI0,FJ0
         REAL THRESHOLD
@@ -1135,7 +1135,7 @@
                     WRITE(CDUMMY,*) TSIGMA
                     TSIGMA=READF('Times sigma to exclude points',CDUMMY)
                   END IF
-                  C255=READC('Function (1), derivative (2)',CFUN_OR_DER,'12')
+                  C255=READC('Function (1), 1st derivative (2), 2nd derivative (3)',CFUN_OR_DER,'123')
                   CFUN_OR_DER=C255(1:1)
                 END IF
               ELSEIF(CFILT.EQ.'8')THEN
@@ -1450,7 +1450,7 @@
                             IMAGEN(J,I,NBUFF1)=IMAGEN(J,I,NBUFF1)*REAL(J)+COEF(K)
                           END DO
                         END IF
-                      ELSE                       !derivative
+                      ELSEIF(CFUN_OR_DER.EQ.'2')THEN !first derivative
                         IMAGEN(J,I,NBUFF1)=0.0
                         IF(NCOEF.GT.1)THEN
                           DO K=2,NCOEF
@@ -1464,6 +1464,28 @@
                             END DO
                           END IF
                         END IF
+                      ELSEIF(CFUN_OR_DER.EQ.'3')THEN !second derivative
+                        IMAGEN(J,I,NBUFF1)=0.0
+                        IF(NCOEF.GT.2)THEN
+                          DO K=2,NCOEF !fist derivative
+                            COEFDER(K-1)=(K-1)*COEF(K)
+                          END DO
+                          NCOEFDER=NCOEF-1
+                          DO K=2,NCOEFDER !second derivative
+                            COEFDER2(K-1)=(K-1)*COEFDER(K)
+                          END DO
+                          NCOEFDER2=NCOEFDER-1
+                          IMAGEN(J,I,NBUFF1)=COEFDER2(NCOEFDER2)
+                          IF(NCOEFDER2.GT.1)THEN
+                            DO K=NCOEFDER2-1,1,-1
+                              IMAGEN(J,I,NBUFF1)=IMAGEN(J,I,NBUFF1)*REAL(J)+COEFDER2(K)
+                            END DO
+                          END IF
+                        END IF
+                      ELSE
+                        WRITE(*,101) '***FATAL ERROR***'
+                        WRITE(*,101) '=> invalid CFUN_OR_DER value: '//CFUN_OR_DER
+                        STOP
                       END IF
                     END DO
                     CALL SHOWPERC(NY1,NY2,1,I,NEXTINFO)
@@ -1498,7 +1520,7 @@
                             IMAGEN(J,I,NBUFF1)=IMAGEN(J,I,NBUFF1)*REAL(I)+COEF(K)
                           END DO
                         END IF
-                      ELSE                       !derivative
+                      ELSEIF(CFUN_OR_DER.EQ.'2')THEN !first derivative
                         IMAGEN(J,I,NBUFF1)=0.0
                         IF(NCOEF.GT.1)THEN
                           DO K=2,NCOEF
@@ -1512,6 +1534,28 @@
                             END DO
                           END IF
                         END IF
+                      ELSEIF(CFUN_OR_DER.EQ.'3')THEN !second derivative
+                        IMAGEN(J,I,NBUFF1)=0.0
+                        IF(NCOEF.GT.2)THEN
+                          DO K=2,NCOEF !fist derivative
+                            COEFDER(K-1)=(K-1)*COEF(K)
+                          END DO
+                          NCOEFDER=NCOEF-1
+                          DO K=2,NCOEFDER !second derivative
+                            COEFDER2(K-1)=(K-1)*COEFDER(K)
+                          END DO
+                          NCOEFDER2=NCOEFDER-1
+                          IMAGEN(J,I,NBUFF1)=COEFDER2(NCOEFDER2)
+                          IF(NCOEFDER2.GT.1)THEN
+                            DO K=NCOEFDER2-1,1,-1
+                              IMAGEN(J,I,NBUFF1)=IMAGEN(J,I,NBUFF1)*REAL(I)+COEFDER2(K)
+                            END DO
+                          END IF
+                        END IF
+                      ELSE
+                        WRITE(*,101) '***FATAL ERROR***'
+                        WRITE(*,101) '=> invalid CFUN_OR_DER value: '//CFUN_OR_DER
+                        STOP
                       END IF
                     END DO
                     CALL SHOWPERC(NX1,NX2,1,J,NEXTINFO)
