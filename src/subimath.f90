@@ -1,4 +1,4 @@
-! Version 26-June-2026
+! Version 11-November-2026
 ! calculadora
 !
         SUBROUTINE SUBIMATH
@@ -60,7 +60,8 @@
         REAL FDUMMY
         REAL FMIN_ABSOLUTE,FMIN_POSITIVE
         REAL OFFSET_LOG
-        CHARACTER*1 CH,CZERO
+        REAL MASK_VALUE
+        CHARACTER*1 CH,CZERO,CMASK
         CHARACTER*1 COPER
         CHARACTER*1 CUTIL
         CHARACTER*1 CFILT,CAXIS,CFUN_OR_DER,CRMS
@@ -75,6 +76,7 @@
         LOGICAL LFIT(NXYMAX)
         LOGICAL LOK
         LOGICAL LOOP
+        LOGICAL LSCANOK,LCHANOK
 !
 !delete COMMON/BLKIMAGEN1/IMAGEN             !imagen FITS leida en formato REAL
 !delete COMMON/BLKIMAGEN1_/PIXEL                !es global para ahorrar memoria
@@ -1775,6 +1777,13 @@
             WRITE(*,101) '(0) exit'
             ICUT=READILIM('Option (note: * with errors)','0',0,3)
             LCANCEL=(ICUT.EQ.0)
+            IF(.NOT.LCANCEL)THEN
+              C255=READC('Mask data (y/n)','n','yn')
+              CMASK=C255(1:1)
+              IF(CMASK.EQ.'y')THEN
+                MASK_VALUE=READF('Mask value', '0.0')
+              END IF
+            END IF
           END IF
 !..............................................................................
 ! calculamos corte en X
@@ -1809,21 +1818,42 @@
                   K=0
                   DO I=1,NAXIS(2,NBUFF1)
                     IF(IFSCAN(I))THEN
-                      K=K+1
-                      YCUT(K)=IMAGEN(J,I,NBUFF1)
-                      IF(NBUFF1.LE.NMAXBUFF/2)THEN
-                        YCUT_ERR(K)=IMAGEN(J,I,NBUFF1+NMAXBUFF/2)
+                      IF(CMASK.EQ.'y')THEN
+                        LSCANOK=(IMAGEN(J,I,NBUFF1).NE.MASK_VALUE)
                       ELSE
-                        YCUT_ERR(K)=0.
+                        LSCANOK=.TRUE.
+                      END IF
+                      IF(LSCANOK)THEN
+                        K=K+1
+                        YCUT(K)=IMAGEN(J,I,NBUFF1)
+                        IF(NBUFF1.LE.NMAXBUFF/2)THEN
+                          YCUT_ERR(K)=IMAGEN(J,I,NBUFF1+NMAXBUFF/2)
+                        ELSE
+                          YCUT_ERR(K)=0.
+                        END IF
                       END IF
                     END IF
                   END DO
                   IF(ICUT.EQ.1)THEN
-                    XCUT(J)=FMEAN0E(K,YCUT,YCUT_ERR,FSIGMA,XCUT_ERR(J))
+                    IF(K.GT.0)THEN
+                      XCUT(J)=FMEAN0E(K,YCUT,YCUT_ERR,FSIGMA,XCUT_ERR(J))
+                    ELSE
+                      XCUT(J)=0.0
+                      XCUT_ERR(J)=0.0
+                    END IF
                   ELSEIF(ICUT.EQ.2)THEN
-                    XCUT(J)=FMEAN2E(K,YCUT,YCUT_ERR,3.0,FSIGMA,XCUT_ERR(J))
+                    IF(K.GT.0)THEN
+                      XCUT(J)=FMEAN2E(K,YCUT,YCUT_ERR,3.0,FSIGMA,XCUT_ERR(J))
+                    ELSE
+                      XCUT(J)=0.0
+                      XCUT_ERR(J)=0.0
+                    END IF
                   ELSEIF(ICUT.EQ.3)THEN
-                    XCUT(J)=FMEDIAN1(K,YCUT)
+                    IF(K.GT.0)THEN
+                      XCUT(J)=FMEDIAN1(K,YCUT)
+                    ELSE
+                      XCUT(J)=0.0
+                    END IF
                     XCUT_ERR(J)=0.0
                   END IF
                 END DO
@@ -1966,21 +1996,42 @@
                   K=0
                   DO J=1,NAXIS(1,NBUFF1)
                     IF(IFCHAN(J))THEN
-                      K=K+1
-                      XCUT(K)=IMAGEN(J,I,NBUFF1)
-                      IF(NBUFF1.LE.NMAXBUFF/2)THEN
-                        XCUT_ERR(K)=IMAGEN(J,I,NBUFF1+NMAXBUFF/2)
+                      IF(CMASK.EQ.'y')THEN
+                        LCHANOK=(IMAGEN(J,I,NBUFF1).NE.MASK_VALUE)
                       ELSE
-                        XCUT_ERR(K)=0.
+                        LCHANOK=.TRUE.
+                      END IF
+                      IF(LCHANOK)THEN
+                        K=K+1
+                        XCUT(K)=IMAGEN(J,I,NBUFF1)
+                        IF(NBUFF1.LE.NMAXBUFF/2)THEN
+                          XCUT_ERR(K)=IMAGEN(J,I,NBUFF1+NMAXBUFF/2)
+                        ELSE
+                          XCUT_ERR(K)=0.
+                        END IF
                       END IF
                     END IF
                   END DO
                   IF(ICUT.EQ.1)THEN
-                    YCUT(I)=FMEAN0E(K,XCUT,XCUT_ERR,FSIGMA,YCUT_ERR(I))
+                    IF(K.GT.0)THEN
+                      YCUT(I)=FMEAN0E(K,XCUT,XCUT_ERR,FSIGMA,YCUT_ERR(I))
+                    ELSE
+                      YCUT(I)=0.0
+                      YCUT_ERR(I)=0.0
+                    END IF
                   ELSEIF(ICUT.EQ.2)THEN
-                    YCUT(I)=FMEAN2E(K,XCUT,XCUT_ERR,3.0,FSIGMA,YCUT_ERR(I))
+                    IF(K.GT.0)THEN
+                      YCUT(I)=FMEAN2E(K,XCUT,XCUT_ERR,3.0,FSIGMA,YCUT_ERR(I))
+                    ELSE
+                      YCUT(I)=0.0
+                      YCUT_ERR(I)=0.0
+                    END IF
                   ELSEIF(ICUT.EQ.3)THEN
-                    YCUT(I)=FMEDIAN1(K,XCUT)
+                    IF(K.GT.0)THEN
+                      YCUT(I)=FMEDIAN1(K,XCUT)
+                    ELSE
+                      YCUT(I)=0.0
+                    END IF
                     YCUT_ERR(I)=0.0
                   END IF
                 END DO
