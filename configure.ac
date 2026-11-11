@@ -2,7 +2,7 @@
 #
 
 # Prelude
-AC_INIT(xnirspec,6.1,[cardiel@ucm.es])
+AC_INIT(xnirspec,6.2,[cardiel@ucm.es])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_SRCDIR([config.h.in])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign])
@@ -50,7 +50,8 @@ AC_CONFIG_FILES([Makefile
                  src/Makefile
                  src/dimensions.inc
                  src/largest.inc
-                 src/sexpath.inc])
+                 src/sexpath.inc
+                 src/version.inc])
 
 # Definitions
 DEFAULT_NXMAX="4300"

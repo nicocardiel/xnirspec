@@ -1,5 +1,6 @@
 syntax: glob
 .gitignore~
+configure~
 
 src/*.dSYM
 src/*.o
@@ -23,6 +24,7 @@ src/Makefile.in
 src/dimensions.inc
 src/largest.inc
 src/sexpath.inc
+src/version.inc
 src/xnirspec
 src/zzz_memory_test
 stamp-h1

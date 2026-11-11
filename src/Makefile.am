@@ -165,4 +165,7 @@ xnirspec_LDADD = $(CFITSIO_LIBS) $(PGPLOT_LDFLAGS)
 
 zzz_memory_test_SOURCES = zzz_memory_test.f90
 
+# Automake does not track Fortran INCLUDE dependencies
+xnirspec.$(OBJEXT): version.inc
+
 CLEANFILES = *.mod

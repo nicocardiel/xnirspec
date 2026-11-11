@@ -22,6 +22,7 @@
 ! parameters
         INCLUDE 'dimensions.inc'
         INCLUDE 'largest.inc'
+        INCLUDE 'version.inc'
 !
         INTEGER NMAPMAX
         PARAMETER (NMAPMAX=3) !second-degree bivariate approximation
@@ -326,7 +327,7 @@
 !------------------------------------------------------------------------------
         WRITE(*,101) '*******************'
         WRITE(*,101) 'Welcome to xnirspec'
-        WRITE(*,101) 'This is version 6.1'
+        WRITE(*,101) 'This is version '//VERSION
         WRITE(*,101) '-------------------'
 !
         NIARG=IARGC()
