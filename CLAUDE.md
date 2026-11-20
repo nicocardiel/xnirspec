@@ -69,10 +69,20 @@ make -C tests check TESTS=test_fpoly      # run a single test
 - Error paths that end in `STOP` (exit status 0) cannot be tested this way.
   Avoid inputs that make a routine wait for `<CR>` (e.g. singular matrices
   in `LUDCMP`/`LUDCMPD`).
-- Only routines with explicit arguments are tested so far. Routines that use
-  `IMAGEN`, `COMMON` state or PGPLOT, and the interactive program itself,
-  are not covered. `zzz_memory_test` only checks that the large arrays can be
-  allocated with the configured dimensions.
+- `test_fitsio` and `test_fitsio_interactive.sh` (with
+  `fitsio_interactive_driver`) test `SLEEFITS`/`SESCRFITS`: they allocate the
+  dynamic arrays, declare the same `COMMON` blocks as the routines (e.g.
+  `BLKNAXIS`, `BLKANYNULL`, `BLKWAVECAL1`), and write their own input files
+  with CFITSIO. Paths that ask questions (3D cubes, extensions, header
+  templates) are fed through stdin by the script. Temporary files are named
+  `tmp_*.fits` and deleted at the end (and by `make clean`). The expected
+  orientation for each `IROTATE` is the convention currently implemented in
+  `SLEEFITS` (documented in `tests/test_fitsio.f90`).
+- Not covered: box-9 (768x768) saving, the REDUCEME format, routines that
+  use PGPLOT, and the interactive program itself. `zzz_memory_test` only
+  checks that the large arrays can be allocated with the configured
+  dimensions; the FITS tests allocate them too (several GB of virtual
+  memory with large `NXMAX`/`NYMAX`, only a few pixels are touched).
 
 ## Architecture
 

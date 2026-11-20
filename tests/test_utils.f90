@@ -5,12 +5,13 @@
 ! routine prints one PASS/FAIL line and counts the failures; TEST_SUMMARY
 ! prints the totals and terminates the program with a non-zero exit status
 ! (ERROR STOP) if any check has failed, which is how the Automake test
-! harness detects a failing test.
+! harness detects a failing test. DELETE_FILE removes temporary files.
 !------------------------------------------------------------------------------
         MODULE TEST_UTILS
         IMPLICIT NONE
         PRIVATE
         PUBLIC :: CHECK_REAL,CHECK_INT,CHECK_TRUE,CHECK_STR,TEST_SUMMARY
+        PUBLIC :: DELETE_FILE
 !
         INTEGER, SAVE :: NCHECKS=0
         INTEGER, SAVE :: NFAILS=0
@@ -121,6 +122,28 @@
            TRIM(EXPECTED)//'"'
         END IF
         END SUBROUTINE CHECK_STR
+!------------------------------------------------------------------------------
+! SUBROUTINE DELETE_FILE(FILENAME)
+!
+! Delete a file if it exists (nothing is done otherwise).
+!
+! Parameters
+! ----------
+! FILENAME : CHARACTER*(*)
+!     Name of the file to be deleted.
+!------------------------------------------------------------------------------
+        SUBROUTINE DELETE_FILE(FILENAME)
+        CHARACTER*(*), INTENT(IN) :: FILENAME
+!
+        INTEGER IUNIT
+        LOGICAL LEXIST
+!
+        INQUIRE(FILE=FILENAME,EXIST=LEXIST)
+        IF(LEXIST)THEN
+          OPEN(NEWUNIT=IUNIT,FILE=FILENAME,STATUS='OLD')
+          CLOSE(IUNIT,STATUS='DELETE')
+        END IF
+        END SUBROUTINE DELETE_FILE
 !------------------------------------------------------------------------------
 ! SUBROUTINE TEST_SUMMARY()
 !
