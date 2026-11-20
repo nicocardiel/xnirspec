@@ -34,7 +34,7 @@
 !
         INTEGER I,J,K
         INTEGER ISTATUS,NKEYS,NSPACE,IREADWRITE,IBLOCK
-        INTEGER NKEYS_TEMPLATE,NKEYS_OWN,NNAXIS1
+        INTEGER NKEYS_TEMPLATE,NKEYS_OWN,NNAXIS1,NCOMMENT
         INTEGER NAXES(3)
         REAL F(NX1,NX2),CUBE(NX1,NX2,NX3)
         CHARACTER*20 COBJECT
@@ -98,10 +98,11 @@
          ALL(IMAGEN(1:NX1,1:NX2,2).EQ.F))
 !------------------------------------------------------------------------------
 ! SESCRFITS copying the header of a template file. The template starts
-! with SIMPLE, BITPIX, NAXIS, NAXIS1 and NAXIS2, so with the default NSKIP=5
-! the remaining keywords (OBJECT and the two COMMENT lines that CFITSIO adds
-! after NAXIS2) are copied after the NKEYS_OWN keywords written by SESCRFITS
-! itself (the same five keywords plus the two COMMENT lines)
+! with SIMPLE, BITPIX, NAXIS, NAXIS1 and NAXIS2, followed by the two COMMENT
+! lines that CFITSIO adds after NAXIS2, and OBJECT. With the default NSKIP=5
+! the remaining records are copied after the NKEYS_OWN records written by
+! SESCRFITS itself (the same five keywords and two COMMENT lines), except
+! those identical to records already present: only OBJECT must be copied
         ISTATUS=0
         NAXES(1:2)=(/2,2/)
         CALL FTINIT(IUNIT,'!'//FILE_HDR,1,ISTATUS)
@@ -126,17 +127,21 @@
         CALL FTOPEN(IUNIT,FILE_OUT,IREADWRITE,IBLOCK,ISTATUS)
         CALL FTGHSP(IUNIT,NKEYS,NSPACE,ISTATUS)
         NNAXIS1=0
+        NCOMMENT=0
         DO I=1,NKEYS
           CALL FTGREC(IUNIT,I,RECORD,ISTATUS)
           IF(RECORD(1:8).EQ.'NAXIS1  ') NNAXIS1=NNAXIS1+1
+          IF(RECORD(1:8).EQ.'COMMENT ') NCOMMENT=NCOMMENT+1
         END DO
         CALL FTGKYS(IUNIT,'OBJECT',COBJECT,COMMENT,ISTATUS)
         CALL FTCLOS(IUNIT,ISTATUS)
         CALL CHECK_INT('CFITSIO status reading output header',ISTATUS,0)
         CALL CHECK_STR('header template: OBJECT copied',COBJECT,'TESTOBJ')
         CALL CHECK_INT('header template: number of keywords',NKEYS, &
-         NKEYS_OWN+NKEYS_TEMPLATE-5)
+         NKEYS_OWN+1)
         CALL CHECK_INT('header template: NAXIS1 not duplicated',NNAXIS1,1)
+        CALL CHECK_INT('header template: COMMENT lines not duplicated', &
+         NCOMMENT,2)
         CALL SLEEFITS(FILE_OUT,.FALSE.,0,4,.FALSE.,0)
         CALL CHECK_TRUE('header template: pixel values', &
          ALL(IMAGEN(1:NX1,1:NX2,4).EQ.F))

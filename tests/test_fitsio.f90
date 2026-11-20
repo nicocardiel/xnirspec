@@ -175,6 +175,29 @@
         CALL CHECK_TRUE('L_PHOTZPT=.FALSE.',.NOT.L_PHOTZPT(7))
         CALL CHECK_TRUE('WCS file pixel values', &
          ALL(IMAGEN(1:NX1,1:NX2,7).EQ.F))
+! wavelength calibration with rotation: with IROTATE=+-180 the X axis is
+! reversed, so CRPIX1 -> NAXIS1-CRPIX1+1 and CDELT1 -> -CDELT1, and the
+! wavelength of the new pixel X'=NX1 (original pixel 1) must not change;
+! with IROTATE=+-90 and +-270 the calibration is not applicable
+        IROT=(/180,-180,90,270,-90,-270,0/)
+        DO K=1,6
+          CALL SLEEFITS(FILE_WCS,.FALSE.,IROT(K),8,.FALSE.,0)
+          WRITE(CNAME,'(A,I0)') 'WCS file IROTATE=',IROT(K)
+          IF(ABS(IROT(K)).EQ.180)THEN
+            CALL CHECK_TRUE(TRIM(CNAME)//' LWAVECAL=.TRUE.',LWAVECAL(8))
+            CALL CHECK_REAL(TRIM(CNAME)//' CRPIX1',CRPIX1(8), &
+             REAL(NX1)-1.5+1.0,1.E-6,0.0)
+            CALL CHECK_REAL(TRIM(CNAME)//' CDELT1',CDELT1(8),-2.5,1.E-6,0.0)
+            CALL CHECK_REAL(TRIM(CNAME)//' CRVAL1',CRVAL1(8),5000.0, &
+             1.E-6,0.0)
+            CALL CHECK_REAL(TRIM(CNAME)//' wavelength at X=NAXIS1', &
+             (REAL(NX1)-CRPIX1(8))*CDELT1(8)+CRVAL1(8), &
+             (1.0-1.5)*2.5+5000.0,1.E-6,0.0)
+          ELSE
+            CALL CHECK_TRUE(TRIM(CNAME)//' LWAVECAL=.FALSE.', &
+             .NOT.LWAVECAL(8))
+          END IF
+        END DO
 !------------------------------------------------------------------------------
         CALL DELETE_FILE(FILE_RT)
         CALL DELETE_FILE(FILE_NULL)

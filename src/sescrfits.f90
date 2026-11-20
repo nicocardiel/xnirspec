@@ -37,7 +37,6 @@
 !delete REAL IMAGEN_(NXYMAX,NXYMAX)
         CHARACTER*1 CBOX9
         CHARACTER*2 CNIMAGE
-        CHARACTER*80 RECORD
         CHARACTER*255 INFILE,CLISTHEAD,INFILE_(NBOXMAX)
         CHARACTER*255 C255
         LOGICAL LOGFILE
@@ -165,13 +164,7 @@
             READWRITE=0 !solo lectura
             CALL FTOPEN(IUNIT_,INFILE_(K),READWRITE,BLOCKSIZE,ISTATUS)
             CALL FTGHSP(IUNIT_,NKEYS,NSPACE,ISTATUS)
-            DO I=1,NSKIP
-              CALL FTGREC(IUNIT_,I,RECORD,ISTATUS)
-            END DO
-            DO I=NSKIP+1,NKEYS
-              CALL FTGREC(IUNIT_,I,RECORD,ISTATUS)
-              CALL FTPREC(IUNIT,RECORD,ISTATUS) 
-            END DO
+            CALL SESCRFITS_COPYHEADER(IUNIT_,IUNIT,NSKIP,NKEYS,ISTATUS)
             CALL FTCLOS(IUNIT_,ISTATUS)
           ELSE
 ! si HDRFILE no es 'none' salvamos el header de una imagen externa
@@ -194,13 +187,7 @@
               WRITE(*,101) 'So, you must know the actual number of'
               WRITE(*,101) 'keywords including the NAXIS2 description.'
               NSKIP=READI('No. of initial keywords to be skipped','5')
-              DO I=1,NSKIP
-                CALL FTGREC(IUNIT_,I,RECORD,ISTATUS)
-              END DO
-              DO I=NSKIP+1,NKEYS
-                CALL FTGREC(IUNIT_,I,RECORD,ISTATUS)
-                CALL FTPREC(IUNIT,RECORD,ISTATUS) 
-              END DO
+              CALL SESCRFITS_COPYHEADER(IUNIT_,IUNIT,NSKIP,NKEYS,ISTATUS)
               CALL FTCLOS(IUNIT_,ISTATUS)
             END IF
           END IF
@@ -234,4 +221,55 @@
 !------------------------------------------------------------------------------
 100     FORMAT(A,$)
 101     FORMAT(A)
+        END
+!
+!******************************************************************************
+! SUBROUTINE SESCRFITS_COPYHEADER(IUNIT_,IUNIT,NSKIP,NKEYS,ISTATUS)
+!
+! Copy the header records NSKIP+1,...,NKEYS of the template file opened in
+! unit IUNIT_ to the header of the file being written in unit IUNIT. Records
+! identical to any of those already written in IUNIT (e.g. the two COMMENT
+! lines with the reference to the FITS standard that CFITSIO writes after
+! NAXIS2) are not copied, to avoid duplicating them.
+!
+! Parameters
+! ----------
+! IUNIT_ : INTEGER
+!     Unit of the template file (opened read-only).
+! IUNIT : INTEGER
+!     Unit of the output file.
+! NSKIP : INTEGER
+!     Number of initial records of the template that are skipped.
+! NKEYS : INTEGER
+!     Number of records in the header of the template.
+! ISTATUS : INTEGER
+!     CFITSIO status (input and output).
+!------------------------------------------------------------------------------
+        SUBROUTINE SESCRFITS_COPYHEADER(IUNIT_,IUNIT,NSKIP,NKEYS,ISTATUS)
+        IMPLICIT NONE
+        INTEGER IUNIT_,IUNIT,NSKIP,NKEYS,ISTATUS
+!
+        INTEGER NOWNMAX
+        PARAMETER (NOWNMAX=100)
+!
+        INTEGER I,K,NOWN,NSPACE
+        CHARACTER*80 RECORD
+        CHARACTER*80 OWNREC(NOWNMAX)
+        LOGICAL LDUPLICATED
+!------------------------------------------------------------------------------
+! records already written in the output header
+        CALL FTGHSP(IUNIT,NOWN,NSPACE,ISTATUS)
+        NOWN=MIN(NOWN,NOWNMAX)
+        DO K=1,NOWN
+          CALL FTGREC(IUNIT,K,OWNREC(K),ISTATUS)
+        END DO
+! copy the remaining records of the template, skipping duplicates
+        DO I=NSKIP+1,NKEYS
+          CALL FTGREC(IUNIT_,I,RECORD,ISTATUS)
+          LDUPLICATED=.FALSE.
+          DO K=1,NOWN
+            IF(RECORD.EQ.OWNREC(K)) LDUPLICATED=.TRUE.
+          END DO
+          IF(.NOT.LDUPLICATED) CALL FTPREC(IUNIT,RECORD,ISTATUS)
+        END DO
         END

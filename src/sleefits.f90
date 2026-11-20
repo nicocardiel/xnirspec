@@ -9,6 +9,13 @@
 !        tienen ninguna importancia en ese caso
 ! IBUFF: if <> 0 means that the photometry keywords of the HST are searched
 !        and, if found, stored in the corresponding array (buffer IBUFF).
+!
+! Wavelength calibration of FITS files (CRPIX1, CRVAL1, CDELT1) when the
+! image is rotated: with IROTATE=+-180 it is transformed to the reversed X
+! axis (CRPIX1 -> NAXIS1-CRPIX1+1, CDELT1 -> -CDELT1); with IROTATE=+-90 or
+! +-270 the original NAXIS1 becomes the Y axis, so the calibration is not
+! applicable and LWAVECAL is set to .FALSE. The calibration of files in
+! REDUCEME format (STWV, DISP) is not modified.
 
 !------------------------------------------------------------------------------
         SUBROUTINE SLEEFITS(FITSFILE,LSHOW,IROTATE,NEWBUFF,LBOX9,IBUFF)
@@ -70,6 +77,7 @@
         LOGICAL L_PHOTFLAM(NMAXBUFF),L_PHOTZPT(NMAXBUFF)
         LOGICAL L_EXPTIME(NMAXBUFF)
         LOGICAL LERROR
+        LOGICAL LREDUCEME                  !.TRUE. if file has REDUCEME format
 !
 !delete COMMON/BLKIMAGEN1/IMAGEN             !imagen FITS leida en formato REAL
 !delete COMMON/BLKIMAGEN1_/IMAGEN_              !es global para ahorrar memoria
@@ -90,6 +98,7 @@
         NULLVAL=-999
         LANYNULL=.FALSE.
         NANYNULLS=0
+        LREDUCEME=.FALSE.
 !------------------------------------------------------------------------------
 ! chequeamos si existe la imagen
         INQUIRE(FILE=FITSFILE,EXIST=LOGFILE)
@@ -122,6 +131,7 @@
             CRPIX1(NEWBUFF)=1.0
             CRVAL1(NEWBUFF)=STWV
             CDELT1(NEWBUFF)=DISP
+            LREDUCEME=.TRUE.
             WRITE(*,100) 'WARNING: reading file with REDUCEME format'
             GOTO 777
           ELSE
@@ -265,7 +275,7 @@
             STOP
           END IF
         END IF
-        IF((IROTATE.EQ.0).AND.(IROTATE.EQ.180).OR.(IROTATE.EQ.-180))THEN
+        IF((IROTATE.EQ.0).OR.(IROTATE.EQ.180).OR.(IROTATE.EQ.-180))THEN
           IF(NAXIS_(2).GT.NYMAX)THEN
             WRITE(*,100) 'NAXIS(2), NYMAX: '
             WRITE(*,*) NAXIS_(2),NYMAX
@@ -439,6 +449,7 @@
           END DO
           NAXIS(1,NEWBUFF)=NAXIS_(2)
           NAXIS(2,NEWBUFF)=NAXIS_(1)
+          CALL SLEEFITS_NOWAVECAL(LREDUCEME,LWAVECAL(NEWBUFF))
         ELSEIF((IROTATE.EQ.180).OR.(IROTATE.EQ.-180))THEN
           DO I=1,NAXIS_(2)
             DO J=1,NAXIS_(1)
@@ -448,6 +459,13 @@
           END DO
           NAXIS(1,NEWBUFF)=NAXIS_(1)
           NAXIS(2,NEWBUFF)=NAXIS_(2)
+! the X axis is reversed: pixel X' corresponds to the original pixel
+! NAXIS1-X'+1, so the same wavelength is obtained with the new CRPIX1 and
+! CDELT1 (CRVAL1 is unchanged)
+          IF(LWAVECAL(NEWBUFF).AND.(.NOT.LREDUCEME))THEN
+            CRPIX1(NEWBUFF)=REAL(NAXIS_(1))-CRPIX1(NEWBUFF)+1.0
+            CDELT1(NEWBUFF)=-CDELT1(NEWBUFF)
+          END IF
         ELSEIF((IROTATE.EQ.270).OR.(IROTATE.EQ.-90))THEN
           DO I=1,NAXIS_(2)
             DO J=1,NAXIS_(1)
@@ -457,9 +475,7 @@
           END DO
           NAXIS(1,NEWBUFF)=NAXIS_(2)
           NAXIS(2,NEWBUFF)=NAXIS_(1)
-          CRPIX1(NEWBUFF)=1.0
-          CRVAL1(NEWBUFF)=STWV
-          CDELT1(NEWBUFF)=DISP
+          CALL SLEEFITS_NOWAVECAL(LREDUCEME,LWAVECAL(NEWBUFF))
         ELSE
           WRITE(*,101) '***FATAL ERROR***'
           WRITE(*,100) '=> IROTATE='
@@ -483,6 +499,34 @@
 !------------------------------------------------------------------------------
 100     FORMAT(A,$)
 101     FORMAT(A)
+        END
+!
+!******************************************************************************
+! SUBROUTINE SLEEFITS_NOWAVECAL(LREDUCEME,LWAVECAL)
+!
+! Invalidate the wavelength calibration of a FITS image read with
+! IROTATE=+-90 or +-270: the original NAXIS1 (to which CRPIX1, CRVAL1 and
+! CDELT1 refer) becomes the Y axis. Files in REDUCEME format are not
+! modified.
+!
+! Parameters
+! ----------
+! LREDUCEME : LOGICAL
+!     .TRUE. if the file has REDUCEME format (nothing is done).
+! LWAVECAL : LOGICAL
+!     Wavelength calibration flag of the buffer; set to .FALSE. (with a
+!     warning) if it was .TRUE. and the file is not in REDUCEME format.
+!------------------------------------------------------------------------------
+        SUBROUTINE SLEEFITS_NOWAVECAL(LREDUCEME,LWAVECAL)
+        IMPLICIT NONE
+        LOGICAL LREDUCEME
+        LOGICAL LWAVECAL
+!
+        IF(LWAVECAL.AND.(.NOT.LREDUCEME))THEN
+          LWAVECAL=.FALSE.
+          WRITE(*,'(A)') 'WARNING: wavelength calibration (CRPIX1, CRVAL1, '// &
+           'CDELT1) ignored: NAXIS1 is not the X axis after rotation'
+        END IF
         END
 !
 !******************************************************************************
