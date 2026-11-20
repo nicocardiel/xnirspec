@@ -6,10 +6,25 @@ src/*.dSYM
 src/.deps/
 src/*.o
 src/*.mod
+src/*.a
+tests/.deps/
+tests/*.o
+tests/*.mod
+tests/*.a
+tests/*.log
+tests/*.trs
+tests/test_fpoly
+tests/test_stats
+tests/test_sort
+tests/test_linalg
+tests/test_spline
+tests/test_strings
+tests/readc_file_driver
 
 Makefile
 Makefile.in
 aclocal.m4
+ar-lib
 autom4te.cache/
 compile
 config.h
@@ -30,3 +45,6 @@ src/version.inc
 src/xnirspec
 src/zzz_memory_test
 stamp-h1
+test-driver
+tests/Makefile
+tests/Makefile.in

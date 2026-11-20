@@ -1,6 +1,11 @@
 #
 bin_PROGRAMS = xnirspec zzz_memory_test
-xnirspec_SOURCES = \
+
+# All the routines except the main program are collected in a convenience
+# library (not installed), which is used both by xnirspec and by the unit
+# tests in tests/ (the linker only extracts the routines actually needed)
+noinst_LIBRARIES = libxnirspec.a
+libxnirspec_a_SOURCES = \
 dynamic_array_imagen.f90 \
 dynamic_array_imagen_.f90 \
 dynamic_array_lnull.f90 \
@@ -158,16 +163,17 @@ whereami.f90 \
 x2arc.f90 \
 xcut.f90 \
 xextract.f90 \
-xnirspec.f90 \
 ycut.f90 \
 zoomhistog.f90 \
 zscale.f90
 
-xnirspec_LDADD = $(CFITSIO_LIBS) $(PGPLOT_LDFLAGS)
+xnirspec_SOURCES = xnirspec.f90
+xnirspec_LDADD = libxnirspec.a $(CFITSIO_LIBS) $(PGPLOT_LDFLAGS)
 
 zzz_memory_test_SOURCES = zzz_memory_test.f90
 
 # Automake does not track Fortran INCLUDE dependencies
-xnirspec.$(OBJEXT): version.inc
+# (nor the modules used by xnirspec.f90, which are compiled in the library)
+xnirspec.$(OBJEXT): version.inc libxnirspec.a
 
 CLEANFILES = *.mod

@@ -10,6 +10,8 @@ AM_INIT_AUTOMAKE([-Wall -Werror foreign])
 # Checks for programs
 AC_PROG_FC
 AC_PROG_CC
+AM_PROG_AR
+AC_PROG_RANLIB
 
 # Safety check
 AC_CONFIG_SRCDIR([src/xnirspec.f90])
@@ -112,6 +114,7 @@ AC_MSG_RESULT(LIBS set to... $LIBS)
 # Output files
 AC_CONFIG_FILES([Makefile 
                  src/Makefile
+                 tests/Makefile
                  src/dimensions.inc
                  src/largest.inc
                  src/sexpath.inc

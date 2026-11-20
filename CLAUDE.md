@@ -35,9 +35,11 @@ sudo make install
   `./configure`.
 - The version string comes from `AC_INIT` in `configure.ac` (via
   `src/version.inc`); bump it there, not in the Fortran source.
-- New source files must be added to `xnirspec_SOURCES` in `src/Makefile.am`.
-  The `dynamic_array*.f90` modules are listed first so their `.mod` files exist
-  before the files that `USE` them.
+- All routines except the main program are compiled into the convenience
+  library `src/libxnirspec.a` (not installed), linked by `xnirspec` and by the
+  tests. New source files must be added to `libxnirspec_a_SOURCES` in
+  `src/Makefile.am`. The `dynamic_array*.f90` modules are listed first so their
+  `.mod` files exist before the files that `USE` them.
 - Automake does not track Fortran `INCLUDE` dependencies: after changing a
   generated `.inc` or `button.inc`, do `make clean && make` (or add an explicit
   dependency, as done for `version.inc`).
@@ -45,10 +47,32 @@ sudo make install
   `-Wsurprising`, `-Wcharacter-truncation`); many commits exist only to
   silence such warnings, so new code should compile warning-free.
 
-There is no test suite. `zzz_memory_test` only checks that the large arrays
-can be allocated with the configured dimensions. Verification is done by
-building and running `src/xnirspec` interactively (optionally with FITS files
-as command-line arguments, at most `NMAXBUFF/2`).
+## Tests
+
+```sh
+make check                                # build and run all the tests
+make -C tests check TESTS=test_fpoly      # run a single test
+```
+
+- Unit tests live in `tests/` (one program per group of routines, linked
+  against `src/libxnirspec.a`); a test passes when it exits with status 0.
+  Results are in `tests/<test>.log` and `tests/test-suite.log`.
+- Checks use the module `TEST_UTILS` (`tests/test_utils.f90`):
+  `CHECK_REAL(name, got, expected, rtol, atol)` (same criterion as
+  `numpy.isclose`), `CHECK_INT`, `CHECK_TRUE`, `CHECK_STR`, and
+  `TEST_SUMMARY()` at the end (`ERROR STOP 1` if any check failed).
+- To add a test: add the program to `check_PROGRAMS` and `TESTS` in
+  `tests/Makefile.am`, with its `_SOURCES` and its object depending on
+  `libtestutils.a` (module ordering).
+- `test_readc_file.sh` drives `readc_file_driver` with redirected stdin
+  (fallback path of `READC_FILE`, without readline).
+- Error paths that end in `STOP` (exit status 0) cannot be tested this way.
+  Avoid inputs that make a routine wait for `<CR>` (e.g. singular matrices
+  in `LUDCMP`/`LUDCMPD`).
+- Only routines with explicit arguments are tested so far. Routines that use
+  `IMAGEN`, `COMMON` state or PGPLOT, and the interactive program itself,
+  are not covered. `zzz_memory_test` only checks that the large arrays can be
+  allocated with the configured dimensions.
 
 ## Architecture
 
