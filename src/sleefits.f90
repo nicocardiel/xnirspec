@@ -443,7 +443,7 @@
           DO I=1,NAXIS_(2)
             DO J=1,NAXIS_(1)
               IMAGEN(J,I,NEWBUFF)=IMAGEN_(NAXIS_(1)-J+1,NAXIS_(2)-I+1)
-              LNULL(J,I,NEWBUFF)=LNULL_(J,I)
+              LNULL(J,I,NEWBUFF)=LNULL_(NAXIS_(1)-J+1,NAXIS_(2)-I+1)
             END DO
           END DO
           NAXIS(1,NEWBUFF)=NAXIS_(1)

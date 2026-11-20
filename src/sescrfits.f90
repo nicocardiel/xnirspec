@@ -31,6 +31,7 @@
         INTEGER NAXIS1,NAXIS2
         INTEGER N1,N2,NSKIP,NKEYS,NSPACE
         INTEGER DI(NBOXMAX),DJ(NBOXMAX)
+        INTEGER DI0,DJ0           !offsets of the region of IMAGEN to be saved
         INTEGER READWRITE
 !delete REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
 !delete REAL IMAGEN_(NXYMAX,NXYMAX)
@@ -142,9 +143,13 @@
             CALL FTINIT(IUNIT,INFILE,BLOCKSIZE,ISTATUS)
             NAXIS_(1,NCBUFF)=256
             NAXIS_(2,NCBUFF)=256
+            DI0=DI(K)
+            DJ0=DJ(K)
           ELSE
-            DI(1)=0
-            DJ(1)=0
+! do not modify DI(1), DJ(1): they are initialized with DATA (and are
+! therefore SAVEd), so changing them would corrupt later box-9 saves
+            DI0=0
+            DJ0=0
             NAXIS_(1,NCBUFF)=NAXIS(1,NCBUFF)
             NAXIS_(2,NCBUFF)=NAXIS(2,NCBUFF)
             CALL FTINIT(IUNIT,FITSFILE,BLOCKSIZE,ISTATUS)
@@ -202,7 +207,7 @@
 ! salvamos la imagen
           DO I=1,NAXIS_(2,NCBUFF)
             DO J=1,NAXIS_(1,NCBUFF)
-              IMAGEN_(J,I)=IMAGEN(J+DJ(K),I+DI(K),NCBUFF)
+              IMAGEN_(J,I)=IMAGEN(J+DJ0,I+DI0,NCBUFF)
             END DO
           END DO
           NAXIS1=NAXIS_(1,NCBUFF)
