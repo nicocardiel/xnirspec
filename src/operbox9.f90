@@ -27,6 +27,7 @@
         REAL READF
         REAL FTSTUDENTI,FNORTIPI
         CHARACTER*255 READC
+        CHARACTER*255 READC_FILE
         LOGICAL INSIDE
         LOGICAL LPOST
 !
@@ -246,7 +247,7 @@
 ! pedimos offsets
         LOGFILE=.FALSE.
         DO WHILE(.NOT.LOGFILE)
-          COFFSETFILE=READC('Name of the file with offsets (none=exit)','offsets.dat','@')
+          COFFSETFILE=READC_FILE('Name of the file with offsets (none=exit)','offsets.dat','@')
           IF(COFFSETFILE.EQ.'none')THEN
             DEALLOCATE(MASKBOX9_, STAT = DeAllocateStatus)
             IF (DeAllocateStatus /= 0) STOP "*** Trouble deallocating the array MASKBOX9_ ***"
@@ -538,7 +539,7 @@
         CPOST=C255(1:1)
 !!!        CPOST='n'
         IF(CPOST.EQ.'y')THEN
-          CBASEPOST=READC('Base for postscript file names',CBASEPOST,'@')
+          CBASEPOST=READC_FILE('Base for postscript file names',CBASEPOST,'@')
           WRITE(CDUMMY,*) NPOST+1
           NPOST=READI('Number of first pgplot????.ps file',CDUMMY)
           NPOST=NPOST-1

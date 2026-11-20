@@ -19,6 +19,7 @@
         REAL ARCLENGTH
         REAL FMEAN0,FMEAN2
         CHARACTER*255 READC
+        CHARACTER*255 READC_FILE
 !
         INTEGER NMAPMAX
         PARAMETER (NMAPMAX=3) !second-degree bivariate approximation
@@ -131,7 +132,7 @@
           LOGFILE=.FALSE.
           LOGFILERR=.FALSE.
           DO WHILE(.NOT.LOGFILE)
-            FILENAME=READC('Mapping file name (none=EXIT)','*.mapp','@')
+            FILENAME=READC_FILE('Mapping file name (none=EXIT)','*.mapp','@')
             IF((INDEX(FILENAME,'*').NE.0).OR.(INDEX(FILENAME,'?').NE.0))THEN
               L1=TRUEBEG(FILENAME)
               L2=TRUELEN(FILENAME)
@@ -204,7 +205,7 @@
           LOGFILE=.TRUE.
           LOGFILERR=.FALSE.
           DO WHILE(LOGFILE)
-            FILENAME=READC('Mapping file name (none=EXIT)','*.mapp','@')
+            FILENAME=READC_FILE('Mapping file name (none=EXIT)','*.mapp','@')
             IF((INDEX(FILENAME,'*').NE.0).OR.(INDEX(FILENAME,'?').NE.0))THEN
               L1=TRUEBEG(FILENAME)
               L2=TRUELEN(FILENAME)

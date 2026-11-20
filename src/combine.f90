@@ -25,6 +25,7 @@
         REAL FMEDIAN1
         REAL FTSTUDENTI
         CHARACTER*255 READC
+        CHARACTER*255 READC_FILE
         LOGICAL INSIDE
 !
         INTEGER I,J,K,II,JJ,KK,II1,II2,JJ1,JJ2,IJ
@@ -125,7 +126,7 @@
 ! pedimos offsets
         LOGFILE=.FALSE.
         DO WHILE(.NOT.LOGFILE)
-          COFFSETFILE=READC('Name of the file with offsets (none=exit)','offsets.dat','@')
+          COFFSETFILE=READC_FILE('Name of the file with offsets (none=exit)','offsets.dat','@')
           L1=TRUEBEG(COFFSETFILE)
           L2=TRUELEN(COFFSETFILE)
           IF(COFFSETFILE(L1:L2).EQ.'none')THEN

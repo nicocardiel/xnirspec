@@ -41,6 +41,7 @@
         REAL READF
         REAL FPOLY
         CHARACTER*255 READC
+        CHARACTER*255 READC_FILE
 ! variables que definen el boundary
 ! NOTA: Por razones historicas, los polinomios que definen el boundary se 
 ! denominan BL y BA por Boundary Lines, y Boundary Arc lines. 
@@ -817,7 +818,7 @@
             LOGFILE=.FALSE.
             LOGFILERR=.FALSE.
             DO WHILE(.NOT.LOGFILE)
-              INFILE_=READC('Input FITS file name (none=EXIT)','*.*fit* FITS*/*.fits *.b9','@')
+              INFILE_=READC_FILE('Input FITS file name (none=EXIT)','*.*fit* FITS*/*.fits *.b9','@')
               IF((INDEX(INFILE_,'*').NE.0).OR.(INDEX(INFILE_,'?').NE.0))THEN
                 L1=TRUEBEG(INFILE_)
                 L2=TRUELEN(INFILE_)
@@ -1164,7 +1165,7 @@
                 LOGFILE=.FALSE.
                 CALL GUESSEF(INFILE_,ERRFILE)
                 DO WHILE(.NOT.LOGFILE)
-                  ERRFILE=READC('Input FITS error file name',ERRFILE,'@')
+                  ERRFILE=READC_FILE('Input FITS error file name',ERRFILE,'@')
                   IF((INDEX(ERRFILE,'*').NE.0).OR.(INDEX(ERRFILE,'?').NE.0))THEN
                     L1=TRUEBEG(ERRFILE)
                     L2=TRUELEN(ERRFILE)
@@ -1227,9 +1228,9 @@
               LOGFILERR=.FALSE.
               DO WHILE(LOGFILE)
                 IF((CSAVE.EQ.'f').OR.(CSAVE.EQ.'F'))THEN
-                  OUTFILE=READC('Output FITS file name (none=EXIT)','*.fits','@')
+                  OUTFILE=READC_FILE('Output FITS file name (none=EXIT)','*.fits','@')
                 ELSE
-                  OUTFILE=READC('Output REDUCEME file name (none=EXIT)','*.u','@')
+                  OUTFILE=READC_FILE('Output REDUCEME file name (none=EXIT)','*.u','@')
                 END IF
                 IF((INDEX(OUTFILE,'*').NE.0).OR.(INDEX(OUTFILE,'?').NE.0))THEN
                   L1=TRUEBEG(OUTFILE)
@@ -1254,7 +1255,7 @@
                   LOGFILERR=.FALSE.
                   DO WHILE(.NOT.LOGFILE)
                     WRITE(*,101)'* Including header from other file'
-                    HDRFILE=READC('Header FITS file name (none=EXIT)','*.fits','@')
+                    HDRFILE=READC_FILE('Header FITS file name (none=EXIT)','*.fits','@')
                     IF((INDEX(HDRFILE,'*').NE.0).OR.(INDEX(HDRFILE,'?').NE.0))THEN
                       L1=TRUEBEG(HDRFILE)
                       L2=TRUELEN(HDRFILE)
@@ -1289,9 +1290,9 @@
                   CALL GUESSEF(OUTFILE,ERRFILE)
                   DO WHILE(LOGFILE)
                     IF((CSAVE.EQ.'f').OR.(CSAVE.EQ.'F'))THEN
-                      ERRFILE=READC('Output FITS error file name',ERRFILE,'@')
+                      ERRFILE=READC_FILE('Output FITS error file name',ERRFILE,'@')
                     ELSE
-                      ERRFILE=READC('Output REDUCEME error file name',ERRFILE,'@')
+                      ERRFILE=READC_FILE('Output REDUCEME error file name',ERRFILE,'@')
                     END IF
                     IF((INDEX(ERRFILE,'*').NE.0).OR.(INDEX(ERRFILE,'?').NE.0))THEN
                       L1=TRUEBEG(ERRFILE)
@@ -1442,7 +1443,7 @@
             LOGFILE=.FALSE.
             LOGFILERR=.FALSE.
             DO WHILE(.NOT.LOGFILE)
-              INFILE_=READC('Input file name with polynomial wavelength calibration (none=EXIT)','polw*','@')
+              INFILE_=READC_FILE('Input file name with polynomial wavelength calibration (none=EXIT)','polw*','@')
               IF((INDEX(INFILE_,'*').NE.0).OR.(INDEX(INFILE_,'?').NE.0))THEN
                 L1=TRUEBEG(INFILE_)
                 L2=TRUELEN(INFILE_)
@@ -2049,7 +2050,7 @@
                   END IF
                 END DO
                 IF(LOK)THEN
-                  OFFFILE=READC('Output file name with offsets','@','@')
+                  OFFFILE=READC_FILE('Output file name with offsets','@','@')
                   OPEN(10,FILE=OFFFILE,STATUS='UNKNOWN',FORM='FORMATTED')
                   DO I=1,NFRAMES(NCBUFF)
                     WRITE(10,*) I,XOFFSET(I),0.0,YOFFSET(I),0.0
@@ -2210,7 +2211,7 @@
               LOGFILE=.FALSE.
               LOGFILERR=.FALSE.
               DO WHILE(.NOT.LOGFILE)
-                INFILE_=READC('Input ds9 file name (none=EXIT, NONE=delete region)','*.reg','@')
+                INFILE_=READC_FILE('Input ds9 file name (none=EXIT, NONE=delete region)','*.reg','@')
                 IF((INDEX(INFILE_,'*').NE.0).OR.(INDEX(INFILE_,'?').NE.0))THEN
                   L1=TRUEBEG(INFILE_)
                   L2=TRUELEN(INFILE_)
@@ -2251,7 +2252,7 @@
                 ELSE
                   CDUMMY='*'
                 END IF
-                INFILE_=READC('Input ASCII file (none=EXIT, NONE=delete region)',CDUMMY,'@')
+                INFILE_=READC_FILE('Input ASCII file (none=EXIT, NONE=delete region)',CDUMMY,'@')
                 IF((INDEX(INFILE_,'*').NE.0).OR.(INDEX(INFILE_,'?').NE.0))THEN
                   L1=TRUEBEG(INFILE_)
                   L2=TRUELEN(INFILE_)
@@ -2301,7 +2302,7 @@
             COFFSETS=C255(1:1)
             LOGFILE=.FALSE.
             DO WHILE(.NOT.LOGFILE)
-              FILELISTIN=READC('Input file name with list of FITS files','@','@')
+              FILELISTIN=READC_FILE('Input file name with list of FITS files','@','@')
               INQUIRE(FILE=FILELISTIN,EXIST=LOGFILE)
               IF(.NOT.LOGFILE)THEN
                 WRITE(*,100) 'ERROR: this file does not exist.'
@@ -2310,7 +2311,7 @@
             END DO
             LOGFILE=.TRUE.
             DO WHILE(LOGFILE)
-              FILELISTOUT=READC('Output file name with list of FITS files','@','@')
+              FILELISTOUT=READC_FILE('Output file name with list of FITS files','@','@')
               INQUIRE(FILE=FILELISTOUT,EXIST=LOGFILE)
               IF(LOGFILE)THEN
                 WRITE(*,100) 'ERROR: this file already exists.'

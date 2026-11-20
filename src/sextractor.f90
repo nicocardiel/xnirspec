@@ -15,6 +15,7 @@
         REAL READF
         REAL LEECOLUMN
         CHARACTER*255 READC
+        CHARACTER*255 READC_FILE
 !
         INTEGER I,II,ISUM,N0,N0_
         INTEGER L1,L2,LL1,LL2,LLL1,LLL2
@@ -188,7 +189,7 @@
             IF(CREF.EQ.'y')THEN
               LOGFILE=.FALSE.
               DO WHILE(.NOT.LOGFILE)
-                REFFILE=READC('Reference image to be used for detection of sources','*.fits','@')
+                REFFILE=READC_FILE('Reference image to be used for detection of sources','*.fits','@')
                 IF((INDEX(REFFILE,'*').NE.0).OR.(INDEX(REFFILE,'?').NE.0))THEN
                   ISYSTEM=SYSTEMFUNCTION('ls '//REFFILE(1:TRUELEN(REFFILE)))
                 ELSE

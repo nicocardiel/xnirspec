@@ -27,6 +27,7 @@
         REAL READF
         REAL FMEAN0,FMEAN0W
         CHARACTER*255 READC
+        CHARACTER*255 READC_FILE
         LOGICAL LPOST
         LOGICAL INSIDE
 !
@@ -1089,7 +1090,7 @@
           CWEIGHT=C255(1:1)
           LOGFILE=.TRUE.
           DO WHILE(LOGFILE)
-            OUTFILE=READC('Output file name','@','@')
+            OUTFILE=READC_FILE('Output file name','@','@')
             L1=TRUEBEG(OUTFILE)
             L2=TRUELEN(OUTFILE)
             INQUIRE(FILE=OUTFILE(L1:L2),EXIST=LOGFILE)

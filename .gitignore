@@ -3,6 +3,7 @@ syntax: glob
 configure~
 
 src/*.dSYM
+src/.deps/
 src/*.o
 src/*.mod
 
@@ -17,6 +18,7 @@ config.h.in~
 config.log
 config.status
 configure
+depcomp
 install-sh
 missing
 src/Makefile

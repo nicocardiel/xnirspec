@@ -19,7 +19,7 @@
 !
         INTEGER READILIM
         INTEGER TRUEBEG,TRUELEN
-        CHARACTER*255 READC
+        CHARACTER*255 READC_FILE
         LOGICAL INSIDE
 !
         INTEGER I,J,K,II,JJ,KK,II1,II2,JJ1,JJ2,IJ
@@ -95,7 +95,7 @@
 ! pedimos offsets
         LOGFILE=.FALSE.
         DO WHILE(.NOT.LOGFILE)
-          COFFSETFILE=READC('Name of the file with offsets (none=exit)','offsets.dat','@')
+          COFFSETFILE=READC_FILE('Name of the file with offsets (none=exit)','offsets.dat','@')
           L1=TRUEBEG(COFFSETFILE)
           L2=TRUELEN(COFFSETFILE)
           IF(COFFSETFILE(L1:L2).EQ.'none')THEN
@@ -235,7 +235,7 @@
 ! indicamos el nombre base de los ficheros de salida
         LOGFILE=.TRUE.
         DO WHILE(LOGFILE)
-          OUTFILEBASE=READC('Base name for output files','@','@')
+          OUTFILEBASE=READC_FILE('Base name for output files','@','@')
           LOGFILE=.FALSE.
           DO K=1,NFRAMES_
             IF(.NOT.LOGFILE)THEN

@@ -21,6 +21,7 @@
         INTEGER TRUELEN
         INTEGER READI
         CHARACTER*255 READC
+        CHARACTER*255 READC_FILE
 !
         INTEGER I,J,K,L
         INTEGER BITPIX,NAXIS(2,NMAXBUFF)
@@ -84,7 +85,7 @@
           IF(CBOX9.EQ.'y')THEN
             LOGFILE=.FALSE.
             DO WHILE(.NOT.LOGFILE)
-              CLISTHEAD=READC('File list to copy FITS headers','@','@')
+              CLISTHEAD=READC_FILE('File list to copy FITS headers','@','@')
               INQUIRE(FILE=CLISTHEAD,EXIST=LOGFILE)
               IF(.NOT.LOGFILE)THEN
                 WRITE(*,101) 'ERROR: this file does not exist. Try again.'

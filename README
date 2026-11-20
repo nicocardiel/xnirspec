@@ -33,3 +33,16 @@ To include compatibility with SExtractor it is necessary to indicate the
 location of its executable:
 
 $ ./configure FC=gfortran-mp-12 FCFLAGS=-Wall SEXPATH=/usr/local/bin
+
+Optionally, if the GNU readline library (including its development headers)
+is available, xnirspec uses it when asking for file names: pressing TAB
+completes the file name up to the longest unambiguous prefix, pressing it
+again lists the possible completions, and previous entries can be recalled
+with the arrow keys. If readline is not found, xnirspec is compiled without
+this feature and works as usual. On macOS, the Homebrew and MacPorts
+installations of GNU readline are detected automatically. Otherwise, the
+location of the library can be indicated with --with-readline=DIR (the files
+are searched in DIR/include and DIR/lib); use --without-readline to disable
+this feature. The configure output reports whether readline has been enabled:
+
+$ ./configure FC=gfortran-mp-12 FCFLAGS=-Wall --with-readline=$HOME/local

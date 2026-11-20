@@ -12,6 +12,7 @@
         INTEGER TRUEBEG,TRUELEN
         REAL READF
         CHARACTER*255 READC
+        CHARACTER*255 READC_FILE
 !
         INTEGER I,J,K,L,L1,L2
         INTEGER NX1,NX2,NY1,NY2
@@ -47,7 +48,7 @@
         L1=0 !evita un warning the compilacion
         L2=0 !evita un warning the compilacion
         DO WHILE(LOGFILE)
-          PPMFILE=READC('Output ppm file name','pgplot.ppm','@')
+          PPMFILE=READC_FILE('Output ppm file name','pgplot.ppm','@')
           L1=TRUEBEG(PPMFILE)
           L2=TRUELEN(PPMFILE)
           INQUIRE(FILE=PPMFILE(L1:L2),EXIST=LOGFILE)

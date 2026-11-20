@@ -15,6 +15,7 @@
         REAL ARCLENGTH
         REAL FPOLY
         CHARACTER*255 READC
+        CHARACTER*255 READC_FILE
 !
         INTEGER L1,L2,LL1,LL2
         INTEGER I,L,LL,LMIN
@@ -101,7 +102,7 @@
           LOGFILE=.FALSE.
           LOGFILERR=.FALSE.
           DO WHILE(.NOT.LOGFILE)
-            FILENAME=READC('Boundary file name (none=EXIT)','*.boun','@')
+            FILENAME=READC_FILE('Boundary file name (none=EXIT)','*.boun','@')
             IF((INDEX(FILENAME,'*').NE.0).OR.(INDEX(FILENAME,'?').NE.0))THEN
               L1=TRUEBEG(FILENAME)
               L2=TRUELEN(FILENAME)
@@ -165,7 +166,7 @@
           LOGFILE=.TRUE.
           LOGFILERR=.FALSE.
           DO WHILE(LOGFILE)
-            FILENAME=READC('Boundary file name (none=EXIT)','*.boun','@')
+            FILENAME=READC_FILE('Boundary file name (none=EXIT)','*.boun','@')
             IF((INDEX(FILENAME,'*').NE.0).OR. &
                (INDEX(FILENAME,'?').NE.0))THEN
               L1=TRUEBEG(FILENAME)

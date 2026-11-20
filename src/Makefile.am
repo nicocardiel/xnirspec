@@ -69,6 +69,7 @@ fmedian1.f90 \
 fmedian1e.f90 \
 fpoly.f90 \
 fpolyinv.f90 \
+freadline.c \
 frobustrms0.f90 \
 frobustrms1.f90 \
 fstatistic.f90 \
@@ -111,6 +112,7 @@ pxmap.f90 \
 randomnumber.f90 \
 read2i.f90 \
 readc.f90 \
+readc_file.f90 \
 readf.f90 \
 readi.f90 \
 readilim.f90 \

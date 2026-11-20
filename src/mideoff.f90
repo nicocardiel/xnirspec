@@ -11,6 +11,7 @@
         INTEGER READI,READILIM
         INTEGER TRUEBEG,TRUELEN
         CHARACTER*255 READC
+        CHARACTER*255 READC_FILE
 !
         INTEGER L,IDUM
         INTEGER L1,L2
@@ -46,7 +47,7 @@
 ! pedimos offsets
         LOGFILE=.FALSE.
         DO WHILE(.NOT.LOGFILE)
-          COFFSETFILE=READC('Name of the file with offsets (none=exit)','offsets.dat','@')
+          COFFSETFILE=READC_FILE('Name of the file with offsets (none=exit)','offsets.dat','@')
           L1=TRUEBEG(COFFSETFILE)
           L2=TRUELEN(COFFSETFILE)
           IF(COFFSETFILE(L1:L2).EQ.'none') RETURN !permitimos escapar
@@ -177,7 +178,7 @@
         CPOST=C255(1:1)
 !!!        CPOST='n'
         IF(CPOST.EQ.'y')THEN
-          CBASEPOST=READC('Base for postscript file names',CBASEPOST,'@')
+          CBASEPOST=READC_FILE('Base for postscript file names',CBASEPOST,'@')
           L1=TRUEBEG(CBASEPOST)
           L2=TRUELEN(CBASEPOST)
           WRITE(CDUMMY,*) NPOST+1

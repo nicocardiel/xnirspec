@@ -27,6 +27,10 @@ sudo make install
   SExtractor support needs `SEXPATH=/path/to/sex`. Other `AC_ARG_VAR`s in
   `configure.ac` (`NXMAXB9`, `NYMAXB9`, `NOVERSAMPMAX`, `NZMAX`, `NMAXBUFF`) are
   marked "do not change".
+- Optional GNU readline (file name completion): `--with-readline[=DIR]`,
+  `--without-readline`; Homebrew and MacPorts locations are detected
+  automatically on macOS. `configure` reports whether it was enabled
+  (`HAVE_READLINE` in `config.h`).
 - After editing `configure.ac` or any `Makefile.am`, rerun `./autogen.sh` and
   `./configure`.
 - The version string comes from `AC_INIT` in `configure.ac` (via
@@ -79,6 +83,14 @@ as command-line arguments, at most `NMAXBUFF/2`).
 - **GUI layer**: `button.f90`, `buttq*.f90` / `butts*.f90` (query/set button
   properties), `ifbutton.f90`, `activebut.f90`, and `rpg*.f90` wrappers around
   PGPLOT.
+- **Terminal input**: `READC`, `READI`, `READF`, ... take a question, a
+  default value (`'@'` = no default) and, for `READC`, the valid characters
+  (`'@'` = any). File names are read with `READC_FILE` (same interface as
+  `READC`), which uses readline through `freadline.c` (C interop via
+  `BIND(C)`) when stdin/stdout are terminals, and a plain `READ` otherwise.
+  Wildcards (`*`, `?`) in the answer are handled by the caller, which lists
+  the matching files and asks again. Use `READC_FILE` for any new file name
+  prompt.
 - **I/O**: `sleefits.f90` reads FITS (CFITSIO; handles extensions, 3D cubes by
   slice/collapsed range, rotation), `sescrfits.f90` writes FITS;
   `try_reduceme.f90` / `sescrredu.f90` handle the legacy REDUCEME format.
