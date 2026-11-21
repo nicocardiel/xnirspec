@@ -22,6 +22,7 @@ tests/test_strings
 tests/readc_file_driver
 tests/test_fitsio
 tests/fitsio_interactive_driver
+tests/subimath_driver
 tests/tmp_*.fits
 
 Makefile

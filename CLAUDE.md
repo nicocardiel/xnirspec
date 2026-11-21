@@ -78,8 +78,17 @@ make -C tests check TESTS=test_fpoly      # run a single test
   `tmp_*.fits` and deleted at the end (and by `make clean`). The expected
   orientation for each `IROTATE` is the convention currently implemented in
   `SLEEFITS` (documented in `tests/test_fitsio.f90`).
-- Not covered: box-9 (768x768) saving, the REDUCEME format, routines that
-  use PGPLOT, and the interactive program itself. `zzz_memory_test` only
+- Button-driven routines can be tested without a display: set
+  `MODOTEXT_BUTT=.TRUE.` (COMMON in `button.inc`, buttons not plotted), open
+  PGPLOT with `/NULL`, and feed through stdin, for each click, `y` and the
+  button number (`RPGBAND`/`IFBUTTON` text mode). `test_subimath.sh` (with
+  `subimath_driver`) does this for `SUBIMATH`: each case is a list of answers
+  (`@NB` = click), and the driver checks the buffers. These tests depend on
+  the button numbers and the order of the questions. Scripts must check that
+  the `Summary: ... 0 failures` line is printed, since a mismatched answer
+  sequence can end the program through `STOP` (exit status 0).
+- Not covered: box-9 (768x768) saving, the REDUCEME format, most of
+  `SUBIMATH` (only some operations are tested), and the main program itself. `zzz_memory_test` only
   checks that the large arrays can be allocated with the configured
   dimensions; the FITS tests allocate them too (several GB of virtual
   memory with large `NXMAX`/`NYMAX`, only a few pixels are touched).
