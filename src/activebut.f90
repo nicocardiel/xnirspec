@@ -48,7 +48,7 @@
         CALL BUTTON(31,'resize ima',0)
 !------------------------------------------------------------------------------
         CALL BUTTON(34,'box[9]oper',0)
-        CALL BUTTON(44,'[o]ffsets',0)
+        CALL BUTTON(56,'[o]ffsets',0)
 !------------------------------------------------------------------------------
         CALL BUTTON(161,'zoom',0)
         CALL BUTTON(161,'zoom',NCOLOR3)

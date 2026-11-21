@@ -560,8 +560,8 @@
 !
         CALL BUTTON(34,'box[9]oper',0)
         CALL BUTTON(34,'box[9]oper',3)
-        CALL BUTTON(44,'[o]ffsets',0)
-        CALL BUTTON(44,'[o]ffsets',3)
+        CALL BUTTON(56,'[o]ffsets',0)
+        CALL BUTTON(56,'[o]ffsets',3)
 !
         CALL BUTTON(41,'zoom',0)
         CALL BUTTON(41,'zoom',3)
@@ -719,8 +719,8 @@
                      'qi   xyp t'// & !01
                      '?  crkeu. '// & !02
                      '   9123456'// & !03
-                     '   o      '// & !04
-                     '          '// & !05
+                     '          '// & !04
+                     '     o    '// & !05
                      '          '// & !06
                      '          '// & !07
                      '          '// & !08
@@ -2668,7 +2668,7 @@
             CALL BUTTON(NB,'min,max',0)
             CALL BUTTON(NB,'min,max',NCOLOR4)
 !------------------------------------------------------------------------------
-          ELSEIF(NB.EQ.44)THEN
+          ELSEIF(NB.EQ.56)THEN
             CALL BUTTON(NB,'[o]ffsets',5)
             IF(NBUFFBOX9.EQ.0)THEN
               NBUFFBOX9=READILIM('Buffer with frames to be measured (0=exit)','@',0,NMAXBUFF)
