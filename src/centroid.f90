@@ -164,9 +164,9 @@
             CALL PGQCH(OLD_CH)
             CALL PGSCH(0.7)
 ! borramos el plot previo
-            CALL RPGERASW(0.00,0.40,0.00,0.80,0)
+            CALL RPGERASW(0.00,0.40,0.00,0.76,0)
 ! definimos nueva region de dibujo para el dibujo 3D y lo hacemos
-            CALL PGSVP(0.01,0.19,0.39,0.79)
+            CALL PGSVP(0.01,0.19,0.39,0.72)
             CALL PLOT3DBARS(IX1,IX2,IY1,IY2,0,.TRUE.,BG,FG)
 ! definimos nueva region de dibujo para el dibujo 2D y lo hacemos
             CALL PGSVP(0.0275,0.1425,0.21,0.38)
@@ -362,7 +362,7 @@
             EAMP_F=EAMP
             ECTE_F=ECTE
 ! definimos nueva region de dibujo para el dibujo 3D y lo hacemos
-            CALL PGSVP(0.21,0.39,0.39,0.79)
+            CALL PGSVP(0.21,0.39,0.39,0.72)
             CALL PLOT3DBARS(IX1,IX2,IY1,IY2,0,.TRUE.,BG,FG)
 ! definimos nueva region de dibujo para el dibujo 2D y lo hacemos
             CALL PGSVP(0.1425,0.2575,0.21,0.38)

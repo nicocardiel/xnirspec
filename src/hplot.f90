@@ -45,7 +45,7 @@
         CALL PGQCH(OLD_CH)
 ! definimos nueva region de dibujo para el plot
         CALL PGSCH(0.8)
-        CALL PGSVP(0.05,0.37,0.46,0.75)
+        CALL PGSVP(0.05,0.37,0.46,0.72)
 ! definimos las nuevas coordenadas
         CALL PGSWIN(XMIN,XMAX,YMIN,YMAX)
 !------------------------------------------------------------------------------
@@ -109,7 +109,7 @@
         END IF
 !------------------------------------------------------------------------------
 ! borramos plot previo
-        CALL RPGERASW(0.00,0.40,0.38,0.80,0)
+        CALL RPGERASW(0.00,0.40,0.38,0.76,0)
 ! dibujamos caja y datos
         CALL PGSWIN(XMIN,XMAX,YMIN,YMAX)
         CALL PGBOX('BCTSN',0.0,0,'BCTSN',0.0,0)

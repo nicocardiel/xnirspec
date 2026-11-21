@@ -3124,10 +3124,10 @@
         ELSE
           NSYMB=1
 ! borramos plot previo
-          CALL RPGERASW(0.00,0.40,0.38,0.80,0)
+          CALL RPGERASW(0.00,0.40,0.38,0.76,0)
           CALL PGSCH(0.6)
 ! definimos nueva region de dibujo para el plot #1
-          CALL PGSVP(0.05,0.21,0.46,0.75)
+          CALL PGSVP(0.05,0.21,0.46,0.72)
         END IF
 ! dibujamos caja y datos
         CALL PGSWIN(XMIN,XMAX,YMIN,YMAX)
@@ -3179,7 +3179,7 @@
         IF(CPOST.EQ.'y')THEN
           CALL PGSVP(0.50,0.90,0.15,0.85)
         ELSE
-          CALL PGSVP(0.21,0.37,0.46,0.75)
+          CALL PGSVP(0.21,0.37,0.46,0.72)
         END IF
 ! dibujamos caja y datos
         CALL PGSWIN(XMIN,XMAX,YMIN,YMAX)

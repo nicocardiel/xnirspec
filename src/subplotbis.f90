@@ -36,7 +36,7 @@
         CALL PGQWIN(XW1,XW2,YW1,YW2)
         CALL PGQCH(OLD_CH)
 ! definimos nueva region de dibujo para el plot
-        CALL PGSVP(0.05,0.37,0.46,0.75)
+        CALL PGSVP(0.05,0.37,0.46,0.72)
 ! dibujamos datos
         CALL PGSWIN(XMIN,XMAX,YMIN,YMAX)
         CALL PGSCI(ICOLOR)

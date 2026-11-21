@@ -54,10 +54,10 @@
         CALL PGQWIN(XW1,XW2,YW1,YW2)
         CALL PGQCH(OLD_CH)
 ! borramos plot previo
-        CALL RPGERASW(0.00,0.40,0.38,0.80,0)
+        CALL RPGERASW(0.00,0.40,0.38,0.76,0)
 ! definimos nueva region de dibujo para el plot
         CALL PGSCH(0.8)
-        CALL PGSVP(0.05,0.37,0.46,0.75)
+        CALL PGSVP(0.05,0.37,0.46,0.72)
 ! en caso necesario, calculamos limites
         IF(LX)THEN
           IF(LEX)THEN
