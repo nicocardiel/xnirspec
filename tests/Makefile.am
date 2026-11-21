@@ -10,8 +10,9 @@ check_LIBRARIES = libtestutils.a
 libtestutils_a_SOURCES = test_utils.f90
 
 check_PROGRAMS = test_fpoly test_stats test_sort test_linalg test_spline \
-                 test_strings test_fitsio test_overbutton readc_file_driver \
-                 fitsio_interactive_driver subimath_driver
+                 test_strings test_fitsio test_overbutton test_cutgaussfit \
+                 readc_file_driver fitsio_interactive_driver subimath_driver \
+                 pcutgauss_driver
 
 LDADD = libtestutils.a $(top_builddir)/src/libxnirspec.a
 
@@ -27,26 +28,30 @@ test_spline_SOURCES = test_spline.f90
 test_strings_SOURCES = test_strings.f90
 test_fitsio_SOURCES = test_fitsio.f90
 test_overbutton_SOURCES = test_overbutton.f90
+test_cutgaussfit_SOURCES = test_cutgaussfit.f90
 fitsio_interactive_driver_SOURCES = fitsio_interactive_driver.f90
 subimath_driver_SOURCES = subimath_driver.f90
+pcutgauss_driver_SOURCES = pcutgauss_driver.f90
 readc_file_driver_SOURCES = readc_file_driver.f90
 
 TESTS = test_fpoly test_stats test_sort test_linalg test_spline \
-        test_strings test_fitsio test_overbutton test_readc_file.sh \
-        test_fitsio_interactive.sh test_subimath.sh
+        test_strings test_fitsio test_overbutton test_cutgaussfit \
+        test_readc_file.sh test_fitsio_interactive.sh test_subimath.sh \
+        test_pcutgauss.sh
 
 TEST_EXTENSIONS = .sh
 SH_LOG_COMPILER = $(SHELL)
 
 EXTRA_DIST = test_readc_file.sh test_fitsio_interactive.sh \
-             test_subimath.sh
+             test_subimath.sh test_pcutgauss.sh
 
 # The tests use the module TEST_UTILS (test_utils.mod), which must be
 # compiled first (Automake does not track Fortran module dependencies)
 test_fpoly.$(OBJEXT) test_stats.$(OBJEXT) test_sort.$(OBJEXT) \
 test_linalg.$(OBJEXT) test_spline.$(OBJEXT) \
 test_strings.$(OBJEXT) test_fitsio.$(OBJEXT) test_overbutton.$(OBJEXT) \
-fitsio_interactive_driver.$(OBJEXT) subimath_driver.$(OBJEXT): libtestutils.a
+test_cutgaussfit.$(OBJEXT) fitsio_interactive_driver.$(OBJEXT) \
+subimath_driver.$(OBJEXT) pcutgauss_driver.$(OBJEXT): libtestutils.a
 
 # temporary FITS files left by the tests if they are interrupted
 CLEANFILES = *.mod tmp_*.fits

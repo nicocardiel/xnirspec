@@ -52,6 +52,8 @@ combpf.f90 \
 creatergb.f90 \
 cubspl.f90 \
 cubsplx.f90 \
+cutcontfit.f90 \
+cutgaussfit.f90 \
 distpp.f90 \
 distpr.f90 \
 downhill.f90 \
@@ -106,6 +108,7 @@ overbutton.f90 \
 palette.f90 \
 pbound.f90 \
 pcut.f90 \
+pcutgauss.f90 \
 plot3dbars.f90 \
 plotascreg.f90 \
 plotds9reg.f90 \

@@ -202,6 +202,8 @@
         LOGICAL L_PHOTFLAM(NMAXBUFF),L_PHOTZPT(NMAXBUFF)              !HST flux
         LOGICAL L_EXPTIME(NMAXBUFF)                                   !HST flux
         LOGICAL LOVERCUTS
+        LOGICAL LFITCUT                  !.TRUE. if PCUTGAUSS fitted the cut
+        REAL X0FITCUT,SIGMAFITCUT,AMPFITCUT     !gaussian fitted by PCUTGAUSS
         INTEGER NPALETTE           !color palette for images (see PALETTE)
         CHARACTER*11 CPALETTE(7)              !label of button 55 (palette)
         DATA CPALETTE /'pal:viridis','pal:plasma','pal:heat','pal:gray', &
@@ -569,8 +571,9 @@
         CALL BUTTON(42,'whole',3)
         CALL BUTTON(43,'min,max',0)
         CALL BUTTON(43,'min,max',3)
-! overplot of cuts: visible from the beginning, active only when more than
-! one data buffer has been defined
+! overplot of cuts (51) and gaussian fit to the displayed cut (44): visible
+! from the beginning, active only when more than one data buffer has been
+! defined (51), or when a single cut is displayed (44)
         CALL OVERBUTTON(.TRUE.,NCOLOR4)
 ! color palette (each click selects the next one; text in black)
         CALL BUTTON(55,TRIM(CPALETTE(NPALETTE)),0)
@@ -2737,6 +2740,13 @@
 !------------------------------------------------------------------------------
           ELSEIF(NB.EQ.51)THEN
             LOVERCUTS=(.NOT.LOVERCUTS)
+            CALL OVERBUTTON(.TRUE.,NCOLOR4)
+!------------------------------------------------------------------------------
+! gaussian fit (with linear continuum) to the cut displayed in the
+! upper-left plot
+          ELSEIF(NB.EQ.44)THEN
+            CALL BUTTON(NB,'gauss fit',5)
+            CALL PCUTGAUSS(LFITCUT,X0FITCUT,SIGMAFITCUT,AMPFITCUT)
             CALL OVERBUTTON(.TRUE.,NCOLOR4)
 !------------------------------------------------------------------------------
 ! select the next color palette and redraw the current image (if any)
