@@ -202,6 +202,10 @@
         LOGICAL L_PHOTFLAM(NMAXBUFF),L_PHOTZPT(NMAXBUFF)              !HST flux
         LOGICAL L_EXPTIME(NMAXBUFF)                                   !HST flux
         LOGICAL LOVERCUTS
+        INTEGER NPALETTE           !color palette for images (see PALETTE)
+        CHARACTER*11 CPALETTE(7)              !label of button 55 (palette)
+        DATA CPALETTE /'pal:viridis','pal:plasma','pal:heat','pal:gray', &
+         'pal:rainbow','pal:IRAF','pal:AIPS'/
         LOGICAL LDS9REG(NMAXBUFF)               !if .TRUE. overplot ds9 regions
         LOGICAL LASCREG(NMAXBUFF)      !if .TRUE. overplot X,Y from binary FITS
         LOGICAL LWAVECAL(NMAXBUFF) !if .TRUE., image has wavelength calibration
@@ -252,6 +256,7 @@
         COMMON/BLK_HSTFLUX2/PHOTFLAM,PHOTZPT,EXPTIME !concerning HST flux cal.
         COMMON/BLKREDUCEME/STWV,DISP,AIRMASS,TIMEXPOS
         COMMON/BLKLOVERCUTS/LOVERCUTS
+        COMMON/BLKPALETTE/NPALETTE
         COMMON/BLKLDS9REG/LDS9REG
         COMMON/BLKLASCREG/LASCREG
         COMMON/BLKDS9REGFILE/DS9REGFILE
@@ -453,7 +458,8 @@
           LECHO=.FALSE.
           CALL RPGBEGOK(TTER,0)
         END IF
-        CALL PALETTE(3)
+        NPALETTE=1                                   !viridis palette
+        CALL PALETTE(NPALETTE)
         CALL PGQID(ID)
         CALL BUTTSPR(0.440,0.965,0.050,0.720)
         CALL BUTTSBR(0.000,1.000,0.000,1.000)
@@ -566,6 +572,8 @@
 ! overplot of cuts: visible from the beginning, active only when more than
 ! one data buffer has been defined
         CALL OVERBUTTON(.TRUE.,NCOLOR4)
+! color palette (each click selects the next one; text in black)
+        CALL BUTTON(55,TRIM(CPALETTE(NPALETTE)),0)
 !
         CALL BUTTON(35,'#[1]',0)
         CALL BUTTON(36,'#[2]',0)
@@ -2730,6 +2738,24 @@
           ELSEIF(NB.EQ.51)THEN
             LOVERCUTS=(.NOT.LOVERCUTS)
             CALL OVERBUTTON(.TRUE.,NCOLOR4)
+!------------------------------------------------------------------------------
+! select the next color palette and redraw the current image (if any)
+          ELSEIF(NB.EQ.55)THEN
+            CALL BUTTON(NB,TRIM(CPALETTE(NPALETTE)),5)
+            NPALETTE=MOD(NPALETTE,7)+1
+            CALL PALETTE(NPALETTE)
+            IF((NAXIS(1,NCBUFF).NE.0).AND.(NAXIS(2,NCBUFF).NE.0))THEN
+              CALL SUBLOOK(.FALSE.,NCBUFF,.FALSE.)
+              IF(LSTACK.AND.(NSTACK.GT.0))THEN
+                CALL PGSCI(3)
+                CALL PGPOINT(NSTACK,XSTACK,YSTACK,21)
+                CALL PGSCI(1)
+              END IF
+              IF(LPBOUND) CALL PBOUND
+              IF(LPMAPP) CALL PMAPP
+              IF(LPWAVE) CALL PWAVE(NDEGWV,CWV)
+            END IF
+            CALL BUTTON(NB,TRIM(CPALETTE(NPALETTE)),0)
 !------------------------------------------------------------------------------
           ELSEIF(NB.EQ.161)THEN
             CALL BUTTON(NB,'zoom',5)

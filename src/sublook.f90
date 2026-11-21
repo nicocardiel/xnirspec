@@ -17,6 +17,7 @@
         REAL BG,FG
         REAL TR(6)                          !auxiliary matrix for PGIMAG/PGGRAY
         REAL OLD_CH                                !previous character height
+        INTEGER NPALETTE              !current color palette (see PALETTE)
         CHARACTER*255 INFILE(NMAXBUFF)
         LOGICAL LDS9REG(NMAXBUFF)
         LOGICAL LASCREG(NMAXBUFF)
@@ -28,6 +29,7 @@
         COMMON/BLKINFILE/INFILE
         COMMON/BLKLDS9REG/LDS9REG
         COMMON/BLKLASCREG/LASCREG
+        COMMON/BLKPALETTE/NPALETTE
 !------------------------------------------------------------------------------
         TR(1)=0.
         TR(2)=1.
@@ -45,9 +47,9 @@
           END IF
         END IF
         IF(LREVERSE)THEN
-          CALL PALETTE(1)
+          CALL PALETTE(4)                                   !gray scale
           CALL PGGRAY(IMAGEN(1,1,NCBUFF),NXMAX,NYMAX,NX1,NX2,NY1,NY2,BG,FG,TR)
-          CALL PALETTE(3)
+          CALL PALETTE(NPALETTE)        !restore the palette chosen by the user
         ELSE
           CALL PGIMAG(IMAGEN(1,1,NCBUFF),NXMAX,NYMAX,NX1,NX2,NY1,NY2,FG,BG,TR)
         END IF

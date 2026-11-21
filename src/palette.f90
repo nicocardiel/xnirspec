@@ -1,3 +1,23 @@
+!------------------------------------------------------------------------------
+! SUBROUTINE PALETTE(ITYPE)
+!
+! Set the color table employed by PGIMAG (through PGCTAB).
+!
+! Parameters
+! ----------
+! ITYPE : INTEGER
+!     Palette: 1=viridis, 2=plasma, 3=heat, 4=gray scale, 5=rainbow,
+!     6=weird IRAF, 7=AIPS. Other values do not modify the color table.
+!
+! Notes
+! -----
+! The viridis and plasma palettes imitate the matplotlib colormaps of the
+! same name: their 33 control points are the RGB values of
+! colormaps['viridis'] and colormaps['plasma'] in matplotlib 3.10, sampled
+! at 33 equally spaced positions in [0,1] (the maximum difference of the
+! linear interpolation with respect to the 256-entry matplotlib tables is
+! 0.011 in each RGB component).
+!------------------------------------------------------------------------------
         SUBROUTINE PALETTE(ITYPE)
         IMPLICIT NONE
         INTEGER ITYPE
@@ -9,6 +29,8 @@
         REAL HL(5), HR(5), HG(5), HB(5)
         REAL WL(10), WR(10), WG(10), WB(10)
         REAL AL(20), AR(20), AG(20), AB(20)
+        REAL VL(33), VR(33), VG(33), VB(33)
+        REAL PL(33), PR(33), PG(33), PB(33)
 !
         DATA GL /0.0, 1.0/
         DATA GR /0.0, 1.0/
@@ -38,6 +60,51 @@
                  0.6, 0.6, 1.0, 1.0, 1.0, 1.0, 0.8, 0.8, 0.0, 0.0/
         DATA AB /0.0, 0.0, 0.3, 0.3, 0.7, 0.7, 0.7, 0.7, 0.9, 0.9, &
                  0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0/
+!
+! viridis (matplotlib), see Notes above
+        DATA VL /0.0000, 0.0312, 0.0625, 0.0938, 0.1250, 0.1562, 0.1875, &
+                 0.2188, 0.2500, 0.2812, 0.3125, 0.3438, 0.3750, 0.4062, &
+                 0.4375, 0.4688, 0.5000, 0.5312, 0.5625, 0.5938, 0.6250, &
+                 0.6562, 0.6875, 0.7188, 0.7500, 0.7812, 0.8125, 0.8438, &
+                 0.8750, 0.9062, 0.9375, 0.9688, 1.0000/
+        DATA VR /0.2670, 0.2770, 0.2823, 0.2829, 0.2788, 0.2706, 0.2590, &
+                 0.2450, 0.2297, 0.2143, 0.1994, 0.1856, 0.1727, 0.1607, &
+                 0.1490, 0.1378, 0.1276, 0.1206, 0.1206, 0.1323, 0.1579, &
+                 0.1966, 0.2461, 0.3041, 0.3692, 0.4401, 0.5160, 0.5958, &
+                 0.6785, 0.7624, 0.8456, 0.9261, 0.9932/
+        DATA VG /0.0049, 0.0503, 0.0950, 0.1359, 0.1755, 0.2141, 0.2515, &
+                 0.2877, 0.3224, 0.3556, 0.3876, 0.4186, 0.4488, 0.4785, &
+                 0.5081, 0.5375, 0.5669, 0.5964, 0.6258, 0.6550, 0.6838, &
+                 0.7118, 0.7389, 0.7647, 0.7889, 0.8111, 0.8312, 0.8487, &
+                 0.8637, 0.8764, 0.8873, 0.8973, 0.9062/
+        DATA VB /0.3294, 0.3757, 0.4173, 0.4534, 0.4834, 0.5071, 0.5247, &
+                 0.5373, 0.5457, 0.5512, 0.5546, 0.5568, 0.5579, 0.5581, &
+                 0.5573, 0.5549, 0.5506, 0.5436, 0.5335, 0.5197, 0.5017, &
+                 0.4792, 0.4520, 0.4199, 0.3829, 0.3410, 0.2943, 0.2433, &
+                 0.1895, 0.1371, 0.0997, 0.1041, 0.1439/
+!
+! plasma (matplotlib), see Notes above
+        DATA PL /0.0000, 0.0312, 0.0625, 0.0938, 0.1250, 0.1562, 0.1875, &
+                 0.2188, 0.2500, 0.2812, 0.3125, 0.3438, 0.3750, 0.4062, &
+                 0.4375, 0.4688, 0.5000, 0.5312, 0.5625, 0.5938, 0.6250, &
+                 0.6562, 0.6875, 0.7188, 0.7500, 0.7812, 0.8125, 0.8438, &
+                 0.8750, 0.9062, 0.9375, 0.9688, 1.0000/
+        DATA PR /0.0504, 0.1324, 0.1934, 0.2480, 0.2999, 0.3502, 0.3994, &
+                 0.4477, 0.4949, 0.5406, 0.5844, 0.6260, 0.6651, 0.7018, &
+                 0.7360, 0.7681, 0.7982, 0.8266, 0.8533, 0.8784, 0.9018, &
+                 0.9233, 0.9426, 0.9594, 0.9734, 0.9842, 0.9914, 0.9945, &
+                 0.9930, 0.9865, 0.9744, 0.9568, 0.9400/
+        DATA PG /0.0298, 0.0223, 0.0184, 0.0144, 0.0096, 0.0044, 0.0009, &
+                 0.0021, 0.0120, 0.0350, 0.0686, 0.1033, 0.1386, 0.1740, &
+                 0.2094, 0.2448, 0.2802, 0.3157, 0.3516, 0.3879, 0.4251, &
+                 0.4633, 0.5026, 0.5434, 0.5858, 0.6297, 0.6754, 0.7227, &
+                 0.7717, 0.8224, 0.8746, 0.9282, 0.9752/
+        DATA PB /0.5280, 0.5633, 0.5903, 0.6129, 0.6316, 0.6463, 0.6561, &
+                 0.6602, 0.6579, 0.6486, 0.6328, 0.6113, 0.5856, 0.5573, &
+                 0.5279, 0.4985, 0.4695, 0.4413, 0.4137, 0.3866, 0.3597, &
+                 0.3328, 0.3058, 0.2787, 0.2515, 0.2246, 0.1985, 0.1744, &
+                 0.1548, 0.1436, 0.1441, 0.1524, 0.1313/
+
 !------------------------------------------------------------------------------
         CONTRA=1.0
         CONTRA=-CONTRA
@@ -45,22 +112,30 @@
         BRIGHT=1-BRIGHT
 !
         IF (ITYPE.EQ.1) THEN
-!         -- gray scale
-          CALL PGCTAB(GL, GR, GG, GB, 2, CONTRA, BRIGHT)
-          WRITE(*,101) '>>> palette: gray scale'
+!         -- viridis
+          CALL PGCTAB(VL, VR, VG, VB, 33, CONTRA, BRIGHT)
+          WRITE(*,101) '>>> palette: viridis'
         ELSE IF (ITYPE.EQ.2) THEN
-!         -- rainbow
-          CALL PGCTAB(RL, RR, RG, RB, 9, CONTRA, BRIGHT)
-          WRITE(*,101) '>>> palette: rainbow'
+!         -- plasma
+          CALL PGCTAB(PL, PR, PG, PB, 33, CONTRA, BRIGHT)
+          WRITE(*,101) '>>> palette: plasma'
         ELSE IF (ITYPE.EQ.3) THEN
 !         -- heat
           CALL PGCTAB(HL, HR, HG, HB, 5, CONTRA, BRIGHT)
           WRITE(*,101) '>>> palette: heat'
         ELSE IF (ITYPE.EQ.4) THEN
+!         -- gray scale
+          CALL PGCTAB(GL, GR, GG, GB, 2, CONTRA, BRIGHT)
+          WRITE(*,101) '>>> palette: gray scale'
+        ELSE IF (ITYPE.EQ.5) THEN
+!         -- rainbow
+          CALL PGCTAB(RL, RR, RG, RB, 9, CONTRA, BRIGHT)
+          WRITE(*,101) '>>> palette: rainbow'
+        ELSE IF (ITYPE.EQ.6) THEN
 !         -- weird IRAF
           CALL PGCTAB(WL, WR, WG, WB, 10, CONTRA, BRIGHT)
           WRITE(*,101) '>>> palette: weird IRAF'
-        ELSE IF (ITYPE.EQ.5) THEN
+        ELSE IF (ITYPE.EQ.7) THEN
 !         -- AIPS
           CALL PGCTAB(AL, AR, AG, AB, 20, CONTRA, BRIGHT)
           WRITE(*,101) '>>> palette: AIPS'
