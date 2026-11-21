@@ -1984,7 +1984,7 @@
         ELSE
           WRITE(*,101) 'Plotting histograms...'
         END IF
-        CALL RPGERASW(0.4,1.0,0.0,0.8,0)
+        CALL RPGERASW(0.4,1.0,0.0,0.76,0)
         WRITE(*,200)
         DO NC=1,9
           CALL MINIHISTO(NC,XMIN,XMAX,XPLOT,NPIX(1,NC),DBIN,FFMEAN(NC),FFSIGMA(NC),.FALSE.)
@@ -2547,23 +2547,23 @@
 !------------------------------------------------------------------------------
         CALL PGSCH(0.7)
         IF(NHISTO.EQ.1)THEN
-          CALL PGSVP(0.45,0.59,0.58,0.78)
+          CALL PGSVP(0.45,0.59,0.54,0.72)
         ELSEIF(NHISTO.EQ.2)THEN
-          CALL PGSVP(0.65,0.79,0.58,0.78)
+          CALL PGSVP(0.65,0.79,0.54,0.72)
         ELSEIF(NHISTO.EQ.3)THEN
-          CALL PGSVP(0.85,0.99,0.58,0.78)
+          CALL PGSVP(0.85,0.99,0.54,0.72)
         ELSEIF(NHISTO.EQ.4)THEN
-          CALL PGSVP(0.45,0.59,0.325,0.525)
+          CALL PGSVP(0.45,0.59,0.305,0.485)
         ELSEIF(NHISTO.EQ.5)THEN
-          CALL PGSVP(0.65,0.79,0.325,0.525)
+          CALL PGSVP(0.65,0.79,0.305,0.485)
         ELSEIF(NHISTO.EQ.6)THEN
-          CALL PGSVP(0.85,0.99,0.325,0.525)
+          CALL PGSVP(0.85,0.99,0.305,0.485)
         ELSEIF(NHISTO.EQ.7)THEN
-          CALL PGSVP(0.45,0.59,0.07,0.27)
+          CALL PGSVP(0.45,0.59,0.07,0.25)
         ELSEIF(NHISTO.EQ.8)THEN
-          CALL PGSVP(0.65,0.79,0.07,0.27)
+          CALL PGSVP(0.65,0.79,0.07,0.25)
         ELSEIF(NHISTO.EQ.9)THEN
-          CALL PGSVP(0.85,0.99,0.07,0.27)
+          CALL PGSVP(0.85,0.99,0.07,0.25)
         END IF
         CALL PGSWIN(XMIN,XMAX,YMIN,YMAX)
         CALL PGBOX('BCTSN',0.0,0,'BCTSN',0.0,0)

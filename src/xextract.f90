@@ -624,8 +624,8 @@
         YMIN=YMIN-DY/20.
         YMAX=YMAX+DY/20.
         DO WHILE(LOOP)
-          CALL RPGERASW(0.4,1.0,0.0,0.8,0)
-          CALL PGSVP(0.5,0.95,0.10,0.75)
+          CALL RPGERASW(0.4,1.0,0.0,0.76,0)
+          CALL PGSVP(0.5,0.95,0.10,0.72)
           CALL PGSWIN(XMIN,XMAX,YMIN,YMAX)
           CALL PGBOX('BCTSN',0.0,0,'BCTSN',0.0,0)
           CALL PGLABEL('spatial direction','No. of counts',' ')

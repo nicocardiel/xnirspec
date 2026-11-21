@@ -16,6 +16,7 @@
 !delete REAL IMAGEN(NXMAX,NYMAX,NMAXBUFF)
         REAL BG,FG
         REAL TR(6)                          !auxiliary matrix for PGIMAG/PGGRAY
+        REAL OLD_CH                                !previous character height
         CHARACTER*255 INFILE(NMAXBUFF)
         LOGICAL LDS9REG(NMAXBUFF)
         LOGICAL LASCREG(NMAXBUFF)
@@ -39,7 +40,7 @@
           IF(LREVERSE)THEN !postscript file
             CALL PGENV(REAL(NX1)-0.6,REAL(NX2)+0.6,REAL(NY1)-0.6,REAL(NY2)+0.6,JUST,-2)
           ELSE
-            CALL RPGERASW(0.4,1.0,0.0,0.8,0)
+            CALL RPGERASW(0.4,1.0,0.0,0.76,0)
             CALL RPGENV(REAL(NX1)-0.6,REAL(NX2)+0.6,REAL(NY1)-0.6,REAL(NY2)+0.6,JUST,-2)
           END IF
         END IF
@@ -52,9 +53,14 @@
         END IF
         CALL PGBOX('IBCTSN',0.0,0,'IBCTSN',0.0,0)
         IF(.NOT.LOVER)THEN
+! title with the same character height as in the plot of cuts (SUBPLOT), so
+! that it does not reach the row of buttons above the image
+          CALL PGQCH(OLD_CH)
+          CALL PGSCH(0.8)
           CALL PGSCI(5)
           CALL PGMTXT('T',1.0,0.5,0.5,INFILE(NCBUFF))
           CALL PGSCI(1)
+          CALL PGSCH(OLD_CH)
         END IF
 !------------------------------------------------------------------------------
         IF(LDS9REG(NCBUFF)) CALL PLOTDS9REG(NCBUFF)

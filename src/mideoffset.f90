@@ -647,7 +647,7 @@
           DO NPLOT=1,NPLOT2
             IF(NPLOT.EQ.1)THEN !en X11
               CALL PGSCH(0.7)
-              CALL RPGERASW(0.40,1.00,0.00,0.80,0)
+              CALL RPGERASW(0.40,1.00,0.00,0.76,0)
               YMINOFF=FOFFSETX_(1,1)
               YMAXOFF=YMINOFF
               DO K=1,NFRAMES_
@@ -678,8 +678,8 @@
               XMAX=0.48+XMAX*(0.98-0.48)
               YMIN=REAL(DI(K))/3.
               YMAX=YMIN+1./3.
-              YMIN=0.08+YMIN*(0.78-0.08)
-              YMAX=0.08+YMAX*(0.78-0.08)
+              YMIN=0.08+YMIN*(0.72-0.08)
+              YMAX=0.08+YMAX*(0.72-0.08)
               CALL PGSVP(XMIN,XMAX,YMIN,YMAX)
               XMAXOFF=REAL(NOBJFIT+1)-0.01
               IF(NOBJFIT.EQ.1)THEN
