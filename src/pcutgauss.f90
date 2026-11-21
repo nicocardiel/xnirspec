@@ -32,7 +32,8 @@
         INTEGER NCURVE
         PARAMETER (NCURVE=500)       !points to draw the fitted function
         INTEGER ICOLCONT,ICOLLINE
-        PARAMETER (ICOLCONT=3,ICOLLINE=7)  !colors: continuum (green) and line
+        PARAMETER (ICOLCONT=8,ICOLLINE=7)  !colors: continuum (orange), line
+                                           !(yellow); not used by the buffers
         REAL FWHMFACTOR                                      !2*SQRT(2*LN(2))
         PARAMETER (FWHMFACTOR=2.354820)
         REAL SQRT2PI
