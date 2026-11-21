@@ -2,7 +2,7 @@
 #
 
 # Prelude
-AC_INIT(xnirspec,6.4,[cardiel@ucm.es])
+AC_INIT(xnirspec,6.5,[cardiel@ucm.es])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_SRCDIR([config.h.in])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign])
