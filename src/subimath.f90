@@ -1914,21 +1914,17 @@
                       FZERO=READF('Pixel value for infinity','0.0')
                       IF(NBUFF0.LE.NMAXBUFF/2)THEN
                         FZERO_ERR=READF('Pixel value for error at infinity','0.0')
-                        IF(XCUT(J).EQ.0.0)THEN
-                          DO I=NY1,NY2
-                            DO J=NX1,NX2
+                        DO I=NY1,NY2
+                          DO J=NX1,NX2
+                            IF(XCUT(J).EQ.0.0)THEN
                               IMAGEN(J,I,NBUFF0+NMAXBUFF/2)=FZERO_ERR
-                            END DO
-                          END DO
-                        ELSE
-                          DO I=NY1,NY2
-                            DO J=NX1,NX2
+                            ELSE
                               IMAGEN(J,I,NBUFF0+NMAXBUFF/2)=SQRT( &
                                IMAGEN(J,I,NBUFF0+NMAXBUFF/2)*IMAGEN(J,I,NBUFF0+NMAXBUFF/2)*XCUT(J)*XCUT(J)+ &
                                IMAGEN(J,I,NBUFF0)*IMAGEN(J,I,NBUFF0)*XCUT_ERR(J)*XCUT_ERR(J))/(XCUT(J)*XCUT(J))
-                            END DO
+                            END IF
                           END DO
-                        END IF
+                        END DO
                       END IF
                       DO J=NX1,NX2
                         IF(XCUT(J).EQ.0.0)THEN
