@@ -563,6 +563,9 @@
         CALL BUTTON(42,'whole',3)
         CALL BUTTON(43,'min,max',0)
         CALL BUTTON(43,'min,max',3)
+! overplot of cuts: visible from the beginning, active only when more than
+! one data buffer has been defined
+        CALL OVERBUTTON(.TRUE.,NCOLOR4)
 !
         CALL BUTTON(35,'#[1]',0)
         CALL BUTTON(36,'#[2]',0)
@@ -669,8 +672,7 @@
             CALL RMBLANK(CDUMMY,CDUMMY,L)
             CALL SUBPLOT(NAXIS(1,NCBUFF),1,NAXIS(1,NCBUFF),XCUTX,YCUTX,XCUTX,YCUTX,.TRUE.,.TRUE.,.FALSE.,.FALSE., &
              'x axis','signal',CDUMMY(1:L),NCBUFF,201,1.0)
-            CALL BUTTON(51,'over=FALSE',0)
-            CALL BUTTON(51,'over=FALSE',NCOLOR4)
+            CALL OVERBUTTON(.TRUE.,NCOLOR4)
           END DO
         END IF
 !------------------------------------------------------------------------------
@@ -678,6 +680,8 @@
 !------------------------------------------------------------------------------
         LEXIT=.FALSE.
         DO WHILE(.NOT.LEXIT)
+! update button 51 if the number of defined buffers has changed
+          CALL OVERBUTTON(.FALSE.,NCOLOR4)
           CALL RPGBAND(0,0,0.,0.,XC,YC,CH)
           CALL IFBUTTON(XC,YC,NB)
 ! change uppercase by lowercase when appropriate
@@ -1122,13 +1126,7 @@
               CALL RMBLANK(CDUMMY,CDUMMY,L)
               CALL SUBPLOT(NAXIS(1,NCBUFF),1,NAXIS(1,NCBUFF),XCUTX,YCUTX,XCUTX,YCUTX,.TRUE.,.TRUE.,.FALSE.,.FALSE., &
                'x axis','signal',CDUMMY(1:L),NCBUFF,201,1.0)
-              IF(LOVERCUTS)THEN
-                CALL BUTTON(51,'over=TRUE',0)
-                CALL BUTTON(51,'over=TRUE',NCOLOR4)
-              ELSE
-                CALL BUTTON(51,'over=FALSE',0)
-                CALL BUTTON(51,'over=FALSE',NCOLOR4)
-              END IF
+              CALL OVERBUTTON(.TRUE.,NCOLOR4)
 !..............................................................................
               IF((CINERR.EQ.'x').OR.(LBOX9))THEN               !no hacemos nada
 !..............................................................................
@@ -1718,26 +1716,14 @@
             CALL PCUT('X',MODECUT,K1,K2,XP,YP)
             CALL BUTTON(NB,'[x] cut',0)
             CALL BUTTON(NB,'[x] cut',NCOLOR2)
-            IF(LOVERCUTS)THEN
-              CALL BUTTON(51,'over=TRUE',0)
-              CALL BUTTON(51,'over=TRUE',NCOLOR4)
-            ELSE
-              CALL BUTTON(51,'over=FALSE',0)
-              CALL BUTTON(51,'over=FALSE',NCOLOR4)
-            END IF
+            CALL OVERBUTTON(.TRUE.,NCOLOR4)
 !------------------------------------------------------------------------------
           ELSEIF(NB.EQ.17)THEN
             CALL BUTTON(NB,'[y] cut',5)
             CALL PCUT('Y',MODECUT,K1,K2,XP,YP)
             CALL BUTTON(NB,'[y] cut',0)
             CALL BUTTON(NB,'[y] cut',NCOLOR2)
-            IF(LOVERCUTS)THEN
-              CALL BUTTON(51,'over=TRUE',0)
-              CALL BUTTON(51,'over=TRUE',NCOLOR4)
-            ELSE
-              CALL BUTTON(51,'over=FALSE',0)
-              CALL BUTTON(51,'over=FALSE',NCOLOR4)
-            END IF
+            CALL OVERBUTTON(.TRUE.,NCOLOR4)
 !------------------------------------------------------------------------------
           ELSEIF(NB.EQ.18)THEN
             IF(LPMAPP)THEN
@@ -2742,15 +2728,8 @@
             END IF
 !------------------------------------------------------------------------------
           ELSEIF(NB.EQ.51)THEN
-            IF(LOVERCUTS)THEN
-              CALL BUTTON(51,'over=FALSE',0)
-              CALL BUTTON(51,'over=FALSE',NCOLOR4)
-              LOVERCUTS=.FALSE.
-            ELSE
-              CALL BUTTON(51,'over=TRUE',0)
-              CALL BUTTON(51,'over=TRUE',NCOLOR4)
-              LOVERCUTS=.TRUE.
-            END IF
+            LOVERCUTS=(.NOT.LOVERCUTS)
+            CALL OVERBUTTON(.TRUE.,NCOLOR4)
 !------------------------------------------------------------------------------
           ELSEIF(NB.EQ.161)THEN
             CALL BUTTON(NB,'zoom',5)

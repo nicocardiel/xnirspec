@@ -21,6 +21,7 @@ tests/test_spline
 tests/test_strings
 tests/readc_file_driver
 tests/test_fitsio
+tests/test_overbutton
 tests/fitsio_interactive_driver
 tests/subimath_driver
 tests/tmp_*.fits
