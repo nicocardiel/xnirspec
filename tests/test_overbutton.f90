@@ -2,7 +2,8 @@
 ! Unit tests for OVERBUTTON: button 51 (overplot of cuts) must be active
 ! (EXIST_BUTT(51)=.TRUE.) only when more than one data buffer (#1 to
 ! #NMAXBUFF/2) is defined; button 44 (gaussian fit to the displayed cut)
-! only when at least one data buffer is defined and LOVERCUTS is .FALSE.
+! and button 54 (save the displayed cut) only when at least one data
+! buffer is defined and LOVERCUTS is .FALSE.
 ! Buttons are used in text mode without plotting them, so no graphic device
 ! is needed.
 !------------------------------------------------------------------------------
@@ -31,11 +32,13 @@
         CALL OVERBUTTON(.FALSE.,NCOLOR4)
         CALL CHECK_TRUE('no buffer defined: disabled',.NOT.EXIST_BUTT(51))
         CALL CHECK_TRUE('no buffer defined: 44 disabled',.NOT.EXIST_BUTT(44))
+        CALL CHECK_TRUE('no buffer defined: 54 disabled',.NOT.EXIST_BUTT(54))
 ! one buffer: disabled
         NAXIS(:,1)=(/5,4/)
         CALL OVERBUTTON(.FALSE.,NCOLOR4)
         CALL CHECK_TRUE('one buffer defined: disabled',.NOT.EXIST_BUTT(51))
         CALL CHECK_TRUE('one buffer defined: 44 active',EXIST_BUTT(44))
+        CALL CHECK_TRUE('one buffer defined: 54 active',EXIST_BUTT(54))
 ! two buffers: active (redrawn because the state changed)
         NAXIS(:,3)=(/7,2/)
         CALL OVERBUTTON(.FALSE.,NCOLOR4)
@@ -52,6 +55,7 @@
         CALL OVERBUTTON(.FALSE.,NCOLOR4)
         CALL CHECK_TRUE('LOVERCUTS toggled: active',EXIST_BUTT(51))
         CALL CHECK_TRUE('LOVERCUTS=.TRUE.: 44 disabled',.NOT.EXIST_BUTT(44))
+        CALL CHECK_TRUE('LOVERCUTS=.TRUE.: 54 disabled',.NOT.EXIST_BUTT(54))
 ! error buffers do not count: data buffer #1 and error buffer #3
         NAXIS(:,3)=0
         NAXIS(:,3+NMAXBUFF/2)=(/7,2/)
@@ -62,6 +66,7 @@
         LOVERCUTS=.FALSE.
         CALL OVERBUTTON(.FALSE.,NCOLOR4)
         CALL CHECK_TRUE('LOVERCUTS=.FALSE.: 44 active',EXIST_BUTT(44))
+        CALL CHECK_TRUE('LOVERCUTS=.FALSE.: 54 active',EXIST_BUTT(54))
 !
         CALL TEST_SUMMARY()
         END PROGRAM TEST_OVERBUTTON

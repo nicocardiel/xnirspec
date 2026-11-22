@@ -203,6 +203,7 @@
         LOGICAL L_EXPTIME(NMAXBUFF)                                   !HST flux
         LOGICAL LOVERCUTS
         LOGICAL LFITCUT                  !.TRUE. if PCUTGAUSS fitted the cut
+        LOGICAL LSAVEDCUT                  !.TRUE. if PSAVECUT saved the cut
         REAL X0FITCUT,SIGMAFITCUT,AMPFITCUT     !gaussian fitted by PCUTGAUSS
         INTEGER NPALETTE           !color palette for images (see PALETTE)
         CHARACTER*11 CPALETTE(7)              !label of button 55 (palette)
@@ -2747,6 +2748,12 @@
           ELSEIF(NB.EQ.44)THEN
             CALL BUTTON(NB,'gauss fit',5)
             CALL PCUTGAUSS(LFITCUT,X0FITCUT,SIGMAFITCUT,AMPFITCUT)
+            CALL OVERBUTTON(.TRUE.,NCOLOR4)
+!------------------------------------------------------------------------------
+! save the cut displayed in the upper-left plot in a FITS file
+          ELSEIF(NB.EQ.54)THEN
+            CALL BUTTON(NB,'save cut',5)
+            CALL PSAVECUT(LSAVEDCUT)
             CALL OVERBUTTON(.TRUE.,NCOLOR4)
 !------------------------------------------------------------------------------
 ! select the next color palette and redraw the current image (if any)

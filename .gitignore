@@ -24,6 +24,8 @@ tests/test_fitsio
 tests/test_overbutton
 tests/test_cutgaussfit
 tests/pcutgauss_driver
+tests/test_writecutfits
+tests/psavecut_driver
 tests/fitsio_interactive_driver
 tests/subimath_driver
 tests/tmp_*.fits

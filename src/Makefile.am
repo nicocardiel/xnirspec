@@ -116,6 +116,7 @@ pmapp.f90 \
 polfit.f90 \
 polfitsig.f90 \
 poly2.f90 \
+psavecut.f90 \
 pwave.f90 \
 pxmap.f90 \
 randomnumber.f90 \
@@ -164,6 +165,7 @@ truelen.f90 \
 try_reduceme.f90 \
 unrectify.f90 \
 whereami.f90 \
+writecutfits.f90 \
 x2arc.f90 \
 xcut.f90 \
 xextract.f90 \

@@ -12,6 +12,8 @@
 !   (PCUTGAUSS). It is always visible, but it is only active when at least
 !   one data buffer has been defined and LOVERCUTS is .FALSE. (i.e. a single
 !   profile is displayed).
+! - Button 54 ("save cut") saves the displayed 1-D profile in a FITS file
+!   (PSAVECUT). It is active under the same conditions as button 44.
 !
 ! Disabled buttons are shown with gray text.
 !
@@ -74,6 +76,13 @@
             CALL BUTTON(44,'gauss fit',NCOLOR)
           ELSE
             CALL BUTTON(44,'gauss fit',3)                  !disabled button
+          END IF
+! button 54: save the displayed profile in a FITS file
+          CALL BUTTON(54,'save cut',0)
+          IF(LFITACTIVE)THEN
+            CALL BUTTON(54,'save cut',NCOLOR)
+          ELSE
+            CALL BUTTON(54,'save cut',3)                   !disabled button
           END IF
           LFIRST=.FALSE.
           LACTIVE_OLD=LACTIVE
