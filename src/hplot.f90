@@ -11,7 +11,9 @@
 !     Determines how the new limits are computed:
 !     'zoom'    : rectangle selected with the cursor (two clicks);
 !     'whole'   : limits of the whole profile;
-!     'min,max' : Y limits of the displayed range of the profile;
+!     'min,max' : Y limits from the minimum and maximum of all the displayed
+!                 cuts, using only the points within the current X limits
+!                 (the Y limits do not change if there are no such points);
 !     'manual'  : Xmin, Xmax, Ymin and Ymax are read from the terminal,
 !                 using the current limits as default values (Xmax must
 !                 be greater than Xmin, and Ymax greater than Ymin). Nothing
@@ -47,6 +49,7 @@
         CHARACTER*1 CH
         CHARACTER*50 CDEF
         LOGICAL LREPEAT
+        LOGICAL LFOUND,LFOUNDB
         CHARACTER*2 CBUFF
         CHARACTER*255 CLABX,CLABY,CLABG
         LOGICAL LPB(NMAXBUFF)
@@ -146,10 +149,37 @@
           N2LAST=NLAST
 !..............................................................................
         ELSEIF(COMMAND.EQ.'min,max')THEN
-          CALL FINDMML(NLAST,N1LAST,N2LAST,YPLAST,YMIN,YMAX)
-          DY=YMAX-YMIN
-          YMIN=YMIN-DY/20.
-          YMAX=YMAX+DY/20.
+! Y limits from the points of all the displayed cuts (the last profile and
+! the cuts of the other data buffers, drawn below with the same N1LAST,
+! N2LAST range) whose X lies within the current X limits
+          CALL FINDMMLX(NLAST,N1LAST,N2LAST,XPLAST,YPLAST,XMIN,XMAX, &
+           YMINNEW,YMAXNEW,LFOUND)
+          DO NB=1,NMAXBUFF/2
+            IF(LPB(NB))THEN
+              CALL FINDMMLX(NXYMAX*NOVERSAMPMAX,N1LAST,N2LAST,XPB(:,NB),YPB(:,NB), &
+               XMIN,XMAX,YC1,YC2,LFOUNDB)
+              IF(LFOUNDB)THEN
+                IF(LFOUND)THEN
+                  YMINNEW=MIN(YMINNEW,YC1)
+                  YMAXNEW=MAX(YMAXNEW,YC2)
+                ELSE
+                  YMINNEW=YC1
+                  YMAXNEW=YC2
+                  LFOUND=.TRUE.
+                END IF
+              END IF
+            END IF
+          END DO
+          IF(LFOUND)THEN
+            DY=YMAXNEW-YMINNEW
+! avoid a null Y range (constant signal) in PGSWIN
+            IF(DY.LE.0.0) DY=MAX(ABS(YMAXNEW),1.0)
+            YMIN=YMINNEW-DY/20.
+            YMAX=YMAXNEW+DY/20.
+          ELSE
+            WRITE(*,101) 'WARNING: no points of the displayed cuts within the X range'
+            WRITE(*,101) '=> Y limits unchanged'
+          END IF
 !..............................................................................
         ELSEIF(COMMAND.EQ.'manual')THEN
 ! the new limits have already been read; the whole profile is drawn (PGPLOT

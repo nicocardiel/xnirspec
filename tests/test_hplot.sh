@@ -45,5 +45,9 @@ run_case default   "" "" "" ""
 run_case set       10 50 -1 100
 run_case retry     50 10 10 50 5 5 0 1
 run_case noprofile
+# HPLOT('min,max') (button "min,max"): nothing is read from stdin
+run_case minmax
+run_case minmaxover
+run_case minmaxnone
 
 exit $status

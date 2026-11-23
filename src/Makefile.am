@@ -65,6 +65,7 @@ factorialpf.f90 \
 fderi.f90 \
 findmax.f90 \
 findmml.f90 \
+findmmlx.f90 \
 fitpol.f90 \
 fitswavecal.f90 \
 fmap.f90 \

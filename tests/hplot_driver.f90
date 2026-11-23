@@ -1,8 +1,9 @@
 !------------------------------------------------------------------------------
 ! Driver for test_hplot.sh: draws a synthetic 1-D profile with SUBPLOT (as
 ! the cuts of the main program) and runs HPLOT('manual'), which reads the
-! new limits of the upper-left plot (Xmin, Xmax, Ymin, Ymax) from stdin.
-! PGPLOT is opened with the /NULL device.
+! new limits of the upper-left plot (Xmin, Xmax, Ymin, Ymax) from stdin, or
+! HPLOT('min,max'), which computes the Y limits from the displayed cuts
+! within the current X limits. PGPLOT is opened with the /NULL device.
 !
 ! Test cases (first command-line argument):
 !   default   : four empty answers; the limits computed by SUBPLOT must
@@ -12,6 +13,12 @@
 !               Ymin=5, Ymax=5 (rejected), then Ymin=0, Ymax=1
 !   noprofile : no profile drawn (NLAST=0): nothing is asked (stdin is
 !               empty) and the limits do not change
+!   minmax    : 'min,max' with X limits [10.5,20.5]: points x=11,...,20,
+!               Y limits 11 and 20 enlarged by 5% of the range on each side
+!   minmaxover: as minmax, with the cut of another buffer (y = 2x) also
+!               displayed: Y limits 11 and 40 (enlarged)
+!   minmaxnone: 'min,max' with X limits [200,300] (no points): Y limits
+!               unchanged
 !
 ! Profile: y = x, x = 1,...,100.
 !------------------------------------------------------------------------------
@@ -67,12 +74,35 @@
           CALL SUBPLOT(N,1,N,X,Y,X,Y,.TRUE.,.TRUE.,.FALSE.,.FALSE., &
            'x axis','signal','[1,1]',1,201,1.0)
         END IF
+! cuts of the data buffers as stored by PCUT: buffer #1 is the displayed
+! profile and, in minmaxover, buffer #2 is overplotted
+        DO I=1,N
+          XPB(I,1)=X(I)
+          YPB(I,1)=Y(I)
+          XPB(I,2)=X(I)
+          YPB(I,2)=2.0*Y(I)
+        END DO
+        IF(CCASE(1:6).EQ.'minmax')THEN
+          LPB(1)=.TRUE.
+          LPB(2)=(TRIM(CCASE).EQ.'minmaxover')
+          IF(TRIM(CCASE).EQ.'minmaxnone')THEN
+            XMIN=200.0
+            XMAX=300.0
+          ELSE
+            XMIN=10.5
+            XMAX=20.5
+          END IF
+        END IF
         XMIN0=XMIN
         XMAX0=XMAX
         YMIN0=YMIN
         YMAX0=YMAX
 !------------------------------------------------------------------------------
-        CALL HPLOT('manual')
+        IF(CCASE(1:6).EQ.'minmax')THEN
+          CALL HPLOT('min,max')
+        ELSE
+          CALL HPLOT('manual')
+        END IF
 !------------------------------------------------------------------------------
         SELECT CASE(TRIM(CCASE))
         CASE('default','noprofile')
@@ -91,11 +121,22 @@
           CALL CHECK_REAL('xmax',XMAX,50.0,0.0,0.0)
           CALL CHECK_REAL('ymin',YMIN,0.0,0.0,0.0)
           CALL CHECK_REAL('ymax',YMAX,1.0,0.0,0.0)
+        CASE('minmax')
+          CALL CHECK_REAL('xmin unchanged',XMIN,XMIN0,0.0,0.0)
+          CALL CHECK_REAL('xmax unchanged',XMAX,XMAX0,0.0,0.0)
+          CALL CHECK_REAL('ymin',YMIN,11.0-9.0/20.0,1.E-6,0.0)
+          CALL CHECK_REAL('ymax',YMAX,20.0+9.0/20.0,1.E-6,0.0)
+        CASE('minmaxover')
+          CALL CHECK_REAL('ymin',YMIN,11.0-29.0/20.0,1.E-6,0.0)
+          CALL CHECK_REAL('ymax',YMAX,40.0+29.0/20.0,1.E-6,0.0)
+        CASE('minmaxnone')
+          CALL CHECK_REAL('ymin unchanged',YMIN,YMIN0,0.0,0.0)
+          CALL CHECK_REAL('ymax unchanged',YMAX,YMAX0,0.0,0.0)
         CASE DEFAULT
           WRITE(*,'(A)') 'FAIL: unknown test case '//TRIM(CCASE)
           ERROR STOP 1
         END SELECT
-        IF(TRIM(CCASE).NE.'noprofile')THEN
+        IF((TRIM(CCASE).NE.'noprofile').AND.(CCASE(1:6).NE.'minmax'))THEN
 ! the whole profile is redrawn
           CALL CHECK_INT('n1last',N1LAST,1)
           CALL CHECK_INT('n2last',N2LAST,N)
