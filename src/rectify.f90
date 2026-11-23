@@ -69,9 +69,11 @@
 ! van desde I1 hasta I2-1. I1,I2,J1,J2 se refieren a los bordes de los pixels,
 ! no al numero de pixel. Hay un offset de 0.5 entre el mapeado realizado con
 ! los coeficientes AIJ,BIJ,AIJ_,BIJ_ y el numero de pixel en la imagen original.
+        CALL WAVECAL_CLEAR(NEWBUFF) !no wavelength calibration
         NAXIS(1,NEWBUFF)=J2-J1
         NAXIS(2,NEWBUFF)=I2-I1
         IF(LERR)THEN
+          CALL WAVECAL_CLEAR(NEWBUFF+NMAXBUFF/2) !no wavelength calibration
           NAXIS(1,NEWBUFF+NMAXBUFF/2)=J2-J1
           NAXIS(2,NEWBUFF+NMAXBUFF/2)=I2-I1
         END IF

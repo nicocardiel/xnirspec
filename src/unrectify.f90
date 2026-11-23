@@ -65,6 +65,7 @@
         WRITE(CDUMMY,*) NYMAX
         NYMAX_=READILIM('NYMAX of unrectified image',CDUMMY,1,NYMAX)
 !
+        CALL WAVECAL_CLEAR(NEWBUFF) !no wavelength calibration
         NAXIS(1,NEWBUFF)=NXMAX_
         NAXIS(2,NEWBUFF)=NYMAX_
         DO I=1,NAXIS(2,NEWBUFF)
@@ -73,6 +74,7 @@
           END DO
         END DO
         IF(LERR)THEN
+          CALL WAVECAL_CLEAR(NEWBUFF+NMAXBUFF/2) !no wavelength calibration
           NAXIS(1,NEWBUFF+NMAXBUFF/2)=NXMAX_
           NAXIS(2,NEWBUFF+NMAXBUFF/2)=NYMAX_
           DO I=1,NAXIS(2,NEWBUFF+NMAXBUFF/2)

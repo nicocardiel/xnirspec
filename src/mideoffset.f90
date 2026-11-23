@@ -162,6 +162,7 @@
             IMAGEN(J,I,NEWBUFF4)=0.0
           END DO
         END DO
+        CALL WAVECAL_CLEAR(NEWBUFF4) !no wavelength calibration
         NAXIS(1,NEWBUFF4)=0
         NAXIS(2,NEWBUFF4)=0
 !------------------------------------------------------------------------------
@@ -273,6 +274,7 @@
 ! nos sirva para luego hacer los ajustes individuales de forma mas sencilla
 ! (nota: aqui hay que tener cuidado porque en los bordes del frame#1, hay
 ! zonas que no estan presentes en todas las imagenes del box-9)
+              CALL WAVECAL_CLEAR(NEWBUFF2) !no wavelength calibration
               NAXIS(1,NEWBUFF2)=NBOX_CENTROID
               NAXIS(2,NEWBUFF2)=NBOX_CENTROID
               DO I=1,NAXIS(2,NEWBUFF2)
@@ -508,6 +510,7 @@
           END DO
 !..............................................................................
 ! mostramos ajustes
+          CALL WAVECAL_CLEAR(NEWBUFF2) !no wavelength calibration
           NAXIS(1,NEWBUFF2)=3*NBOX_CENTROID
           NAXIS(2,NEWBUFF2)=3*NBOX_CENTROID
           DO I=1,NAXIS(2,NEWBUFF2)
@@ -556,6 +559,7 @@
           CALL PGSCI(7)
           CALL PGMTXT('T',0.5,0.5,0.5,'original frame')
           CALL PGSCI(1)
+          CALL WAVECAL_CLEAR(NEWBUFF3) !no wavelength calibration
           NAXIS(1,NEWBUFF3)=3*NBOX_CENTROID
           NAXIS(2,NEWBUFF3)=3*NBOX_CENTROID
           DO I=1,NAXIS(2,NEWBUFF3)
@@ -1015,6 +1019,7 @@
                   IMAGEN(J+6*NBOX_CENTROID,I+NAXIS(2,NEWBUFF4),NEWBUFF4)=IMAGEN(J,I,NEWBUFF2)-IMAGEN(J,I,NEWBUFF3)
                 END DO
               END DO
+              CALL WAVECAL_CLEAR(NEWBUFF4) !no wavelength calibration
               NAXIS(1,NEWBUFF4)=MAX0(NAXIS(1,NEWBUFF4),9*NBOX_CENTROID)
               NAXIS(2,NEWBUFF4)=NAXIS(2,NEWBUFF4)+3*NBOX_CENTROID
             END IF

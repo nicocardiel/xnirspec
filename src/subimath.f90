@@ -758,6 +758,7 @@
                 END DO
               END DO
               IF((NBUFF0.LE.NMAXBUFF/2).AND.(NBUFF1.LE.NMAXBUFF/2))THEN
+                CALL WAVECAL_COPY(NBUFF1+NMAXBUFF/2,NBUFF0+NMAXBUFF/2)
                 NAXIS(1,NBUFF0+NMAXBUFF/2)=NAXIS(1,NBUFF1+NMAXBUFF/2)
                 NAXIS(2,NBUFF0+NMAXBUFF/2)=NAXIS(2,NBUFF1+NMAXBUFF/2)
                 NFRAMES(NBUFF0+NMAXBUFF/2)=NFRAMES(NBUFF1+NMAXBUFF/2)
@@ -774,6 +775,11 @@
 ! la operacion '4' puede hacerse ya
           IF(.NOT.LCANCEL)THEN
             IF(COPER.EQ.'4')THEN
+! pixels are rearranged: the wavelength calibration does not apply
+              CALL WAVECAL_CLEAR(NBUFF0)
+              IF((NBUFF0.LE.NMAXBUFF/2).AND.(NBUFF1.LE.NMAXBUFF/2))THEN
+                CALL WAVECAL_CLEAR(NBUFF0+NMAXBUFF/2)
+              END IF
               NAXIS(1,NBUFF0)=NAXIS(1,NBUFF1)
               NAXIS(2,NBUFF0)=NAXIS(2,NBUFF1)
               NFRAMES(NBUFF0)=NFRAMES(NBUFF1)
@@ -809,6 +815,11 @@
 ! la operacion '1' puede hacerse ya
           IF(.NOT.LCANCEL)THEN
             IF(COPER.EQ.'1')THEN
+! pixels are rearranged: the wavelength calibration does not apply
+              CALL WAVECAL_CLEAR(NBUFF0)
+              IF((NBUFF0.LE.NMAXBUFF/2).AND.(NBUFF1.LE.NMAXBUFF/2))THEN
+                CALL WAVECAL_CLEAR(NBUFF0+NMAXBUFF/2)
+              END IF
               NAXIS(1,NBUFF0)=NAXIS(1,NBUFF1)
               NAXIS(2,NBUFF0)=NAXIS(2,NBUFF1)
               NFRAMES(NBUFF0)=NFRAMES(NBUFF1)
@@ -844,6 +855,8 @@
 ! la operacion '9' puede hacerse ya
           IF(.NOT.LCANCEL)THEN
             IF(COPER.EQ.'9')THEN
+! box-9 mosaic: the wavelength calibration does not apply
+              CALL WAVECAL_CLEAR(NBUFF0)
               NAXIS(1,NBUFF0)=3*NAXIS(1,NBUFF1)
               NAXIS(2,NBUFF0)=3*NAXIS(2,NBUFF1)
               NFRAMES(NBUFF0)=9
@@ -861,6 +874,8 @@
 ! la operacion 'c' puede hacerse ya
           IF(.NOT.LCANCEL)THEN
             IF(COPER.EQ.'c')THEN
+! box-9 mosaic: the wavelength calibration does not apply
+              CALL WAVECAL_CLEAR(NBUFF0)
               NAXIS(1,NBUFF0)=NAXIS(1,NBUFF1)/3
               NAXIS(2,NBUFF0)=NAXIS(2,NBUFF1)/3
               NFRAMES(NBUFF0)=1
@@ -880,6 +895,11 @@
 ! la operacion 'q' puede hacerse ya
           IF(.NOT.LCANCEL)THEN
             IF(COPER.EQ.'q')THEN
+! pixels are rearranged: the wavelength calibration does not apply
+              CALL WAVECAL_CLEAR(NBUFF0)
+              IF((NBUFF0.LE.NMAXBUFF/2).AND.(NBUFF1.LE.NMAXBUFF/2))THEN
+                CALL WAVECAL_CLEAR(NBUFF0+NMAXBUFF/2)
+              END IF
               NAXIS(1,NBUFF0)=NAXIS(1,NBUFF1)
               NAXIS(2,NBUFF0)=NAXIS(2,NBUFF1)
               NFRAMES(NBUFF0)=NFRAMES(NBUFF1)
@@ -1073,6 +1093,22 @@
               C255=READC('Option',CFILT,'0123456789bkmxy')
               CFILT=C255(1:1)
 !
+! the filtered image keeps the X axis of the original one, except for
+! option (x): pixel X becomes NAXIS1-X+1, so the same wavelength is
+! obtained with CRPIX1 -> NAXIS1-CRPIX1+1 and CDELT1 -> -CDELT1
+              CALL WAVECAL_COPY(NBUFF0,NBUFF1)
+              IF(CFILT.EQ.'x')THEN
+                CRPIX1(NBUFF1)=REAL(NAXIS(1,NBUFF0))-CRPIX1(NBUFF1)+1.0
+                CDELT1(NBUFF1)=-CDELT1(NBUFF1)
+              END IF
+              IF((NBUFF0.LE.NMAXBUFF/2).AND.(NBUFF1.LE.NMAXBUFF/2))THEN
+                CALL WAVECAL_COPY(NBUFF0+NMAXBUFF/2,NBUFF1+NMAXBUFF/2)
+                IF(CFILT.EQ.'x')THEN
+                  CRPIX1(NBUFF1+NMAXBUFF/2)=REAL(NAXIS(1,NBUFF0))- &
+                   CRPIX1(NBUFF1+NMAXBUFF/2)+1.0
+                  CDELT1(NBUFF1+NMAXBUFF/2)=-CDELT1(NBUFF1+NMAXBUFF/2)
+                END IF
+              END IF
               NAXIS(1,NBUFF1)=NAXIS(1,NBUFF0)
               NAXIS(2,NBUFF1)=NAXIS(2,NBUFF0)
               NFRAMES(NBUFF1)=NFRAMES(NBUFF0)
@@ -1654,6 +1690,14 @@
               FJ0=XOFFSET-REAL(J0)
               I0=INT(YOFFSET)
               FI0=YOFFSET-REAL(I0)
+! the original pixel X is moved to X+XOFFSET: the wavelength calibration
+! is kept by shifting the reference pixel
+              CALL WAVECAL_COPY(NBUFF0,NBUFF1)
+              CRPIX1(NBUFF1)=CRPIX1(NBUFF1)+XOFFSET
+              IF((NBUFF0.LE.NMAXBUFF/2).AND.(NBUFF1.LE.NMAXBUFF/2))THEN
+                CALL WAVECAL_COPY(NBUFF0+NMAXBUFF/2,NBUFF1+NMAXBUFF/2)
+                CRPIX1(NBUFF1+NMAXBUFF/2)=CRPIX1(NBUFF1+NMAXBUFF/2)+XOFFSET
+              END IF
 ! inicializamos imagen de destino a cero
               NAXIS(1,NBUFF1)=NAXIS(1,NBUFF0)
               NAXIS(2,NBUFF1)=NAXIS(2,NBUFF0)

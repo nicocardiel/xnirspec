@@ -10,7 +10,8 @@
 #
 # Button numbers in SUBIMATH (NORIGEN=86, NMAXBUFF=12):
 #   first buffer #k: 86+10*(k-1)     second buffer #k: 89+10*(k-1)
-#   operations: 87 [<] copy, 97 [+], 107 [-], 117 [*], 127 [/], 147 [f]ilter
+#   operations: 87 [<] copy, 97 [+], 107 [-], 117 [*], 127 [/], 147 [f]ilter,
+#               157 [4] (1 -> 4 quadrants), 187 [s]hift xy
 #   region:     88 [f]ull frame, 98 [r]egion
 #   operand:    108 cons[t]ant, 118 [f]rame, 128 [x]-cut
 #   216 [C]ancel, 217 e[X]it
@@ -79,6 +80,10 @@ run_case reverse_x           @86 @147 @88 @109 x @217
 run_case reverse_y           @86 @147 @88 @109 y @217
 run_case median_filter       @86 @147 @88 @109 3 3 3 @217
 run_case bin_expand          @86 @147 @88 @109 b x 2 @217
+# wavelength calibration of the result: shifted (CRPIX1 + offset) and removed
+# when the pixels are rearranged in quadrants
+run_case shift_wavecal       @86 @187 @88 @109 1.5 0 @217
+run_case quad_4_wavecal      @86 @157 @99 @217
 # mean X-cut (1) of #2 with mask value -999, rows 1 to 4 (0 ends the list)
 run_case xcut_mask           @86 @107 @88 @128 @99 1 y -999 1 4 0 @217
 # as xcut_mask, dividing: column 5 is fully masked (X-cut = 0), so

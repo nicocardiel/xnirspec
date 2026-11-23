@@ -258,9 +258,11 @@
         END DO
 !------------------------------------------------------------------------------
 !------------------------------------------------------------------------------
+        CALL WAVECAL_CLEAR(NEWBUFF1) !no wavelength calibration
         NAXIS(1,NEWBUFF1)=NXMAXB9_
         NAXIS(2,NEWBUFF1)=NYMAXB9_
         NFRAMES(NEWBUFF1)=1
+        CALL WAVECAL_CLEAR(NEWBUFF1+NMAXBUFF/2) !no wavelength calibration
         NAXIS(1,NEWBUFF1+NMAXBUFF/2)=NXMAXB9_
         NAXIS(2,NEWBUFF1+NMAXBUFF/2)=NYMAXB9_
         NFRAMES(NEWBUFF1+NMAXBUFF/2)=1

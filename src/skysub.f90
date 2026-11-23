@@ -328,6 +328,9 @@
 !------------------------------------------------------------------------------
 ! Creamos una imagen distorsionada usando el espectro de cielo promedio
 ! anterior.
+! the new images have the same X axis as the original one
+        CALL WAVECAL_COPY(NCBUFF,NEWBUFF1)
+        CALL WAVECAL_COPY(NCBUFF,NEWBUFF2)
         NAXIS(1,NEWBUFF1)=NAXIS(1,NCBUFF)
         NAXIS(2,NEWBUFF1)=NAXIS(2,NCBUFF)
         NAXIS(1,NEWBUFF2)=NAXIS(1,NCBUFF)
@@ -571,6 +574,8 @@
 !------------------------------------------------------------------------------
 ! Creamos una imagen distorsionada usando el espectro de cielo promedio
 ! anterior.
+! the new image has the same X axis as the original one
+        CALL WAVECAL_COPY(NCBUFF,NEWBUFF1)
         NAXIS(1,NEWBUFF1)=NAXIS(1,NCBUFF)
         NAXIS(2,NEWBUFF1)=NAXIS(2,NCBUFF)
         DO I=1,NAXIS(2,NEWBUFF1)
@@ -579,6 +584,7 @@
           END DO
         END DO
         IF(LERR)THEN
+          CALL WAVECAL_COPY(NCBUFF+NMAXBUFF/2,NEWBUFF1+NMAXBUFF/2)
           NAXIS(1,NEWBUFF1+NMAXBUFF/2)=NAXIS(1,NCBUFF+NMAXBUFF/2)
           NAXIS(2,NEWBUFF1+NMAXBUFF/2)=NAXIS(2,NCBUFF+NMAXBUFF/2)
           DO I=1,NAXIS(2,NEWBUFF1+NMAXBUFF/2)

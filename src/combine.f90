@@ -294,9 +294,11 @@
 !------------------------------------------------------------------------------
 !------------------------------------------------------------------------------
 ! it is time to coadd the frames into a single image
+        CALL WAVECAL_CLEAR(NEWBUFF1) !no wavelength calibration
         NAXIS(1,NEWBUFF1)=NXMAXB9_
         NAXIS(2,NEWBUFF1)=NYMAXB9_
         NFRAMES(NEWBUFF1)=1
+        CALL WAVECAL_CLEAR(NEWBUFF1+NMAXBUFF/2) !no wavelength calibration
         NAXIS(1,NEWBUFF1+NMAXBUFF/2)=NXMAXB9_
         NAXIS(2,NEWBUFF1+NMAXBUFF/2)=NYMAXB9_
         NFRAMES(NEWBUFF1+NMAXBUFF/2)=1
@@ -550,6 +552,7 @@
 ! salvamos en otro buffer el numero de pixels utilizados para el calculo de 
 ! cada pixel (ademas, en aquellos pixels en los que no hemos sumado nada, 
 ! introducimos un error negativo)
+        CALL WAVECAL_CLEAR(NEWBUFF2) !no wavelength calibration
         NAXIS(1,NEWBUFF2)=NXMAXB9_
         NAXIS(2,NEWBUFF2)=NYMAXB9_
         NFRAMES(NEWBUFF2)=1
@@ -636,10 +639,13 @@
             END DO
           END DO
         END IF
+        CALL WAVECAL_CLEAR(NEWBUFF1) !no wavelength calibration
         NAXIS(1,NEWBUFF1)=NXMAXB9_EFF
         NAXIS(2,NEWBUFF1)=NYMAXB9_EFF
+        CALL WAVECAL_CLEAR(NEWBUFF1+NMAXBUFF/2) !no wavelength calibration
         NAXIS(1,NEWBUFF1+NMAXBUFF/2)=NXMAXB9_EFF
         NAXIS(2,NEWBUFF1+NMAXBUFF/2)=NYMAXB9_EFF
+        CALL WAVECAL_CLEAR(NEWBUFF2) !no wavelength calibration
         NAXIS(1,NEWBUFF2)=NXMAXB9_EFF
         NAXIS(2,NEWBUFF2)=NYMAXB9_EFF
 !------------------------------------------------------------------------------

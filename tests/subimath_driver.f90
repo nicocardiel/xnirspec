@@ -114,6 +114,14 @@
         CRPIX1(2)=1.0
         CRVAL1(2)=5000.0
         CDELT1(2)=2.0
+        LWAVECAL(1)=.TRUE.
+        CRPIX1(1)=2.0
+        CRVAL1(1)=6000.0
+        CDELT1(1)=1.5
+        LWAVECAL(NE1)=.TRUE.
+        CRPIX1(NE1)=2.0
+        CRVAL1(NE1)=6000.0
+        CDELT1(NE1)=1.5
 !------------------------------------------------------------------------------
         CALL SUBIMATH
 !------------------------------------------------------------------------------
@@ -185,12 +193,15 @@
             FEXP(J,:)=A(NX1-J+1,:)
           END DO
           CALL CHECK_FILTER_OUTPUT(FEXP)
+! reversed X axis: CRPIX1 -> NAXIS1-CRPIX1+1, CDELT1 -> -CDELT1
+          CALL CHECK_WAVECAL('#3',3,.TRUE.,REAL(NX1)-2.0+1.0,6000.0,-1.5)
 !..............................................................................
         CASE('reverse_y')                           !#3 = #1 reversed along Y
           DO I=1,NX2
             FEXP(:,I)=A(:,NX2-I+1)
           END DO
           CALL CHECK_FILTER_OUTPUT(FEXP)
+          CALL CHECK_WAVECAL('#3',3,.TRUE.,2.0,6000.0,1.5)
 !..............................................................................
         CASE('median_filter')        !#3 = 3x3 median of #1 (box clipped at
           DO I=1,NX2                 !the borders of the image)
@@ -238,6 +249,15 @@
           END DO
           CALL CHECK_IMAGE('data #1',1,FEXP)
           CALL CHECK_IMAGE('error #1',NE1,EEXP)
+!..............................................................................
+        CASE('shift_wavecal')        !#3 = #1 shifted by +1.5 pixels along X:
+          CALL CHECK_INT('NAXIS1 #3',NAXIS(1,3),NX1) !calibration of #1 with
+          CALL CHECK_WAVECAL('#3',3,.TRUE.,3.5,6000.0,1.5) !CRPIX1 + 1.5
+          CALL CHECK_WAVECAL('error #3',NE3,.TRUE.,3.5,6000.0,1.5)
+!..............................................................................
+        CASE('quad_4_wavecal')    !#1 <- 4 quadrants of #2: no calibration
+          CALL CHECK_WAVECAL('#1',1,.FALSE.,1.0,0.0,0.0)
+          CALL CHECK_WAVECAL('error #1',NE1,.FALSE.,1.0,0.0,0.0)
 !..............................................................................
         CASE DEFAULT
           WRITE(*,'(A)') 'FAIL: unknown test case '//TRIM(CCASE)
@@ -311,6 +331,24 @@
         END DO
         CALL CHECK_INT(LABEL//' (mismatched pixels)',NBAD,0)
         END SUBROUTINE CHECK_IMAGE
+!------------------------------------------------------------------------------
+! SUBROUTINE CHECK_WAVECAL(LABEL,NBUFF,LEXP,CRPIX1EXP,CRVAL1EXP,CDELT1EXP)
+!
+! Check the wavelength calibration of buffer NBUFF (LWAVECAL, CRPIX1, CRVAL1
+! and CDELT1).
+!------------------------------------------------------------------------------
+        SUBROUTINE CHECK_WAVECAL(LABEL,NBUFF,LEXP,CRPIX1EXP,CRVAL1EXP, &
+         CDELT1EXP)
+        CHARACTER*(*), INTENT(IN) :: LABEL
+        INTEGER, INTENT(IN) :: NBUFF
+        LOGICAL, INTENT(IN) :: LEXP
+        REAL, INTENT(IN) :: CRPIX1EXP,CRVAL1EXP,CDELT1EXP
+!
+        CALL CHECK_TRUE('LWAVECAL '//LABEL,LWAVECAL(NBUFF).EQV.LEXP)
+        CALL CHECK_REAL('CRPIX1 '//LABEL,CRPIX1(NBUFF),CRPIX1EXP,1.E-6,0.0)
+        CALL CHECK_REAL('CRVAL1 '//LABEL,CRVAL1(NBUFF),CRVAL1EXP,1.E-6,0.0)
+        CALL CHECK_REAL('CDELT1 '//LABEL,CDELT1(NBUFF),CDELT1EXP,1.E-6,0.0)
+        END SUBROUTINE CHECK_WAVECAL
 !------------------------------------------------------------------------------
 ! SUBROUTINE COMPUTE_XCUT()
 !

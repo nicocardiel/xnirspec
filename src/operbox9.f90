@@ -550,6 +550,7 @@
 ! frame que constituye el box 9
         CALL GIVESUBMASK(NFRAMES_,NEXTRA_XMINB9,NEXTRA_YMINB9,I0,J0,FI0,FJ0,NXMAXB9_,NYMAXB9_)
 ! Duplicamos buffer para no modificar NCBUFF
+        CALL WAVECAL_CLEAR(NEWBUFF1) !no wavelength calibration
         NAXIS(1,NEWBUFF1)=768
         NAXIS(2,NEWBUFF1)=768
         NFRAMES(NEWBUFF1)=NFRAMES(NCBUFF)
@@ -558,6 +559,7 @@
             IMAGEN(J,I,NEWBUFF1)=IMAGEN(J,I,NCBUFF)
           END DO
         END DO
+        CALL WAVECAL_CLEAR(NEWBUFF1+NMAXBUFF/2) !no wavelength calibration
         NAXIS(1,NEWBUFF1+NMAXBUFF/2)=768
         NAXIS(2,NEWBUFF1+NMAXBUFF/2)=768
         NFRAMES(NEWBUFF1+NMAXBUFF/2)=NFRAMES(NCBUFF+NMAXBUFF/2)
@@ -1633,9 +1635,11 @@
           END IF
         END IF
 ! it's time to coadd the 9 frames into a single image
+        CALL WAVECAL_CLEAR(NEWBUFF2) !no wavelength calibration
         NAXIS(1,NEWBUFF2)=NXMAXB9_
         NAXIS(2,NEWBUFF2)=NYMAXB9_
         NFRAMES(NEWBUFF2)=1
+        CALL WAVECAL_CLEAR(NEWBUFF2+NMAXBUFF/2) !no wavelength calibration
         NAXIS(1,NEWBUFF2+NMAXBUFF/2)=NXMAXB9_
         NAXIS(2,NEWBUFF2+NMAXBUFF/2)=NYMAXB9_
         NFRAMES(NEWBUFF2+NMAXBUFF/2)=1
@@ -1648,6 +1652,7 @@
           END DO
         END DO
         IF(NEWBUFF3.GT.0)THEN
+          CALL WAVECAL_CLEAR(NEWBUFF3) !no wavelength calibration
           NAXIS(1,NEWBUFF3)=NXMAXB9_
           NAXIS(2,NEWBUFF3)=NYMAXB9_
           NFRAMES(NEWBUFF2)=1
@@ -1856,6 +1861,7 @@
         END DO
 ! si se ha pedido, salvamos en otro buffer el numero de pixels utilizados para
 ! el calculo de cada pixel
+        CALL WAVECAL_CLEAR(NEWBUFF4) !no wavelength calibration
         NAXIS(1,NEWBUFF4)=NXMAXB9_
         NAXIS(2,NEWBUFF4)=NYMAXB9_
         NFRAMES(NEWBUFF4)=1

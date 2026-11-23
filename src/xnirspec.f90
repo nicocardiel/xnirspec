@@ -385,6 +385,7 @@
           LDS9REG(K)=.FALSE.
           LASCREG(K)=.FALSE.
         END DO
+        CALL WAVECAL_CLEAR(0)          !no wavelength calibration in any buffer
 !
         LFIRSTPLOT=.TRUE.
         LBOUNDARY=.FALSE.
@@ -939,6 +940,9 @@
                 WRITE(*,*) NSIZEFB9(NEWBUFF)
                 NAXIS(1,NEWBUFF)=3*NSIZEFB9(NEWBUFF)
                 NAXIS(2,NEWBUFF)=3*NSIZEFB9(NEWBUFF)
+! box-9 mosaic: the wavelength calibration of the frames does not apply
+                CALL WAVECAL_CLEAR(NEWBUFF)
+                IF(NEWBUFF.LE.NMAXBUFF/2) CALL WAVECAL_CLEAR(NEWBUFF+NMAXBUFF/2)
                 IF(NAXIS(1,NEWBUFF).GT.NXMAX)THEN
                   WRITE(*,100) 'NAXIS(1), NXMAX: '
                   WRITE(*,*) NAXIS(1,NEWBUFF),NXMAX
@@ -1143,6 +1147,7 @@
               IF((CINERR.EQ.'x').OR.(LBOX9))THEN               !no hacemos nada
 !..............................................................................
               ELSEIF(CINERR.EQ.'0')THEN
+                CALL WAVECAL_COPY(NCBUFF,NCBUFF+NMAXBUFF/2)
                 NAXIS(1,NCBUFF+NMAXBUFF/2)=NAXIS(1,NCBUFF)
                 NAXIS(2,NCBUFF+NMAXBUFF/2)=NAXIS(2,NCBUFF)
                 NFRAMES(NCBUFF+NMAXBUFF/2)=NFRAMES(NCBUFF)
@@ -1161,6 +1166,7 @@
 ! sen~al en cada coadd. Sin embargo, este factor no se cancela en el termino
 ! correspondiente al ruido de lectura.
               ELSEIF(CINERR.EQ.'g')THEN
+                CALL WAVECAL_COPY(NCBUFF,NCBUFF+NMAXBUFF/2)
                 NAXIS(1,NCBUFF+NMAXBUFF/2)=NAXIS(1,NCBUFF)
                 NAXIS(2,NCBUFF+NMAXBUFF/2)=NAXIS(2,NCBUFF)
                 NFRAMES(NCBUFF+NMAXBUFF/2)=NFRAMES(NCBUFF)
@@ -2510,6 +2516,13 @@
             IF(NCBUFF.LE.NMAXBUFF/2)THEN
               NAXIS(1,NCBUFF+NMAXBUFF/2)=NAXIS1_
               NAXIS(2,NCBUFF+NMAXBUFF/2)=NAXIS2_
+            END IF
+! the original pixel J is now J+DAXIS1_: the wavelength calibration is kept
+! by shifting the reference pixel
+            CRPIX1(NCBUFF)=CRPIX1(NCBUFF)+REAL(DAXIS1_)
+            IF(NCBUFF.LE.NMAXBUFF/2)THEN
+              CRPIX1(NCBUFF+NMAXBUFF/2)=CRPIX1(NCBUFF+NMAXBUFF/2)+ &
+               REAL(DAXIS1_)
             END IF
             WRITE(*,101) 'WARNING: replot image to see updated size.'
             CALL BUTTON(NB,'resize ima',0)
