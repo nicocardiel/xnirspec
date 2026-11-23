@@ -47,11 +47,13 @@
         REAL F(NX1,NX2),FNULL(NX1,NX2)
         REAL FDATA(6)
         CHARACTER*60 CNAME
+        LOGICAL WAVECTYPE
 ! global variables (COMMONs) shared with SLEEFITS and SESCRFITS
         INTEGER NAXIS(2,NMAXBUFF)
         LOGICAL ANYNULL
         REAL CRPIX1(NMAXBUFF),CRVAL1(NMAXBUFF),CDELT1(NMAXBUFF)
         LOGICAL LWAVECAL(NMAXBUFF)
+        CHARACTER*20 CTYPE1(NMAXBUFF),CUNIT1(NMAXBUFF)
         REAL PHOTFLAM(NMAXBUFF),PHOTZPT(NMAXBUFF),EXPTIME(NMAXBUFF)
         LOGICAL L_PHOTFLAM(NMAXBUFF),L_PHOTZPT(NMAXBUFF)
         LOGICAL L_EXPTIME(NMAXBUFF)
@@ -59,6 +61,7 @@
         COMMON/BLKANYNULL/ANYNULL
         COMMON/BLKWAVECAL1/CRPIX1,CRVAL1,CDELT1
         COMMON/BLKWAVECAL2/LWAVECAL
+        COMMON/BLKWAVECAL3/CTYPE1,CUNIT1
         COMMON/BLK_HSTFLUX1/L_PHOTFLAM,L_PHOTZPT,L_EXPTIME
         COMMON/BLK_HSTFLUX2/PHOTFLAM,PHOTZPT,EXPTIME
 !------------------------------------------------------------------------------
@@ -157,6 +160,8 @@
         NAXES=(/NX1,NX2/)
         CALL FTINIT(IUNIT,'!'//FILE_WCS,1,ISTATUS)
         CALL FTPHPR(IUNIT,.TRUE.,-32,2,NAXES,0,1,.FALSE.,ISTATUS)
+        CALL FTPKYS(IUNIT,'CTYPE1','WAVE','wavelength axis',ISTATUS)
+        CALL FTPKYS(IUNIT,'CUNIT1','Angstrom','units',ISTATUS)
         CALL FTPKYE(IUNIT,'CRPIX1',1.5,7,'reference pixel',ISTATUS)
         CALL FTPKYE(IUNIT,'CRVAL1',5000.0,7,'wavelength at CRPIX1',ISTATUS)
         CALL FTPKYE(IUNIT,'CDELT1',2.5,7,'dispersion',ISTATUS)
@@ -169,6 +174,8 @@
         CALL CHECK_REAL('CRPIX1',CRPIX1(7),1.5,1.E-6,0.0)
         CALL CHECK_REAL('CRVAL1',CRVAL1(7),5000.0,1.E-6,0.0)
         CALL CHECK_REAL('CDELT1',CDELT1(7),2.5,1.E-6,0.0)
+        CALL CHECK_STR('CTYPE1',CTYPE1(7),'WAVE')
+        CALL CHECK_STR('CUNIT1',CUNIT1(7),'Angstrom')
         CALL CHECK_TRUE('L_EXPTIME=.TRUE.',L_EXPTIME(7))
         CALL CHECK_REAL('EXPTIME',EXPTIME(7),300.0,1.E-6,0.0)
         CALL CHECK_TRUE('L_PHOTFLAM=.FALSE.',.NOT.L_PHOTFLAM(7))
@@ -198,6 +205,39 @@
              .NOT.LWAVECAL(8))
           END IF
         END DO
+!------------------------------------------------------------------------------
+! accepted values of CTYPE1 (WAVECTYPE): case and blanks are ignored
+        CALL CHECK_TRUE('WAVECTYPE WAVE',WAVECTYPE('WAVE'))
+        CALL CHECK_TRUE('WAVECTYPE AWAV',WAVECTYPE('AWAV'))
+        CALL CHECK_TRUE('WAVECTYPE wavelength',WAVECTYPE(' wavelength'))
+        CALL CHECK_TRUE('WAVECTYPE Lambda',WAVECTYPE('Lambda  '))
+        CALL CHECK_TRUE('WAVECTYPE WAVE-LOG rejected',.NOT.WAVECTYPE('WAVE-LOG'))
+        CALL CHECK_TRUE('WAVECTYPE LINEAR rejected',.NOT.WAVECTYPE('LINEAR'))
+        CALL CHECK_TRUE('WAVECTYPE RA---TAN rejected',.NOT.WAVECTYPE('RA---TAN'))
+        CALL CHECK_TRUE('WAVECTYPE blank rejected',.NOT.WAVECTYPE(' '))
+! wavelength calibration accepted or rejected by SLEEFITS (buffer 9):
+! CTYPE1 absent, celestial CTYPE1, lowercase 'lambda', CD1_1 instead of
+! CDELT1, and CDELT1=0
+        CALL WRITE_WCS(' ','CDELT1',2.5)
+        CALL SLEEFITS(FILE_WCS,.FALSE.,0,9,.FALSE.,0)
+        CALL CHECK_TRUE('no CTYPE1: LWAVECAL=.FALSE.',.NOT.LWAVECAL(9))
+        CALL WRITE_WCS('RA---TAN','CDELT1',2.5)
+        CALL SLEEFITS(FILE_WCS,.FALSE.,0,9,.FALSE.,0)
+        CALL CHECK_TRUE('CTYPE1=RA---TAN: LWAVECAL=.FALSE.',.NOT.LWAVECAL(9))
+        CALL CHECK_REAL('CTYPE1=RA---TAN: CDELT1 set to 0',CDELT1(9),0.0, &
+         0.0,0.0)
+        CALL WRITE_WCS('lambda','CDELT1',2.5)
+        CALL SLEEFITS(FILE_WCS,.FALSE.,0,9,.FALSE.,0)
+        CALL CHECK_TRUE('CTYPE1=lambda: LWAVECAL=.TRUE.',LWAVECAL(9))
+        CALL WRITE_WCS('AWAV','CD1_1',-1.25)
+        CALL SLEEFITS(FILE_WCS,.FALSE.,0,9,.FALSE.,0)
+        CALL CHECK_TRUE('CD1_1: LWAVECAL=.TRUE.',LWAVECAL(9))
+        CALL CHECK_REAL('CD1_1: CDELT1',CDELT1(9),-1.25,0.0,0.0)
+        CALL CHECK_STR('CD1_1: CTYPE1',CTYPE1(9),'AWAV')
+        CALL CHECK_STR('CD1_1: CUNIT1 (absent)',CUNIT1(9),' ')
+        CALL WRITE_WCS('WAVE','CDELT1',0.0)
+        CALL SLEEFITS(FILE_WCS,.FALSE.,0,9,.FALSE.,0)
+        CALL CHECK_TRUE('CDELT1=0: LWAVECAL=.FALSE.',.NOT.LWAVECAL(9))
 !------------------------------------------------------------------------------
         CALL DELETE_FILE(FILE_RT)
         CALL DELETE_FILE(FILE_NULL)
@@ -277,5 +317,31 @@
         CALL CHECK_INT(LABEL//' mismatched pixel values',NBADV,0)
         CALL CHECK_INT(LABEL//' mismatched null mask pixels',NBADM,0)
         END SUBROUTINE CHECK_ORIENTATION
+!------------------------------------------------------------------------------
+! SUBROUTINE WRITE_WCS(CTYPE,CKEYDELT,DELT)
+!
+! Write FILE_WCS (image F) with CRPIX1=1, CRVAL1=5000, the dispersion DELT
+! in the keyword CKEYDELT ('CDELT1' or 'CD1_1') and CTYPE1=CTYPE (not
+! written if blank).
+!------------------------------------------------------------------------------
+        SUBROUTINE WRITE_WCS(CTYPE,CKEYDELT,DELT)
+        CHARACTER*(*) CTYPE,CKEYDELT
+        REAL DELT
+!
+        ISTATUS=0
+        NAXES=(/NX1,NX2/)
+        CALL FTINIT(IUNIT,'!'//FILE_WCS,1,ISTATUS)
+        CALL FTPHPR(IUNIT,.TRUE.,-32,2,NAXES,0,1,.FALSE.,ISTATUS)
+        IF(LEN_TRIM(CTYPE).GT.0)THEN
+          CALL FTPKYS(IUNIT,'CTYPE1',CTYPE,'axis type',ISTATUS)
+        END IF
+        CALL FTPKYE(IUNIT,'CRPIX1',1.0,7,'reference pixel',ISTATUS)
+        CALL FTPKYE(IUNIT,'CRVAL1',5000.0,7,'value at CRPIX1',ISTATUS)
+        CALL FTPKYE(IUNIT,CKEYDELT,DELT,7,'increment',ISTATUS)
+        CALL FTPPRE(IUNIT,1,1,NX1*NX2,F,ISTATUS)
+        CALL FTCLOS(IUNIT,ISTATUS)
+        CALL CHECK_INT('CFITSIO status writing '//TRIM(CTYPE)//' '// &
+         TRIM(CKEYDELT)//' file',ISTATUS,0)
+        END SUBROUTINE WRITE_WCS
 !
         END PROGRAM TEST_FITSIO

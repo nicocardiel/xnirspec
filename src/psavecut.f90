@@ -11,8 +11,8 @@
 ! has been drawn as the cuts of PCUT and of the main program: X label
 ! 'x axis' ('y axis'), color number = buffer number NB, NAXIS1 (NAXIS2)
 ! points and X(I)=I. If it is a cut along X and the buffer has wavelength
-! calibration (LWAVECAL), CRPIX1, CRVAL1 and CDELT1 of the buffer are
-! written in the header. A HISTORY record describes the origin of the
+! calibration (LWAVECAL), CTYPE1, CUNIT1, CRPIX1, CRVAL1 and CDELT1 of the
+! buffer are written in the header. A HISTORY record describes the origin of the
 ! profile. For other profiles only the Y values are saved.
 !
 ! Returns
@@ -42,6 +42,7 @@
         REAL CRPIX1(NMAXBUFF),CRVAL1(NMAXBUFF),CDELT1(NMAXBUFF)
         CHARACTER*255 CLABX,CLABY,CLABG
         LOGICAL LWAVECAL(NMAXBUFF)
+        CHARACTER*20 CTYPE1(NMAXBUFF),CUNIT1(NMAXBUFF)
         COMMON/BLKPNLAST/NLAST,N1LAST,N2LAST
         COMMON/BLKPLAST/XPLAST,YPLAST
         COMMON/BLKPLABELS/CLABX,CLABY,CLABG
@@ -49,6 +50,7 @@
         COMMON/BLKNAXIS/NAXIS
         COMMON/BLKWAVECAL1/CRPIX1,CRVAL1,CDELT1
         COMMON/BLKWAVECAL2/LWAVECAL
+        COMMON/BLKWAVECAL3/CTYPE1,CUNIT1
 !------------------------------------------------------------------------------
         LSAVED=.FALSE.
         IF(NLAST.LE.0)THEN
@@ -123,7 +125,7 @@
 ! range, so buffer #1 is passed instead)
         IF(.NOT.LWAVE) NB=1
         CALL WRITECUTFITS(OUTFILE,NLAST,YPLAST,LWAVE,CRPIX1(NB), &
-         CRVAL1(NB),CDELT1(NB),CHIST,ISTATUS)
+         CRVAL1(NB),CDELT1(NB),CTYPE1(NB),CUNIT1(NB),CHIST,ISTATUS)
         IF(ISTATUS.EQ.0)THEN
           LSAVED=.TRUE.
           WRITE(*,101) 'File '//TRIM(OUTFILE)//' written'

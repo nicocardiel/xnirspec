@@ -65,6 +65,7 @@ fderi.f90 \
 findmax.f90 \
 findmml.f90 \
 fitpol.f90 \
+fitswavecal.f90 \
 fmap.f90 \
 fmean0.f90 \
 fmean0e.f90 \
@@ -164,6 +165,9 @@ truebeg.f90 \
 truelen.f90 \
 try_reduceme.f90 \
 unrectify.f90 \
+wavecal_clear.f90 \
+wavecal_copy.f90 \
+wavectype.f90 \
 whereami.f90 \
 writecutfits.f90 \
 wvscalebox.f90 \

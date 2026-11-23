@@ -1,12 +1,14 @@
 !------------------------------------------------------------------------------
-! SUBROUTINE WRITECUTFITS(FITSFILE,N,Y,LWAVE,CRPIX1,CRVAL1,CDELT1,CHIST,
-!                         ISTATUS)
+! SUBROUTINE WRITECUTFITS(FITSFILE,N,Y,LWAVE,CRPIX1,CRVAL1,CDELT1,CTYPE1,
+!                         CUNIT1,CHIST,ISTATUS)
 !
 ! Write a 1-D profile Y(1:N) as a one-dimensional FITS image (NAXIS=1,
 ! NAXIS1=N, BITPIX=-32). If LWAVE is .TRUE., the wavelength calibration
-! keywords CRPIX1, CRVAL1 and CDELT1 are also written, so that the
-! wavelength of pixel I (1-based) is CRVAL1+(I-CRPIX1)*CDELT1 (the same
-! convention read by SLEEFITS). The string CHIST is written as a HISTORY
+! keywords CTYPE1, CUNIT1 (if not blank), CRPIX1, CRVAL1 and CDELT1 are
+! also written, so that the wavelength of pixel I (1-based) is
+! CRVAL1+(I-CRPIX1)*CDELT1 (the same convention read by SLEEFITS, which
+! requires CTYPE1 to be a linear wavelength axis; 'WAVE' is written if
+! CTYPE1 is blank). The string CHIST is written as a HISTORY
 ! record (CFITSIO splits it into several records if needed). The file must
 ! not exist.
 !
@@ -19,9 +21,11 @@
 ! Y : REAL array, shape (N)
 !     Profile to be saved.
 ! LWAVE : LOGICAL
-!     If .TRUE., write CRPIX1, CRVAL1 and CDELT1.
+!     If .TRUE., write the wavelength calibration keywords.
 ! CRPIX1, CRVAL1, CDELT1 : REAL
 !     Wavelength calibration (ignored if LWAVE is .FALSE.).
+! CTYPE1, CUNIT1 : CHARACTER*(*)
+!     Type and units of the wavelength axis (ignored if LWAVE is .FALSE.).
 ! CHIST : CHARACTER*(*)
 !     Text of the HISTORY record (not written if blank).
 !
@@ -32,13 +36,14 @@
 !     error message is displayed).
 !------------------------------------------------------------------------------
         SUBROUTINE WRITECUTFITS(FITSFILE,N,Y,LWAVE,CRPIX1,CRVAL1,CDELT1, &
-         CHIST,ISTATUS)
+         CTYPE1,CUNIT1,CHIST,ISTATUS)
         IMPLICIT NONE
         CHARACTER*(*) FITSFILE
         INTEGER N
         REAL Y(N)
         LOGICAL LWAVE
         REAL CRPIX1,CRVAL1,CDELT1
+        CHARACTER*(*) CTYPE1,CUNIT1
         CHARACTER*(*) CHIST
         INTEGER ISTATUS
 !
@@ -56,6 +61,16 @@
         CALL FTINIT(IUNIT,FITSFILE,1,ISTATUS)
         CALL FTPHPR(IUNIT,.TRUE.,-32,1,NAXES,0,1,.FALSE.,ISTATUS)
         IF(LWAVE)THEN
+          IF(LEN_TRIM(CTYPE1).GT.0)THEN
+            CALL FTPKYS(IUNIT,'CTYPE1',TRIM(ADJUSTL(CTYPE1)), &
+             'wavelength axis',ISTATUS)
+          ELSE
+            CALL FTPKYS(IUNIT,'CTYPE1','WAVE','wavelength axis',ISTATUS)
+          END IF
+          IF(LEN_TRIM(CUNIT1).GT.0)THEN
+            CALL FTPKYS(IUNIT,'CUNIT1',TRIM(ADJUSTL(CUNIT1)), &
+             'wavelength units',ISTATUS)
+          END IF
           CALL FTPKYE(IUNIT,'CRPIX1',CRPIX1,NDECIMALS, &
            'reference pixel',ISTATUS)
           CALL FTPKYE(IUNIT,'CRVAL1',CRVAL1,NDECIMALS, &

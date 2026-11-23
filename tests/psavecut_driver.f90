@@ -7,7 +7,7 @@
 !
 ! Test cases (first command-line argument):
 !   xwave  : cut along X of buffer #2, which has wavelength calibration:
-!            CRPIX1, CRVAL1 and CDELT1 must be written
+!            CTYPE1, CUNIT1, CRPIX1, CRVAL1 and CDELT1 must be written
 !   ycut   : cut along Y of buffer #1 (which also has wavelength
 !            calibration): no calibration keywords
 !   none   : the answer is "none": nothing is saved
@@ -40,10 +40,13 @@
         INTEGER NAXIS(2,NMAXBUFF)
         REAL CRPIX1(NMAXBUFF),CRVAL1(NMAXBUFF),CDELT1(NMAXBUFF)
         LOGICAL LWAVECAL(NMAXBUFF)
+        CHARACTER*20 CTYPE1(NMAXBUFF),CUNIT1(NMAXBUFF)
+        CHARACTER*20 CVAL
         LOGICAL LECHO
         COMMON/BLKNAXIS/NAXIS
         COMMON/BLKWAVECAL1/CRPIX1,CRVAL1,CDELT1
         COMMON/BLKWAVECAL2/LWAVECAL
+        COMMON/BLKWAVECAL3/CTYPE1,CUNIT1
         COMMON/BLKLECHO/LECHO
 !------------------------------------------------------------------------------
         CALL GET_COMMAND_ARGUMENT(1,CCASE)
@@ -67,6 +70,8 @@
         CRPIX1(1:2)=(/1.0,2.0/)
         CRVAL1(1:2)=(/4000.0,21500.25/)
         CDELT1(1:2)=(/1.0,-0.75/)
+        CTYPE1(1:2)=(/'WAVE                ','AWAV                '/)
+        CUNIT1(1:2)=(/'nm                  ','Angstrom            '/)
         DO I=1,N
           X(I)=REAL(I)
           Y(I)=50.0+REAL(I)+10.0*SIN(REAL(I))
@@ -84,7 +89,8 @@
           ERROR STOP 1
         END SELECT
         IF(TRIM(CCASE).EQ.'exists')THEN
-          CALL WRITECUTFITS(OLDFILE,3,Y,.FALSE.,1.0,1.0,1.0,' ',ISTATUS)
+          CALL WRITECUTFITS(OLDFILE,3,Y,.FALSE.,1.0,1.0,1.0,' ',' ',' ', &
+           ISTATUS)
         END IF
 !------------------------------------------------------------------------------
         CALL PSAVECUT(LSAVED)
@@ -113,6 +119,10 @@
             CALL CHECK_REAL('CRVAL1',RVAL,21500.25,0.0,0.0)
             CALL FTGKYE(IUNIT,'CDELT1',RVAL,COMMENT,ISTATUS)
             CALL CHECK_REAL('CDELT1',RVAL,-0.75,0.0,0.0)
+            CALL FTGKYS(IUNIT,'CTYPE1',CVAL,COMMENT,ISTATUS)
+            CALL CHECK_STR('CTYPE1',CVAL,'AWAV')
+            CALL FTGKYS(IUNIT,'CUNIT1',CVAL,COMMENT,ISTATUS)
+            CALL CHECK_STR('CUNIT1',CVAL,'Angstrom')
             CALL CHECK_INT('CFITSIO status reading keywords',ISTATUS,0)
           END IF
           CALL FTCLOS(IUNIT,ISTATUS)

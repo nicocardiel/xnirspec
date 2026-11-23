@@ -10,7 +10,10 @@
 ! IBUFF: if <> 0 means that the photometry keywords of the HST are searched
 !        and, if found, stored in the corresponding array (buffer IBUFF).
 !
-! Wavelength calibration of FITS files (CRPIX1, CRVAL1, CDELT1) when the
+! Wavelength calibration of FITS files (CRPIX1, CRVAL1, CDELT1, with
+! CTYPE1 and CUNIT1) is read with FITSWAVECAL, and it is only accepted when
+! CTYPE1 is a linear wavelength axis and CDELT1 (or CD1_1) is not zero;
+! REDUCEME files are calibrated when DISP is not zero. When the
 ! image is rotated: with IROTATE=+-180 it is transformed to the reversed X
 ! axis (CRPIX1 -> NAXIS1-CRPIX1+1, CDELT1 -> -CDELT1); with IROTATE=+-90 or
 ! +-270 the original NAXIS1 becomes the Y axis, so the calibration is not
@@ -47,6 +50,7 @@
 !delete REAL IMAGEN_(NXYMAX,NXYMAX)
         REAL CRPIX1(NMAXBUFF),CRVAL1(NMAXBUFF),CDELT1(NMAXBUFF)
         LOGICAL LWAVECAL(NMAXBUFF)
+        CHARACTER*20 CTYPE1(NMAXBUFF),CUNIT1(NMAXBUFF)
         REAL STWV,DISP
         REAL AIRMASS,TIMEXPOS
 !delete LOGICAL LNULL(NXMAX,NYMAX,NMAXBUFF)
@@ -83,6 +87,7 @@
 !delete COMMON/BLKIMAGEN1_/IMAGEN_              !es global para ahorrar memoria
         COMMON/BLKWAVECAL1/CRPIX1,CRVAL1,CDELT1         !wavelength calibration
         COMMON/BLKWAVECAL2/LWAVECAL                     !wavelength calibration
+        COMMON/BLKWAVECAL3/CTYPE1,CUNIT1                !wavelength calibration
         COMMON/BLKREDUCEME/STWV,DISP,AIRMASS,TIMEXPOS     !Reduceme header info
 !delete COMMON/BLKLNULL/LNULL,ANYNULL   !mascara que indica si existen NaN, etc
         COMMON/BLKANYNULL/ANYNULL                   !indica si existen NaN, etc
@@ -127,10 +132,14 @@
                 LNULL_(J,I)=.FALSE.
               END DO
             END DO
-            LWAVECAL(NEWBUFF)=.TRUE.
+! REDUCEME files have no CTYPE1: they are considered wavelength calibrated
+! when DISP is not zero (CTYPE1='WAVE', units unknown)
+            LWAVECAL(NEWBUFF)=(DISP.NE.0.0)
             CRPIX1(NEWBUFF)=1.0
             CRVAL1(NEWBUFF)=STWV
             CDELT1(NEWBUFF)=DISP
+            CTYPE1(NEWBUFF)='WAVE'
+            CUNIT1(NEWBUFF)=' '
             LREDUCEME=.TRUE.
             WRITE(*,100) 'WARNING: reading file with REDUCEME format'
             GOTO 777
@@ -327,32 +336,26 @@
             L_EXPTIME(IBUFF)=.TRUE.
           END IF
         END IF
-! leemos calibracion en longitud de onda
-        LWAVECAL(NEWBUFF)=.TRUE.           !salvo que se demuestre lo contrario
-        CALL FTGKYE(IUNIT,'CRPIX1',CRPIX1(NEWBUFF),COMMENT,ISTATUS)
-        IF(ISTATUS.GT.0)THEN
-          CRPIX1(NEWBUFF)=1.0
-          ISTATUS=0
-        END IF
-        CALL FTGKYE(IUNIT,'CRVAL1',CRVAL1(NEWBUFF),COMMENT,ISTATUS)
-        IF(ISTATUS.GT.0)THEN
-          LWAVECAL(NEWBUFF)=.FALSE.
-          CRVAL1(NEWBUFF)=0.0
-          ISTATUS=0
-        END IF
-        CALL FTGKYE(IUNIT,'CDELT1',CDELT1(NEWBUFF),COMMENT,ISTATUS)
-        IF(ISTATUS.GT.0)THEN
-          LWAVECAL(NEWBUFF)=.FALSE.
-          CDELT1(NEWBUFF)=0.0
-          ISTATUS=0
-        END IF
-        IF(LWAVECAL(NEWBUFF))THEN
-          WRITE(*,100) 'CFITSIO> CRPIX1 : '
-          WRITE(*,*) CRPIX1(NEWBUFF)
-          WRITE(*,100) 'CFITSIO> CRVAL1 : '
-          WRITE(*,*) CRVAL1(NEWBUFF)
-          WRITE(*,100) 'CFITSIO> CDELT1 : '
-          WRITE(*,*) CDELT1(NEWBUFF)
+! wavelength calibration (CTYPE1 must be a linear wavelength axis; see
+! FITSWAVECAL); with LBOX9 the image is not stored in a buffer, and NEWBUFF
+! may not be a valid buffer number
+        IF((NEWBUFF.GE.1).AND.(NEWBUFF.LE.NMAXBUFF))THEN
+          CALL FITSWAVECAL(IUNIT,LWAVECAL(NEWBUFF),CRPIX1(NEWBUFF), &
+           CRVAL1(NEWBUFF),CDELT1(NEWBUFF),CTYPE1(NEWBUFF),CUNIT1(NEWBUFF))
+          IF(LWAVECAL(NEWBUFF))THEN
+            WRITE(*,100) 'CFITSIO> CTYPE1 : '
+            WRITE(*,101) TRIM(CTYPE1(NEWBUFF))
+            IF(LEN_TRIM(CUNIT1(NEWBUFF)).GT.0)THEN
+              WRITE(*,100) 'CFITSIO> CUNIT1 : '
+              WRITE(*,101) TRIM(CUNIT1(NEWBUFF))
+            END IF
+            WRITE(*,100) 'CFITSIO> CRPIX1 : '
+            WRITE(*,*) CRPIX1(NEWBUFF)
+            WRITE(*,100) 'CFITSIO> CRVAL1 : '
+            WRITE(*,*) CRVAL1(NEWBUFF)
+            WRITE(*,100) 'CFITSIO> CDELT1 : '
+            WRITE(*,*) CDELT1(NEWBUFF)
+          END IF
         END IF
 ! leemos la imagen
         DO I=1,NAXIS_(2)
