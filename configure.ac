@@ -133,9 +133,9 @@ DEFAULT_NXYMAX="4300"
 NXYMAX=${NXYMAX="$DEFAULT_NXYMAX"}
 AC_ARG_VAR(NXYMAX,[Maximum image dimension in X or Y direction])
 
-DEFAULT_SEXPATH="/opt/local/bin/sex"
+DEFAULT_SEXPATH="/opt/local/bin"
 SEXPATH=${SEXPATH="$DEFAULT_SEXPATH"}
-AC_ARG_VAR(SEXPATH,[Sextractor path])
+AC_ARG_VAR(SEXPATH,[Directory containing the SExtractor executable (sex)])
 
 DEFAULT_NXMAXB9="900"
 NXMAXB9=${NXMAXB9="$DEFAULT_NXMAXB9"}

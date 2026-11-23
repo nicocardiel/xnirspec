@@ -24,7 +24,8 @@ sudo make install
 
 - Maximum image size is fixed at configure time: `NXMAX`, `NYMAX`, `NXYMAX`
   (default 4300; `NXYMAX` must equal `max(NXMAX, NYMAX)`, checked at runtime).
-  SExtractor support needs `SEXPATH=/path/to/sex`. Other `AC_ARG_VAR`s in
+  SExtractor support needs `SEXPATH=/path/to/dir` (directory containing the
+  `sex` executable; default `/opt/local/bin`). Other `AC_ARG_VAR`s in
   `configure.ac` (`NXMAXB9`, `NYMAXB9`, `NOVERSAMPMAX`, `NZMAX`, `NMAXBUFF`) are
   marked "do not change".
 - Optional GNU readline (file name completion): `--with-readline[=DIR]`,
