@@ -54,6 +54,7 @@ cubspl.f90 \
 cubsplx.f90 \
 cutcontfit.f90 \
 cutgaussfit.f90 \
+delwavecal.f90 \
 distpp.f90 \
 distpr.f90 \
 downhill.f90 \
@@ -170,6 +171,7 @@ wavecal_copy.f90 \
 wavectype.f90 \
 whereami.f90 \
 writecutfits.f90 \
+writewavecal.f90 \
 wvscalebox.f90 \
 x2arc.f90 \
 xcut.f90 \

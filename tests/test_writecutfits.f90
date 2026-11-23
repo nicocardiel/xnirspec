@@ -15,7 +15,8 @@
         PARAMETER (FILE_WAVE='tmp_cut_wave.fits')
         PARAMETER (FILE_NOWAVE='tmp_cut_nowave.fits')
 !
-        INTEGER I,ISTATUS,NAXIS,NAXIS1,BITPIX,NKEYS,NMORE
+        INTEGER I,ISTATUS,NAXIS,NAXIS1,BITPIX,NKEYS,NMORE,NCRVAL
+        INTEGER NAXES(1)
         REAL Y(N),YREAD(N)
         REAL CRPIX1,CRVAL1,CDELT1
         CHARACTER*80 COMMENT,CARD
@@ -99,6 +100,42 @@
         CALL FTGKYJ(IUNIT,'NAXIS1',NAXIS1,COMMENT,ISTATUS)
         CALL FTCLOS(IUNIT,ISTATUS)
         CALL CHECK_INT('existing file: unchanged NAXIS1',NAXIS1,N)
+!
+!------------------------------------------------------------------------------
+! WRITEWAVECAL on a header that already contains calibration keywords (as
+! when a header template is copied): they are updated, not duplicated, and
+! CD1_1 is set to CDELT1
+        CALL DELETE_FILE(FILE_WAVE)
+        ISTATUS=0
+        CALL FTINIT(IUNIT,FILE_WAVE,1,ISTATUS)
+        NAXES(1)=N         !a variable: the constant (/N/) crashed in FTPHPR
+        CALL FTPHPR(IUNIT,.TRUE.,-32,1,NAXES,0,1,.FALSE.,ISTATUS)
+        CALL FTPKYS(IUNIT,'CTYPE1','PIXEL','old',ISTATUS)
+        CALL FTPKYE(IUNIT,'CRVAL1',1.0,7,'old',ISTATUS)
+        CALL FTPKYE(IUNIT,'CDELT1',1.0,7,'old',ISTATUS)
+        CALL FTPKYE(IUNIT,'CD1_1',1.0,7,'old',ISTATUS)
+        CALL WRITEWAVECAL(IUNIT,1.0,4500.0,0.5,'WAVE',' ',ISTATUS)
+        CALL FTPPRE(IUNIT,1,1,N,Y,ISTATUS)
+        CALL FTCLOS(IUNIT,ISTATUS)
+        CALL CHECK_INT('update: CFITSIO status writing',ISTATUS,0)
+        CALL FTOPEN(IUNIT,FILE_WAVE,0,I,ISTATUS)
+        CALL FTGKYS(IUNIT,'CTYPE1',CTYPE1,COMMENT,ISTATUS)
+        CALL FTGKYE(IUNIT,'CRVAL1',CRVAL1,COMMENT,ISTATUS)
+        CALL FTGKYE(IUNIT,'CDELT1',CDELT1,COMMENT,ISTATUS)
+        CALL FTGKYE(IUNIT,'CD1_1',CRPIX1,COMMENT,ISTATUS)
+        CALL CHECK_INT('update: CFITSIO status reading',ISTATUS,0)
+        CALL CHECK_STR('update: CTYPE1',CTYPE1,'WAVE')
+        CALL CHECK_REAL('update: CRVAL1',CRVAL1,4500.0,0.0,0.0)
+        CALL CHECK_REAL('update: CDELT1',CDELT1,0.5,0.0,0.0)
+        CALL CHECK_REAL('update: CD1_1',CRPIX1,0.5,0.0,0.0)
+        CALL FTGHSP(IUNIT,NKEYS,NMORE,ISTATUS)
+        NCRVAL=0
+        DO I=1,NKEYS
+          CALL FTGREC(IUNIT,I,CARD,ISTATUS)
+          IF(CARD(1:8).EQ.'CRVAL1  ') NCRVAL=NCRVAL+1
+        END DO
+        CALL CHECK_INT('update: CRVAL1 not duplicated',NCRVAL,1)
+        CALL FTCLOS(IUNIT,ISTATUS)
 !
         CALL DELETE_FILE(FILE_WAVE)
         CALL DELETE_FILE(FILE_NOWAVE)

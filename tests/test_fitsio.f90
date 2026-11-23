@@ -32,12 +32,13 @@
         PARAMETER (JNULL=2,INULL=1)
         INTEGER IUNIT
         PARAMETER (IUNIT=90)          !SLEEFITS and SESCRFITS use 80, 82, 83
-        CHARACTER*(*) FILE_RT,FILE_NULL,FILE_I16,FILE_1D,FILE_WCS
+        CHARACTER*(*) FILE_RT,FILE_NULL,FILE_I16,FILE_1D,FILE_WCS,FILE_RTW
         PARAMETER (FILE_RT='tmp_fitsio_roundtrip.fits')
         PARAMETER (FILE_NULL='tmp_fitsio_null.fits')
         PARAMETER (FILE_I16='tmp_fitsio_int16.fits')
         PARAMETER (FILE_1D='tmp_fitsio_1d.fits')
         PARAMETER (FILE_WCS='tmp_fitsio_wcs.fits')
+        PARAMETER (FILE_RTW='tmp_fitsio_roundtrip_wave.fits')
 !
         INTEGER I,J,K,NBAD
         INTEGER IROT(7)
@@ -79,6 +80,7 @@
 !------------------------------------------------------------------------------
 ! round trip: SESCRFITS (buffer 1) -> SLEEFITS (buffer 2)
         CALL DELETE_FILE(FILE_RT)
+        LWAVECAL=.FALSE.
         IMAGEN(1:NX1,1:NX2,1)=F
         NAXIS(1,1)=NX1
         NAXIS(2,1)=NX2
@@ -239,11 +241,40 @@
         CALL SLEEFITS(FILE_WCS,.FALSE.,0,9,.FALSE.,0)
         CALL CHECK_TRUE('CDELT1=0: LWAVECAL=.FALSE.',.NOT.LWAVECAL(9))
 !------------------------------------------------------------------------------
+! round trip of the wavelength calibration: SESCRFITS (buffer 1, calibrated)
+! -> SLEEFITS (buffer 10)
+        CALL DELETE_FILE(FILE_RTW)
+        IMAGEN(1:NX1,1:NX2,1)=F
+        NAXIS(1,1)=NX1
+        NAXIS(2,1)=NX2
+        LWAVECAL(1)=.TRUE.
+        CRPIX1(1)=3.0
+        CRVAL1(1)=21234.5
+        CDELT1(1)=-2.75
+        CTYPE1(1)='AWAV'
+        CUNIT1(1)='Angstrom'
+        CALL SESCRFITS(FILE_RTW,1,'none')
+        CALL SLEEFITS(FILE_RTW,.FALSE.,0,10,.FALSE.,0)
+        CALL CHECK_TRUE('round trip with calibration: pixel values', &
+         ALL(IMAGEN(1:NX1,1:NX2,10).EQ.F))
+        CALL CHECK_TRUE('round trip with calibration: LWAVECAL',LWAVECAL(10))
+        CALL CHECK_REAL('round trip with calibration: CRPIX1',CRPIX1(10), &
+         3.0,0.0,0.0)
+        CALL CHECK_REAL('round trip with calibration: CRVAL1',CRVAL1(10), &
+         21234.5,0.0,0.0)
+        CALL CHECK_REAL('round trip with calibration: CDELT1',CDELT1(10), &
+         -2.75,0.0,0.0)
+        CALL CHECK_STR('round trip with calibration: CTYPE1',CTYPE1(10), &
+         'AWAV')
+        CALL CHECK_STR('round trip with calibration: CUNIT1',CUNIT1(10), &
+         'Angstrom')
+!------------------------------------------------------------------------------
         CALL DELETE_FILE(FILE_RT)
         CALL DELETE_FILE(FILE_NULL)
         CALL DELETE_FILE(FILE_I16)
         CALL DELETE_FILE(FILE_1D)
         CALL DELETE_FILE(FILE_WCS)
+        CALL DELETE_FILE(FILE_RTW)
         CALL Deallocate_Array_IMAGEN
         CALL Deallocate_Array_IMAGEN_
         CALL Deallocate_Array_LNULL

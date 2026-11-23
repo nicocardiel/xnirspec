@@ -17,4 +17,4 @@ if [ ! -x "$driver" ]; then
     exit 1
 fi
 
-printf '%s\n' 0 2 -1 2 3 2 '' | "$driver"
+printf '%s\n' 0 2 -1 2 3 2 '' '' '' | "$driver"

@@ -7,6 +7,9 @@
 !   -1, 2, 3 -> SLEEFITS, 3D cube: collapse slices 2 to 3
 !   2        -> SLEEFITS, file with extensions: read extension number 2
 !   <empty>  -> SESCRFITS with header template: skip 5 keywords (default)
+!   <empty>  -> idem, template with wavelength calibration (removed, since
+!               the buffer is not calibrated)
+!   <empty>  -> idem, template with celestial WCS (kept)
 !
 ! Test image: F(J,I) = 100*I + J + 0.25; slice K of the cube is
 ! F(J,I) + 1000*K (the collapsed cube is the sum of the slices).
@@ -27,10 +30,13 @@
         INTEGER IUNIT
         PARAMETER (IUNIT=90)          !SLEEFITS and SESCRFITS use 80, 82, 83
         CHARACTER*(*) FILE_CUBE,FILE_MEF,FILE_HDR,FILE_OUT
+        CHARACTER*(*) FILE_HDRW,FILE_OUTW
         PARAMETER (FILE_CUBE='tmp_fitsio_cube.fits')
         PARAMETER (FILE_MEF='tmp_fitsio_mef.fits')
         PARAMETER (FILE_HDR='tmp_fitsio_hdrtemplate.fits')
         PARAMETER (FILE_OUT='tmp_fitsio_withhdr.fits')
+        PARAMETER (FILE_HDRW='tmp_fitsio_hdrtemplate_wcs.fits')
+        PARAMETER (FILE_OUTW='tmp_fitsio_withhdr_wcs.fits')
 !
         INTEGER I,J,K
         INTEGER ISTATUS,NKEYS,NSPACE,IREADWRITE,IBLOCK
@@ -40,13 +46,18 @@
         CHARACTER*20 COBJECT
         CHARACTER*50 COMMENT
         CHARACTER*80 RECORD
+        CHARACTER*20 CVAL
+        REAL RVAL
 ! global variables (COMMONs) shared with SLEEFITS and SESCRFITS
         INTEGER NAXIS(2,NMAXBUFF)
+        LOGICAL LWAVECAL(NMAXBUFF)
         COMMON/BLKNAXIS/NAXIS
+        COMMON/BLKWAVECAL2/LWAVECAL
 !------------------------------------------------------------------------------
         CALL Initialize_Dynamic_Array_IMAGEN
         CALL Initialize_Dynamic_Array_IMAGEN_
         CALL Initialize_Dynamic_Array_LNULL
+        LWAVECAL=.FALSE.
 !
         DO I=1,NX2
           DO J=1,NX1
@@ -146,12 +157,81 @@
         CALL CHECK_TRUE('header template: pixel values', &
          ALL(IMAGEN(1:NX1,1:NX2,4).EQ.F))
 !------------------------------------------------------------------------------
+! header template with wavelength calibration and an uncalibrated buffer
+! (#3): the calibration keywords copied from the template are removed, and
+! the file is not read back as calibrated
+        CALL WRITE_TEMPLATE('WAVE',21000.0,2.5)
+        CALL DELETE_FILE(FILE_OUTW)
+        CALL SESCRFITS(FILE_OUTW,3,FILE_HDRW)             !answer: <empty>
+        ISTATUS=0
+        CALL FTOPEN(IUNIT,FILE_OUTW,0,IBLOCK,ISTATUS)
+        CALL FTGKYS(IUNIT,'OBJECT',COBJECT,COMMENT,ISTATUS)
+        CALL CHECK_INT('wavelength template: CFITSIO status',ISTATUS,0)
+        CALL CHECK_STR('wavelength template: OBJECT copied',COBJECT,'WAVEOBJ')
+        CALL FTGKYS(IUNIT,'CTYPE1',CVAL,COMMENT,ISTATUS)
+        CALL CHECK_TRUE('wavelength template: CTYPE1 removed',ISTATUS.NE.0)
+        ISTATUS=0
+        CALL FTGKYE(IUNIT,'CRVAL1',RVAL,COMMENT,ISTATUS)
+        CALL CHECK_TRUE('wavelength template: CRVAL1 removed',ISTATUS.NE.0)
+        ISTATUS=0
+        CALL FTGKYE(IUNIT,'CD1_1',RVAL,COMMENT,ISTATUS)
+        CALL CHECK_TRUE('wavelength template: CD1_1 removed',ISTATUS.NE.0)
+        ISTATUS=0
+        CALL FTCLOS(IUNIT,ISTATUS)
+        CALL SLEEFITS(FILE_OUTW,.FALSE.,0,5,.FALSE.,0)
+        CALL CHECK_TRUE('wavelength template: read back not calibrated', &
+         .NOT.LWAVECAL(5))
+! header template with celestial WCS: kept
+        CALL WRITE_TEMPLATE('RA---TAN',150.0,-1.E-4)
+        CALL DELETE_FILE(FILE_OUTW)
+        CALL SESCRFITS(FILE_OUTW,3,FILE_HDRW)             !answer: <empty>
+        ISTATUS=0
+        CALL FTOPEN(IUNIT,FILE_OUTW,0,IBLOCK,ISTATUS)
+        CALL FTGKYS(IUNIT,'CTYPE1',CVAL,COMMENT,ISTATUS)
+        CALL FTGKYE(IUNIT,'CRVAL1',RVAL,COMMENT,ISTATUS)
+        CALL FTCLOS(IUNIT,ISTATUS)
+        CALL CHECK_INT('celestial template: CFITSIO status',ISTATUS,0)
+        CALL CHECK_STR('celestial template: CTYPE1 kept',CVAL,'RA---TAN')
+        CALL CHECK_REAL('celestial template: CRVAL1 kept',RVAL,150.0, &
+         0.0,0.0)
+!------------------------------------------------------------------------------
         CALL DELETE_FILE(FILE_CUBE)
         CALL DELETE_FILE(FILE_MEF)
         CALL DELETE_FILE(FILE_HDR)
         CALL DELETE_FILE(FILE_OUT)
+        CALL DELETE_FILE(FILE_HDRW)
+        CALL DELETE_FILE(FILE_OUTW)
         CALL Deallocate_Array_IMAGEN
         CALL Deallocate_Array_IMAGEN_
         CALL Deallocate_Array_LNULL
         CALL TEST_SUMMARY()
+!
+        CONTAINS
+!------------------------------------------------------------------------------
+! SUBROUTINE WRITE_TEMPLATE(CTYPE,VAL,DELT)
+!
+! Write the header template FILE_HDRW (2x2 image) with OBJECT='WAVEOBJ' and
+! the axis-1 keywords CTYPE1=CTYPE, CUNIT1, CRPIX1=1, CRVAL1=VAL,
+! CDELT1=DELT and CD1_1=DELT.
+!------------------------------------------------------------------------------
+        SUBROUTINE WRITE_TEMPLATE(CTYPE,VAL,DELT)
+        CHARACTER*(*) CTYPE
+        REAL VAL,DELT
+!
+        ISTATUS=0
+        NAXES(1:2)=(/2,2/)
+        CALL FTINIT(IUNIT,'!'//FILE_HDRW,1,ISTATUS)
+        CALL FTPHPR(IUNIT,.TRUE.,-32,2,NAXES,0,1,.FALSE.,ISTATUS)
+        CALL FTPKYS(IUNIT,'OBJECT','WAVEOBJ','object name',ISTATUS)
+        CALL FTPKYS(IUNIT,'CTYPE1',CTYPE,'axis type',ISTATUS)
+        CALL FTPKYS(IUNIT,'CUNIT1','Angstrom','units',ISTATUS)
+        CALL FTPKYE(IUNIT,'CRPIX1',1.0,7,'reference pixel',ISTATUS)
+        CALL FTPKYE(IUNIT,'CRVAL1',VAL,7,'value at CRPIX1',ISTATUS)
+        CALL FTPKYE(IUNIT,'CDELT1',DELT,7,'increment',ISTATUS)
+        CALL FTPKYE(IUNIT,'CD1_1',DELT,7,'increment',ISTATUS)
+        CALL FTPPRE(IUNIT,1,1,4,(/1.0,2.0,3.0,4.0/),ISTATUS)
+        CALL FTCLOS(IUNIT,ISTATUS)
+        CALL CHECK_INT('CFITSIO status writing template '//TRIM(CTYPE), &
+         ISTATUS,0)
+        END SUBROUTINE WRITE_TEMPLATE
         END PROGRAM FITSIO_INTERACTIVE_DRIVER

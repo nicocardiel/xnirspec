@@ -1,6 +1,14 @@
 !
 !******************************************************************************
 ! Subrutina para escribir una image FITS
+!
+! Write buffer NCBUFF in the FITS file FITSFILE (BITPIX=-32), optionally
+! copying the header of the FITS file HDRFILE ('none': no template). A
+! 768x768 image can be saved as the 9 individual 256x256 frames of a box-9
+! mosaic. If the buffer has wavelength calibration (LWAVECAL), CTYPE1,
+! CUNIT1, CRPIX1, CRVAL1 and CDELT1 are written (see WRITEWAVECAL; not for
+! the box-9 frames); otherwise, a wavelength calibration copied from the
+! header template is removed (see DELWAVECAL).
         SUBROUTINE SESCRFITS(FITSFILE,NCBUFF,HDRFILE)
         USE Dynamic_Array_IMAGEN
         USE Dynamic_Array_IMAGEN_
@@ -41,10 +49,17 @@
         CHARACTER*255 C255
         LOGICAL LOGFILE
         LOGICAL SIMPLE,EXTEND
+        LOGICAL LDELETED
+        REAL CRPIX1(NMAXBUFF),CRVAL1(NMAXBUFF),CDELT1(NMAXBUFF)
+        LOGICAL LWAVECAL(NMAXBUFF)
+        CHARACTER*20 CTYPE1(NMAXBUFF),CUNIT1(NMAXBUFF)
 !
 !delete COMMON/BLKIMAGEN1/IMAGEN
 !delete COMMON/BLKIMAGEN1_/IMAGEN_
         COMMON/BLKNAXIS/NAXIS
+        COMMON/BLKWAVECAL1/CRPIX1,CRVAL1,CDELT1         !wavelength calibration
+        COMMON/BLKWAVECAL2/LWAVECAL
+        COMMON/BLKWAVECAL3/CTYPE1,CUNIT1
 !------------------------------------------------------------------------------
 ! Note: the pattern of the frames in box-9 is the following:
 !       6 9 4
@@ -189,6 +204,24 @@
               NSKIP=READI('No. of initial keywords to be skipped','5')
               CALL SESCRFITS_COPYHEADER(IUNIT_,IUNIT,NSKIP,NKEYS,ISTATUS)
               CALL FTCLOS(IUNIT_,ISTATUS)
+            END IF
+          END IF
+! wavelength calibration of the buffer (not for the individual frames of a
+! box-9 mosaic); keywords copied from a header template are updated. If the
+! buffer is not calibrated, a wavelength calibration copied from the
+! template is removed (it does not correspond to the saved image)
+          IF(CBOX9.NE.'y')THEN
+            IF(LWAVECAL(NCBUFF))THEN
+              CALL WRITEWAVECAL(IUNIT,CRPIX1(NCBUFF),CRVAL1(NCBUFF), &
+               CDELT1(NCBUFF),CTYPE1(NCBUFF),CUNIT1(NCBUFF),ISTATUS)
+            ELSE
+              CALL DELWAVECAL(IUNIT,LDELETED,ISTATUS)
+              IF(LDELETED)THEN
+                WRITE(*,101) 'WARNING: the wavelength calibration '// &
+                 'copied from the header template has been removed'
+                WRITE(*,101) '         (the image in the buffer is '// &
+                 'not wavelength calibrated)'
+              END IF
             END IF
           END IF
 ! salvamos la imagen
