@@ -29,6 +29,7 @@ tests/test_gauss2dfit
 tests/psavecut_driver
 tests/fitsio_interactive_driver
 tests/subimath_driver
+tests/hplot_driver
 tests/tmp_*.fits
 
 Makefile

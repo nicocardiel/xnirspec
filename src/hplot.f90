@@ -1,3 +1,22 @@
+!------------------------------------------------------------------------------
+! SUBROUTINE HPLOT(COMMAND)
+!
+! Redraw the 1-D cuts displayed in the upper-left plot (the last profile
+! drawn by SUBPLOT and, if any, the cuts of the other data buffers) with
+! new plot limits.
+!
+! Parameters
+! ----------
+! COMMAND : CHARACTER*(*)
+!     Determines how the new limits are computed:
+!     'zoom'    : rectangle selected with the cursor (two clicks);
+!     'whole'   : limits of the whole profile;
+!     'min,max' : Y limits of the displayed range of the profile;
+!     'manual'  : Xmin, Xmax, Ymin and Ymax are read from the terminal,
+!                 using the current limits as default values (Xmax must
+!                 be greater than Xmin, and Ymax greater than Ymin). Nothing
+!                 is done if no profile has been drawn yet.
+!------------------------------------------------------------------------------
         SUBROUTINE HPLOT(COMMAND)
         USE Dynamic_Arrays_XYPB
         IMPLICIT NONE
@@ -9,6 +28,7 @@
         INCLUDE 'largest.inc'
 !
         INTEGER TRUEBEG,TRUELEN
+        REAL READF
 !
         INTEGER L1,L2
         INTEGER NLAST,N1LAST,N2LAST
@@ -21,9 +41,12 @@
         REAL OLD_CH
         REAL XC,YC,XC1,XC2,YC1,YC2
         REAL CHLAST
+        REAL XMINNEW,XMAXNEW,YMINNEW,YMAXNEW
 !delete REAL XPB(NXYMAX*NOVERSAMPMAX,NMAXBUFF)
 !delete REAL YPB(NXYMAX*NOVERSAMPMAX,NMAXBUFF)
         CHARACTER*1 CH
+        CHARACTER*50 CDEF
+        LOGICAL LREPEAT
         CHARACTER*2 CBUFF
         CHARACTER*255 CLABX,CLABY,CLABG
         LOGICAL LPB(NMAXBUFF)
@@ -36,6 +59,37 @@
         COMMON/BLKPLABELS/CLABX,CLABY,CLABG
         COMMON/BLKP_ALLBUFF_L/LPB
 !delete COMMON/BLKP_ALLBUFF_XY/XPB,YPB
+!------------------------------------------------------------------------------
+! manual limits: they are read before buffering the graphic output, so that
+! the plot is not frozen while the user answers
+        IF(COMMAND.EQ.'manual')THEN
+          IF(NLAST.LE.0)THEN
+            WRITE(*,101) 'ERROR: there is no 1-D profile displayed'
+            RETURN
+          END IF
+          LREPEAT=.TRUE.
+          DO WHILE(LREPEAT)
+            WRITE(CDEF,*) XMIN
+            XMINNEW=READF('Xmin',CDEF)
+            WRITE(CDEF,*) XMAX
+            XMAXNEW=READF('Xmax',CDEF)
+            LREPEAT=(XMAXNEW.LE.XMINNEW)
+            IF(LREPEAT) WRITE(*,101) 'ERROR: Xmax must be greater than Xmin. Try again.'
+          END DO
+          LREPEAT=.TRUE.
+          DO WHILE(LREPEAT)
+            WRITE(CDEF,*) YMIN
+            YMINNEW=READF('Ymin',CDEF)
+            WRITE(CDEF,*) YMAX
+            YMAXNEW=READF('Ymax',CDEF)
+            LREPEAT=(YMAXNEW.LE.YMINNEW)
+            IF(LREPEAT) WRITE(*,101) 'ERROR: Ymax must be greater than Ymin. Try again.'
+          END DO
+          XMIN=XMINNEW
+          XMAX=XMAXNEW
+          YMIN=YMINNEW
+          YMAX=YMAXNEW
+        END IF
 !------------------------------------------------------------------------------
 ! comenzamos buffering
         CALL PGBBUF
@@ -96,6 +150,12 @@
           DY=YMAX-YMIN
           YMIN=YMIN-DY/20.
           YMAX=YMAX+DY/20.
+!..............................................................................
+        ELSEIF(COMMAND.EQ.'manual')THEN
+! the new limits have already been read; the whole profile is drawn (PGPLOT
+! clips it at the viewport edges)
+          N1LAST=1
+          N2LAST=NLAST
 !..............................................................................
         ELSE
           WRITE(*,101) '***FATAL ERROR***'

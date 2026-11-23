@@ -13,7 +13,7 @@ check_PROGRAMS = test_fpoly test_stats test_sort test_linalg test_spline \
                  test_strings test_fitsio test_overbutton test_cutgaussfit \
                  test_writecutfits test_gauss2dfit readc_file_driver \
                  fitsio_interactive_driver subimath_driver pcutgauss_driver \
-                 psavecut_driver
+                 psavecut_driver hplot_driver
 
 LDADD = libtestutils.a $(top_builddir)/src/libxnirspec.a
 
@@ -36,19 +36,21 @@ fitsio_interactive_driver_SOURCES = fitsio_interactive_driver.f90
 subimath_driver_SOURCES = subimath_driver.f90
 pcutgauss_driver_SOURCES = pcutgauss_driver.f90
 psavecut_driver_SOURCES = psavecut_driver.f90
+hplot_driver_SOURCES = hplot_driver.f90
 readc_file_driver_SOURCES = readc_file_driver.f90
 
 TESTS = test_fpoly test_stats test_sort test_linalg test_spline \
         test_strings test_fitsio test_overbutton test_cutgaussfit \
         test_writecutfits test_gauss2dfit test_readc_file.sh \
         test_fitsio_interactive.sh \
-        test_subimath.sh test_pcutgauss.sh test_psavecut.sh
+        test_subimath.sh test_pcutgauss.sh test_psavecut.sh test_hplot.sh
 
 TEST_EXTENSIONS = .sh
 SH_LOG_COMPILER = $(SHELL)
 
 EXTRA_DIST = test_readc_file.sh test_fitsio_interactive.sh \
-             test_subimath.sh test_pcutgauss.sh test_psavecut.sh
+             test_subimath.sh test_pcutgauss.sh test_psavecut.sh \
+             test_hplot.sh
 
 # The tests use the module TEST_UTILS (test_utils.mod), which must be
 # compiled first (Automake does not track Fortran module dependencies)
@@ -58,7 +60,8 @@ test_strings.$(OBJEXT) test_fitsio.$(OBJEXT) test_overbutton.$(OBJEXT) \
 test_cutgaussfit.$(OBJEXT) test_writecutfits.$(OBJEXT) \
 test_gauss2dfit.$(OBJEXT) \
 fitsio_interactive_driver.$(OBJEXT) subimath_driver.$(OBJEXT) \
-pcutgauss_driver.$(OBJEXT) psavecut_driver.$(OBJEXT): libtestutils.a
+pcutgauss_driver.$(OBJEXT) psavecut_driver.$(OBJEXT) \
+hplot_driver.$(OBJEXT): libtestutils.a
 
 # temporary FITS files left by the tests if they are interrupted
 CLEANFILES = *.mod tmp_*.fits

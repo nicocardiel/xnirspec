@@ -65,4 +65,6 @@
         CALL BUTTON(42,'whole',NCOLOR4)
         CALL BUTTON(43,'min,max',0)
         CALL BUTTON(43,'min,max',NCOLOR4)
+        CALL BUTTON(44,'manual lim.',0)
+        CALL BUTTON(44,'manual lim.',NCOLOR4)
         END

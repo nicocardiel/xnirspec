@@ -573,6 +573,8 @@
         CALL BUTTON(42,'whole',3)
         CALL BUTTON(43,'min,max',0)
         CALL BUTTON(43,'min,max',3)
+        CALL BUTTON(44,'manual lim.',0)
+        CALL BUTTON(44,'manual lim.',3)
 ! overplot of cuts (51) and gaussian fit to the displayed cut (53): visible
 ! from the beginning, active only when more than one data buffer has been
 ! defined (51), or when a single cut is displayed (53)
@@ -2684,6 +2686,13 @@
             CALL HPLOT('min,max')
             CALL BUTTON(NB,'min,max',0)
             CALL BUTTON(NB,'min,max',NCOLOR4)
+!------------------------------------------------------------------------------
+! limits of the upper-left plot (1-D cuts) entered manually
+          ELSEIF(NB.EQ.44)THEN
+            CALL BUTTON(NB,'manual lim.',5)
+            CALL HPLOT('manual')
+            CALL BUTTON(NB,'manual lim.',0)
+            CALL BUTTON(NB,'manual lim.',NCOLOR4)
 !------------------------------------------------------------------------------
           ELSEIF(NB.EQ.56)THEN
             CALL BUTTON(NB,'[o]ffsets',5)
