@@ -166,6 +166,7 @@ try_reduceme.f90 \
 unrectify.f90 \
 whereami.f90 \
 writecutfits.f90 \
+wvscalebox.f90 \
 x2arc.f90 \
 xcut.f90 \
 xextract.f90 \
