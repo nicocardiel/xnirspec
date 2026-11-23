@@ -1,7 +1,7 @@
 !------------------------------------------------------------------------------
 ! Unit tests for OVERBUTTON: button 51 (overplot of cuts) must be active
 ! (EXIST_BUTT(51)=.TRUE.) only when more than one data buffer (#1 to
-! #NMAXBUFF/2) is defined; button 44 (gaussian fit to the displayed cut)
+! #NMAXBUFF/2) is defined; button 53 (gaussian fit to the displayed cut)
 ! and button 54 (save the displayed cut) only when at least one data
 ! buffer is defined and LOVERCUTS is .FALSE.
 ! Buttons are used in text mode without plotting them, so no graphic device
@@ -31,13 +31,13 @@
 ! no buffer: disabled (the first call always draws the button)
         CALL OVERBUTTON(.FALSE.,NCOLOR4)
         CALL CHECK_TRUE('no buffer defined: disabled',.NOT.EXIST_BUTT(51))
-        CALL CHECK_TRUE('no buffer defined: 44 disabled',.NOT.EXIST_BUTT(44))
+        CALL CHECK_TRUE('no buffer defined: 53 disabled',.NOT.EXIST_BUTT(53))
         CALL CHECK_TRUE('no buffer defined: 54 disabled',.NOT.EXIST_BUTT(54))
 ! one buffer: disabled
         NAXIS(:,1)=(/5,4/)
         CALL OVERBUTTON(.FALSE.,NCOLOR4)
         CALL CHECK_TRUE('one buffer defined: disabled',.NOT.EXIST_BUTT(51))
-        CALL CHECK_TRUE('one buffer defined: 44 active',EXIST_BUTT(44))
+        CALL CHECK_TRUE('one buffer defined: 53 active',EXIST_BUTT(53))
         CALL CHECK_TRUE('one buffer defined: 54 active',EXIST_BUTT(54))
 ! two buffers: active (redrawn because the state changed)
         NAXIS(:,3)=(/7,2/)
@@ -54,7 +54,7 @@
         LOVERCUTS=.TRUE.
         CALL OVERBUTTON(.FALSE.,NCOLOR4)
         CALL CHECK_TRUE('LOVERCUTS toggled: active',EXIST_BUTT(51))
-        CALL CHECK_TRUE('LOVERCUTS=.TRUE.: 44 disabled',.NOT.EXIST_BUTT(44))
+        CALL CHECK_TRUE('LOVERCUTS=.TRUE.: 53 disabled',.NOT.EXIST_BUTT(53))
         CALL CHECK_TRUE('LOVERCUTS=.TRUE.: 54 disabled',.NOT.EXIST_BUTT(54))
 ! error buffers do not count: data buffer #1 and error buffer #3
         NAXIS(:,3)=0
@@ -62,10 +62,10 @@
         CALL OVERBUTTON(.FALSE.,NCOLOR4)
         CALL CHECK_TRUE('error buffers not counted: disabled', &
          .NOT.EXIST_BUTT(51))
-! back to LOVERCUTS=.FALSE. with one data buffer: 44 active again
+! back to LOVERCUTS=.FALSE. with one data buffer: 53 active again
         LOVERCUTS=.FALSE.
         CALL OVERBUTTON(.FALSE.,NCOLOR4)
-        CALL CHECK_TRUE('LOVERCUTS=.FALSE.: 44 active',EXIST_BUTT(44))
+        CALL CHECK_TRUE('LOVERCUTS=.FALSE.: 53 active',EXIST_BUTT(53))
         CALL CHECK_TRUE('LOVERCUTS=.FALSE.: 54 active',EXIST_BUTT(54))
 !
         CALL TEST_SUMMARY()

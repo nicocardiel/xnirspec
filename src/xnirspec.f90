@@ -573,9 +573,9 @@
         CALL BUTTON(42,'whole',3)
         CALL BUTTON(43,'min,max',0)
         CALL BUTTON(43,'min,max',3)
-! overplot of cuts (51) and gaussian fit to the displayed cut (44): visible
+! overplot of cuts (51) and gaussian fit to the displayed cut (53): visible
 ! from the beginning, active only when more than one data buffer has been
-! defined (51), or when a single cut is displayed (44)
+! defined (51), or when a single cut is displayed (53)
         CALL OVERBUTTON(.TRUE.,NCOLOR4)
 ! color palette (each click selects the next one; text in black)
         CALL BUTTON(55,TRIM(CPALETTE(NPALETTE)),0)
@@ -2758,7 +2758,7 @@
 !------------------------------------------------------------------------------
 ! gaussian fit (with linear continuum) to the cut displayed in the
 ! upper-left plot
-          ELSEIF(NB.EQ.44)THEN
+          ELSEIF(NB.EQ.53)THEN
             CALL BUTTON(NB,'gauss fit',5)
             CALL PCUTGAUSS(LFITCUT,X0FITCUT,SIGMAFITCUT,AMPFITCUT)
             CALL OVERBUTTON(.TRUE.,NCOLOR4)

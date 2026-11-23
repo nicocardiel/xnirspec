@@ -8,12 +8,12 @@
 !   active when more than one data buffer (#1 to #NMAXBUFF/2) has been
 !   defined (NAXIS1 and NAXIS2 different from zero), since otherwise there
 !   is nothing to overplot.
-! - Button 44 ("gauss fit") fits a gaussian to the displayed 1-D profile
+! - Button 53 ("gauss fit") fits a gaussian to the displayed 1-D profile
 !   (PCUTGAUSS). It is always visible, but it is only active when at least
 !   one data buffer has been defined and LOVERCUTS is .FALSE. (i.e. a single
 !   profile is displayed).
 ! - Button 54 ("save cut") saves the displayed 1-D profile in a FITS file
-!   (PSAVECUT). It is active under the same conditions as button 44.
+!   (PSAVECUT). It is active under the same conditions as button 53.
 !
 ! Disabled buttons are shown with gray text.
 !
@@ -70,12 +70,12 @@
           ELSE
             CALL BUTTON(51,TRIM(CLABEL),3)                 !disabled button
           END IF
-! button 44: gaussian fit to the displayed profile
-          CALL BUTTON(44,'gauss fit',0)
+! button 53: gaussian fit to the displayed profile
+          CALL BUTTON(53,'gauss fit',0)
           IF(LFITACTIVE)THEN
-            CALL BUTTON(44,'gauss fit',NCOLOR)
+            CALL BUTTON(53,'gauss fit',NCOLOR)
           ELSE
-            CALL BUTTON(44,'gauss fit',3)                  !disabled button
+            CALL BUTTON(53,'gauss fit',3)                  !disabled button
           END IF
 ! button 54: save the displayed profile in a FITS file
           CALL BUTTON(54,'save cut',0)
