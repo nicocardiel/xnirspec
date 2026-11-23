@@ -216,7 +216,7 @@
               DO I=IY1,IY2
                 YP(J-IX1+1)=YP(J-IX1+1)+IMAGEN(J,I,NBUFF)
               END DO
-              YP(J-IX1+1)=YP(J-IX1+1)/REAL(NPFITX)
+              YP(J-IX1+1)=YP(J-IX1+1)/REAL(IY2-IY1+1)  !mean of the rows
             END DO
             CALL FINDMML(NPFITX,1,NPFITX,YP,YMIN,YMAX)
             NPFITY=IY2-IY1+1
@@ -226,7 +226,7 @@
               DO J=IX1,IX2
                 YP_(I-IY1+1)=YP_(I-IY1+1)+IMAGEN(J,I,NBUFF)
               END DO
-              YP_(I-IY1+1)=YP_(I-IY1+1)/REAL(NPFITY)
+              YP_(I-IY1+1)=YP_(I-IY1+1)/REAL(NPFITX)  !mean of the columns
             END DO
             CALL FINDMML(NPFITY,1,NPFITY,YP_,YMIN_,YMAX_)
             IF(YMIN_.LT.YMIN) YMIN=YMIN_
@@ -321,7 +321,10 @@
               WRITE(*,100) 'BETA,EBETA,EEBETA......: '
               WRITE(*,*) BETA,EBETA,EEBETA
               WRITE(*,100) 'AMP,EAMP,EEAMP.........: '
-              WRITE(*,*) AMP,EAMP,EEAMP,(AMPX_*2.5*SIGMAY_+AMPY_*2.5*SIGMAX_)/2.
+! last value: estimate from the 1D fits to the mean profiles (as the
+! initial value in GAUSS2DFIT)
+              WRITE(*,*) AMP,EAMP,EEAMP,(AMPX_*REAL(NPFITY)/(2.506628*SIGMAY_)+ &
+               AMPY_*REAL(NPFITX)/(2.506628*SIGMAX_))/2.
               WRITE(*,100) 'CTE,ECTE,EECTE.........: '
               WRITE(*,*) CTE,ECTE,EECTE,(CTEX_+CTEY_)/2.
               IF(EAREA1.GT.0.0)THEN

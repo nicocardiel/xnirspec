@@ -99,6 +99,8 @@
         PARAMETER(NSIMULMAX=1000)                !numero maximo de simulaciones
         REAL PI2
         PARAMETER(PI2=6.283185307)               !2 x pi
+        REAL SQRT2PI
+        PARAMETER(SQRT2PI=2.506628275)           !sqrt(2 x pi)
 !
         INTEGER IX1_,IX2_,IY1_,IY2_
         INTEGER I,J,ISIMUL
@@ -232,7 +234,7 @@
                 YF(J-IX1+1)=YF(J-IX1+1)+IMAGEN(J,I,NBUFF)
               END DO
             END IF
-            YF(J-IX1+1)=YF(J-IX1+1)/REAL(NPFITX)
+            YF(J-IX1+1)=YF(J-IX1+1)/REAL(NPFITY)      !mean of NPFITY rows
           END DO
           CALL GAUSCFIT(NPFITX,XF,YF,X0_,SIGMAX_,AMPX_,CTEX_,EEX0_,EESIGMAX_,EEAMPX_,EECTEX_,YRMSTOL)
           X0_=X0_+REAL(IX1-1)
@@ -249,17 +251,37 @@
                 YF(I-IY1+1)=YF(I-IY1+1)+IMAGEN(J,I,NBUFF)
               END DO
             END IF
-            YF(I-IY1+1)=YF(I-IY1+1)/REAL(NPFITY)
+            YF(I-IY1+1)=YF(I-IY1+1)/REAL(NPFITX)   !mean of NPFITX columns
           END DO
           CALL GAUSCFIT(NPFITY,XF,YF,Y0_,SIGMAY_,AMPY_,CTEY_,EEY0_,EESIGMAY_,EEAMPY_,EECTEY_,YRMSTOL)
           Y0_=Y0_+REAL(IY1-1)
-! Con estas estimaciones ya podemos calcular los parametros de entrada de
-! la subrutina DOWNHILL (nota: recordar que los ajustes 1D corresponden a los
-! perfiles promedio en X y en Y, y no al perfil que pasa por el centro; por
-! eso hacemos una estimacion de AMP usando AMPX y AMPY multiplicadas por un
-! factor=SQRT(2*PI)*SIGMA)
+! Initial values for DOWNHILL from the 1D fits. The 1D fits correspond to
+! the mean profiles along X and Y, not to the profiles through the center:
+! for a 2D gaussian of amplitude AMP, the mean of NPFITY rows has an
+! amplitude AMPX_ ~ AMP*SQRT(2*PI)*SIGMAY/NPFITY (if the box contains the
+! wings of the gaussian), so AMP ~ AMPX_*NPFITY/(SQRT(2*PI)*SIGMAY_), and
+! similarly from AMPY_. (Multiplying instead of dividing by SQRT(2*PI)*SIGMA,
+! as done previously, overestimated AMP by a factor (2.5*SIGMA)**2/NPFIT,
+! which made DOWNHILL converge to a spurious narrow solution for wide
+! profiles.) If a 1D fit fails (SIGMA<=0), the peak of the box above the
+! background is used instead.
           XX0(1)=(CTEX_+CTEY_)/2.
-          XX0(2)=(AMPX_*SIGMAY_*2.5+AMPY_*SIGMAX_*2.5)/2.
+          IF((SIGMAX_.GT.0.0).AND.(SIGMAY_.GT.0.0))THEN
+            XX0(2)=(AMPX_*REAL(NPFITY)/(SQRT2PI*SIGMAY_)+ &
+                    AMPY_*REAL(NPFITX)/(SQRT2PI*SIGMAX_))/2.
+          ELSE
+            XX0(2)=-1.E30
+            DO I=IY1,IY2
+              DO J=IX1,IX2
+                IF(NBUFF.EQ.0)THEN
+                  XX0(2)=MAX(XX0(2),IMAGEN_(J,I))
+                ELSE
+                  XX0(2)=MAX(XX0(2),IMAGEN(J,I,NBUFF))
+                END IF
+              END DO
+            END DO
+            XX0(2)=XX0(2)-XX0(1)
+          END IF
           XX0(3)=X0_
           XX0(4)=Y0_
           XX0(5)=SIGMAX_
@@ -294,6 +316,16 @@
             print*,i,xx0(i),dxx0(i)
           end do
         END IF
+        CALL DOWNHILL(NDIM,XX0,DXX0,FUNKGSS2D,1.0,0.5,2.0,YRMSTOL,XX,DXX,NEVAL,500)
+! restart DOWNHILL once from the solution, with a new simplex of the
+! initial size, to avoid a premature convergence of the simplex
+        DO I=1,NDIM
+          XX0(I)=XX(I)
+        END DO
+        DXX0(1)=XX0(1)/100.
+        IF(DXX0(1).EQ.0.0) DXX0(1)=0.1
+        DXX0(2)=XX0(2)/100.
+        IF(DXX0(2).EQ.0.0) DXX0(2)=0.1
         CALL DOWNHILL(NDIM,XX0,DXX0,FUNKGSS2D,1.0,0.5,2.0,YRMSTOL,XX,DXX,NEVAL,500)
         IF(LSHOW)THEN
           print*,'>After downhill:'
