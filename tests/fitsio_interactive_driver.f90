@@ -10,7 +10,9 @@
 !               the HDUs, table HDU 2 rejected, empty primary HDU 0
 !               rejected, read extension 1
 !   <empty>  -> idem: the default is extension 1 (first image HDU)
-!   <empty>  -> SLEEFITS, tile-compressed image (extension 1, default)
+!   -1, <empty> -> SLEEFITS, tile-compressed image: list the HDUs (name
+!               COMPRESSED_IMAGE, since EXTNAME is missing), read
+!               extension 1 (default)
 !   <empty>  -> SESCRFITS with header template: skip 5 keywords (default)
 !   <empty>  -> idem, template with wavelength calibration (removed, since
 !               the buffer is not calibrated)
@@ -156,7 +158,7 @@
         CALL FTCLOS(IUNIT,ISTATUS)
         CALL CHECK_INT('CFITSIO status writing compressed image', &
          ISTATUS,0)
-        CALL SLEEFITS(FILE_CMP,.FALSE.,0,8,.FALSE.,0)      !answer: <empty>
+        CALL SLEEFITS(FILE_CMP,.FALSE.,0,8,.FALSE.,0) !answers: -1, <empty>
         CALL CHECK_INT('compressed image NAXIS1',NAXIS(1,8),NX1)
         CALL CHECK_INT('compressed image NAXIS2',NAXIS(2,8),NX2)
         CALL CHECK_TRUE('compressed image pixel values', &

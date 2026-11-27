@@ -28,7 +28,8 @@
 ! (BITPIX), followed by the equivalent type returned by FTGIET when BSCALE
 ! and BZERO change it. For tile-compressed images, Cards is the number of
 ! records of the underlying binary table (astropy gives that of the image
-! header), since this is what CFITSIO (FTGHSP) returns. The file is
+! header), since this is what CFITSIO (FTGHSP) returns, and their name is
+! COMPRESSED_IMAGE when EXTNAME is missing (as in astropy). The file is
 ! left positioned at an arbitrary HDU: the caller must move to the desired
 ! HDU (FTMAHD) afterwards. CFITSIO errors are printed (PRINTERROR) but do
 ! not modify the status of the caller.
@@ -103,6 +104,8 @@
             END IF
             IF(ZIMAGE)THEN
               CTYPE='CompImageHDU'
+! default name given by astropy to compressed images without EXTNAME
+              IF(LEN_TRIM(EXTNAME).EQ.0) EXTNAME='COMPRESSED_IMAGE'
             ELSEIF(IHDU.EQ.1)THEN
               CTYPE='PrimaryHDU'
             ELSE

@@ -17,7 +17,7 @@ if [ ! -x "$driver" ]; then
     exit 1
 fi
 
-output=$(printf '%s\n' 0 2 -1 2 3 -1 2 0 1 '' '' '' '' '' | "$driver")
+output=$(printf '%s\n' 0 2 -1 2 3 -1 2 0 1 '' -1 '' '' '' '' | "$driver")
 status=$?
 printf '%s\n' "$output"
 if [ $status -ne 0 ]; then
@@ -30,12 +30,15 @@ if ! printf '%s\n' "$output" | grep -q 'Summary: .* 0 failures'; then
     exit 1
 fi
 
-# listing of the HDUs printed with the answer -1 (astropy fitsinfo layout)
+# listing of the HDUs printed with the answer -1 (astropy fitsinfo layout),
+# and default name of a compressed image without EXTNAME
 for pattern in \
     '^No\.    Name      Ver    Type      Cards   Dimensions   Format$' \
     '^  0  PRIMARY       1 PrimaryHDU  ' \
     '^  1  SCI           1 ImageHDU    .*   (4, 3)   float32$' \
-    '^  2  TAB           1 BinTableHDU .*   5R x 2C   \[E, J\]$'; do
+    '^  2  TAB           1 BinTableHDU .*   5R x 2C   \[E, J\]$' \
+    '^  1  COMPRESSED_IMAGE    1 CompImageHDU .*   (4, 3)   float32$' \
+    '^CFITSIO> EXTNAME: COMPRESSED_IMAGE *$'; do
     if ! printf '%s\n' "$output" | grep -q "$pattern"; then
         echo "FAIL: HDU listing line not found: $pattern"
         exit 1

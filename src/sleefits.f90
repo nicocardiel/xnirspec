@@ -84,6 +84,7 @@
         CHARACTER*80 CLINEA
         REAL PHOTFLAM(NMAXBUFF),PHOTZPT(NMAXBUFF),EXPTIME(NMAXBUFF)
         LOGICAL EXTEND
+        LOGICAL ZIMAGE
 !delete LOGICAL LNULL_(NXYMAX,NXYMAX)
         LOGICAL LOGFILE,LANYNULL
         LOGICAL LROW(NXYMAX)
@@ -245,6 +246,13 @@
             IF(ISTATUS.EQ.202)THEN              !EXTNAME is optional
               ISTATUS=0
               EXTNAME=' '
+! default name given by astropy to tile-compressed images (ZIMAGE=T)
+              CALL FTGKYL(IUNIT,'ZIMAGE',ZIMAGE,COMMENT,ISTATUS)
+              IF(ISTATUS.EQ.202)THEN
+                ISTATUS=0
+                ZIMAGE=.FALSE.
+              END IF
+              IF(ZIMAGE) EXTNAME='COMPRESSED_IMAGE'
             END IF
             WRITE(*,100) 'CFITSIO> EXTNAME: '
             WRITE(*,101) EXTNAME
