@@ -10,6 +10,14 @@
 ! IBUFF: if <> 0 means that the photometry keywords of the HST are searched
 !        and, if found, stored in the corresponding array (buffer IBUFF).
 !
+! Tile-compressed images are supported (image parameters are obtained
+! with FTGIDT, FTGIDM and FTGISZ).
+!
+! Files with more than one HDU: the user is asked for the extension number,
+! counted from 0 (primary HDU) as in astropy. The default is the first image
+! HDU with 1 <= NAXIS <= 3; the answer -1 prints a list of the HDUs (see
+! FITSINFO) and asks again, and HDUs that are not such images are rejected.
+!
 ! Wavelength calibration of FITS files (CRPIX1, CRVAL1, CDELT1, with
 ! CTYPE1 and CUNIT1) is read with FITSWAVECAL, and it is only accepted when
 ! CTYPE1 is a linear wavelength axis and CDELT1 (or CD1_1) is not zero;
@@ -42,7 +50,6 @@
         INCLUDE 'dimensions.inc'
         INCLUDE 'largest.inc'
 ! funciones auxiliares
-        INTEGER READI
         INTEGER READILIM
         INTEGER TRUELEN
 ! variables globales (COMMONs)
@@ -58,6 +65,8 @@
         INTEGER NAXIS(2,NMAXBUFF)
 ! variables locales
         INTEGER NEW_HDU,HDUTYPE
+        INTEGER NHDU,IEXT,IEXTDEF,NDIMHDU
+        CHARACTER*10 CDEF
         INTEGER JROW(NXYMAX)
         INTEGER I,J,K,L
         INTEGER FIRSTPIX
@@ -156,11 +165,54 @@
           EXTEND=.FALSE.
           ISTATUS=0
         END IF
-        IF(EXTEND)THEN
+! The user numbers the HDUs from 0 (primary HDU), as in astropy, whereas
+! CFITSIO (FTMAHD) numbers them from 1: NEW_HDU is always the CFITSIO
+! number (NEW_HDU=IEXT+1). EXTEND=T does not guarantee that the file has
+! extensions, so the question is only asked when there is more than one HDU.
+        NHDU=1
+        IF(EXTEND) CALL FTTHDU(IUNIT,NHDU,ISTATUS)
+        IF(NHDU.GT.1)THEN
+! default: first image HDU that can be read (1 <= NAXIS <= 3)
+          IEXTDEF=-1
+          DO I=1,NHDU
+            CALL FTMAHD(IUNIT,I,HDUTYPE,ISTATUS)
+            IF(HDUTYPE.EQ.0)THEN
+              CALL FTGIDM(IUNIT,NDIMHDU,ISTATUS)
+              IF((NDIMHDU.GE.1).AND.(NDIMHDU.LE.3))THEN
+                IEXTDEF=I-1
+                EXIT
+              END IF
+            END IF
+          END DO
+          IF((IEXTDEF.EQ.-1).OR.(ISTATUS.GT.0))THEN
+            IF(ISTATUS.GT.0) CALL PRINTERROR(ISTATUS)
+            CALL FITSINFO(IUNIT,FITSFILE,NHDU)
+            WRITE(*,101) '***FATAL ERROR***'
+            WRITE(*,101) '=> no image HDU with 1 <= NAXIS <= 3 found'
+            ISTATUS=0
+            CALL FTCLOS(IUNIT,ISTATUS)
+            INCLUDE 'deallocate_arrays.inc'
+            CALL Deallocate_Array_LNULL_
+            STOP
+          END IF
           WRITE(*,101) '***WARNING***'
           WRITE(*,101) '=> this file contains extensions'
-          NEW_HDU=READI('Extension number to be read (1=primary)','1')
+          WRITE(CDEF,'(I10)') IEXTDEF
+10        IEXT=READILIM('Extension number to be read (0=primary, -1=list)', &
+           CDEF,-1,NHDU-1)
+          IF(IEXT.EQ.-1)THEN
+            CALL FITSINFO(IUNIT,FITSFILE,NHDU)
+            GOTO 10
+          END IF
+          NEW_HDU=IEXT+1
           CALL FTMAHD(IUNIT,NEW_HDU,HDUTYPE,ISTATUS)
+          NDIMHDU=0
+          IF(HDUTYPE.EQ.0) CALL FTGIDM(IUNIT,NDIMHDU,ISTATUS)
+          IF((HDUTYPE.NE.0).OR.(NDIMHDU.LT.1).OR.(NDIMHDU.GT.3))THEN
+            WRITE(*,101) 'ERROR: this HDU is not an image with 1 <= NAXIS <= 3'// &
+             ' (use -1 to list the extensions)'
+            GOTO 10
+          END IF
         ELSE
           NEW_HDU=1
         END IF
@@ -177,14 +229,23 @@
             WRITE(*,*)
           END IF
         END IF
-! leemos BITPIX
-        CALL FTGKYJ(IUNIT,'BITPIX',BITPIX,COMMENT,ISTATUS)
+! leemos BITPIX. FTGIDT, FTGIDM and FTGISZ are used instead of reading the
+! keywords BITPIX, NAXIS and NAXISn: for tile-compressed images these
+! keywords describe the binary table that stores the compressed data, and
+! CFITSIO returns the values of the uncompressed image (ZBITPIX, ZNAXIS...)
+        CALL FTGIDT(IUNIT,BITPIX,ISTATUS)
         IF(.NOT.LSHOW)THEN
           WRITE(*,*)
           IF(NEW_HDU.EQ.1)THEN
             WRITE(*,101) 'CFITSIO> Primary HDU'
           ELSE
+            WRITE(*,100) 'CFITSIO> Extension number: '
+            WRITE(*,*) NEW_HDU-1
             CALL FTGKYS(IUNIT,'EXTNAME',EXTNAME,COMMENT,ISTATUS)
+            IF(ISTATUS.EQ.202)THEN              !EXTNAME is optional
+              ISTATUS=0
+              EXTNAME=' '
+            END IF
             WRITE(*,100) 'CFITSIO> EXTNAME: '
             WRITE(*,101) EXTNAME
           ENDIF
@@ -192,28 +253,25 @@
           WRITE(*,*) BITPIX
         END IF
 ! leemos NAXIS, NAXIS1, NAXIS2 y NAXIS3
-        CALL FTGKYJ(IUNIT,'NAXIS',NAXES,COMMENT,ISTATUS)
+        CALL FTGIDM(IUNIT,NAXES,ISTATUS)
         IF(.NOT.LSHOW)THEN
           WRITE(*,100) 'CFITSIO> NAXIS  : '
           WRITE(*,*) NAXES 
         END IF
         LERROR=.FALSE.
         IF(NAXES.EQ.1)THEN
-          CALL FTGKYJ(IUNIT,'NAXIS1',NAXIS_(1),COMMENT,ISTATUS)
+          CALL FTGISZ(IUNIT,1,NAXIS_,ISTATUS)
           NAXIS_(2)=1
           NAXIS_(3)=1
           NAXIS3FIXED1=1
           NAXIS3FIXED2=1
         ELSEIF(NAXES.EQ.2)THEN
-          CALL FTGKYJ(IUNIT,'NAXIS1',NAXIS_(1),COMMENT,ISTATUS)
-          CALL FTGKYJ(IUNIT,'NAXIS2',NAXIS_(2),COMMENT,ISTATUS)
+          CALL FTGISZ(IUNIT,2,NAXIS_,ISTATUS)
           NAXIS_(3)=1
           NAXIS3FIXED1=1
           NAXIS3FIXED2=1
         ELSEIF(NAXES.EQ.3)THEN
-          CALL FTGKYJ(IUNIT,'NAXIS1',NAXIS_(1),COMMENT,ISTATUS)
-          CALL FTGKYJ(IUNIT,'NAXIS2',NAXIS_(2),COMMENT,ISTATUS)
-          CALL FTGKYJ(IUNIT,'NAXIS3',NAXIS_(3),COMMENT,ISTATUS)
+          CALL FTGISZ(IUNIT,3,NAXIS_,ISTATUS)
           IF(NAXIS_(3).EQ.1)THEN
             WRITE(*,101) 'WARNING: NAXIS=3 with NAXIS3=1. Reading anyway!'
             NAXIS3FIXED1=1

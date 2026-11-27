@@ -5,7 +5,12 @@
 !   0        -> SLEEFITS, 3D cube: collapse the whole cube
 !   2        -> SLEEFITS, 3D cube: read slice 2
 !   -1, 2, 3 -> SLEEFITS, 3D cube: collapse slices 2 to 3
-!   2        -> SLEEFITS, file with extensions: read extension number 2
+!   (none)   -> SLEEFITS, single HDU with EXTEND=T: no question is asked
+!   -1, 2, 0, 1 -> SLEEFITS, file with extensions (numbered from 0): list
+!               the HDUs, table HDU 2 rejected, empty primary HDU 0
+!               rejected, read extension 1
+!   <empty>  -> idem: the default is extension 1 (first image HDU)
+!   <empty>  -> SLEEFITS, tile-compressed image (extension 1, default)
 !   <empty>  -> SESCRFITS with header template: skip 5 keywords (default)
 !   <empty>  -> idem, template with wavelength calibration (removed, since
 !               the buffer is not calibrated)
@@ -29,10 +34,13 @@
         PARAMETER (NX1=4,NX2=3,NX3=3)
         INTEGER IUNIT
         PARAMETER (IUNIT=90)          !SLEEFITS and SESCRFITS use 80, 82, 83
-        CHARACTER*(*) FILE_CUBE,FILE_MEF,FILE_HDR,FILE_OUT
+        CHARACTER*(*) FILE_CUBE,FILE_MEF,FILE_HDR,FILE_OUT,FILE_EXT1
+        CHARACTER*(*) FILE_CMP
         CHARACTER*(*) FILE_HDRW,FILE_OUTW
         PARAMETER (FILE_CUBE='tmp_fitsio_cube.fits')
         PARAMETER (FILE_MEF='tmp_fitsio_mef.fits')
+        PARAMETER (FILE_EXT1='tmp_fitsio_extend1.fits')
+        PARAMETER (FILE_CMP='tmp_fitsio_compressed.fits')
         PARAMETER (FILE_HDR='tmp_fitsio_hdrtemplate.fits')
         PARAMETER (FILE_OUT='tmp_fitsio_withhdr.fits')
         PARAMETER (FILE_HDRW='tmp_fitsio_hdrtemplate_wcs.fits')
@@ -42,6 +50,9 @@
         INTEGER ISTATUS,NKEYS,NSPACE,IREADWRITE,IBLOCK
         INTEGER NKEYS_TEMPLATE,NKEYS_OWN,NNAXIS1,NCOMMENT
         INTEGER NAXES(3)
+        INTEGER NROWS
+        PARAMETER (NROWS=5)
+        CHARACTER*8 TTYPE(2),TFORM(2),TUNIT(2)
         REAL F(NX1,NX2),CUBE(NX1,NX2,NX3)
         CHARACTER*20 COBJECT
         CHARACTER*50 COMMENT
@@ -89,7 +100,21 @@
         CALL CHECK_TRUE('cube slices 2 to 3 collapsed (sum)', &
          ALL(IMAGEN(1:NX1,1:NX2,1).EQ.2.0*F+5000.0))
 !------------------------------------------------------------------------------
-! file with an empty primary HDU and one image extension
+! single HDU with EXTEND=T: the extension number is not asked
+        ISTATUS=0
+        NAXES(1:2)=(/NX1,NX2/)
+        CALL FTINIT(IUNIT,'!'//FILE_EXT1,1,ISTATUS)
+        CALL FTPHPR(IUNIT,.TRUE.,-32,2,NAXES,0,1,.TRUE.,ISTATUS)
+        CALL FTPPRE(IUNIT,1,1,NX1*NX2,F,ISTATUS)
+        CALL FTCLOS(IUNIT,ISTATUS)
+        CALL CHECK_INT('CFITSIO status writing single HDU with EXTEND', &
+         ISTATUS,0)
+        CALL SLEEFITS(FILE_EXT1,.FALSE.,0,6,.FALSE.,0)           !no answer
+        CALL CHECK_TRUE('single HDU with EXTEND=T: pixel values', &
+         ALL(IMAGEN(1:NX1,1:NX2,6).EQ.F))
+!------------------------------------------------------------------------------
+! file with an empty primary HDU (0), one image extension (1) and one
+! binary table (2)
         ISTATUS=0
         CALL FTINIT(IUNIT,'!'//FILE_MEF,1,ISTATUS)
         CALL FTPHPR(IUNIT,.TRUE.,-32,0,NAXES,0,1,.TRUE.,ISTATUS)
@@ -98,15 +123,44 @@
         CALL FTPHPR(IUNIT,.TRUE.,-32,2,NAXES,0,1,.FALSE.,ISTATUS)
         CALL FTPKYS(IUNIT,'EXTNAME','SCI','extension name',ISTATUS)
         CALL FTPPRE(IUNIT,1,1,NX1*NX2,F,ISTATUS)
+        CALL FTCRHD(IUNIT,ISTATUS)
+        TTYPE=(/'A','B'/)
+        TFORM=(/'E','J'/)
+        TUNIT=(/' ',' '/)
+        CALL FTPHBN(IUNIT,NROWS,2,TTYPE,TFORM,TUNIT,'TAB',0,ISTATUS)
+        CALL FTPCLE(IUNIT,1,1,1,NROWS,(/1.0,2.0,3.0,4.0,5.0/),ISTATUS)
+        CALL FTPCLJ(IUNIT,2,1,1,NROWS,(/1,2,3,4,5/),ISTATUS)
         CALL FTCLOS(IUNIT,ISTATUS)
-        CALL CHECK_INT('CFITSIO status writing file with extension', &
+        CALL CHECK_INT('CFITSIO status writing file with extensions', &
          ISTATUS,0)
 !
-        CALL SLEEFITS(FILE_MEF,.FALSE.,0,2,.FALSE.,0)             !answer: 2
+        CALL SLEEFITS(FILE_MEF,.FALSE.,0,2,.FALSE.,0)  !answers: -1, 2, 0, 1
         CALL CHECK_INT('extension NAXIS1',NAXIS(1,2),NX1)
         CALL CHECK_INT('extension NAXIS2',NAXIS(2,2),NX2)
         CALL CHECK_TRUE('extension pixel values', &
          ALL(IMAGEN(1:NX1,1:NX2,2).EQ.F))
+        CALL SLEEFITS(FILE_MEF,.FALSE.,0,7,.FALSE.,0)      !answer: <empty>
+        CALL CHECK_INT('default extension NAXIS1',NAXIS(1,7),NX1)
+        CALL CHECK_TRUE('default extension pixel values', &
+         ALL(IMAGEN(1:NX1,1:NX2,7).EQ.F))
+!------------------------------------------------------------------------------
+! tile-compressed float image (lossless: GZIP without quantization), written
+! by CFITSIO as extension 1 after an empty primary HDU. The keywords BITPIX,
+! NAXIS1, ... of this HDU describe the binary table (BITPIX=8, NAXIS1=8),
+! not the image (BITPIX=-32, 4x3)
+        ISTATUS=0
+        NAXES(1:2)=(/NX1,NX2/)
+        CALL FTINIT(IUNIT,'!'//FILE_CMP//'[compress GZIP; q 0]',1,ISTATUS)
+        CALL FTPHPR(IUNIT,.TRUE.,-32,2,NAXES,0,1,.TRUE.,ISTATUS)
+        CALL FTPPRE(IUNIT,1,1,NX1*NX2,F,ISTATUS)
+        CALL FTCLOS(IUNIT,ISTATUS)
+        CALL CHECK_INT('CFITSIO status writing compressed image', &
+         ISTATUS,0)
+        CALL SLEEFITS(FILE_CMP,.FALSE.,0,8,.FALSE.,0)      !answer: <empty>
+        CALL CHECK_INT('compressed image NAXIS1',NAXIS(1,8),NX1)
+        CALL CHECK_INT('compressed image NAXIS2',NAXIS(2,8),NX2)
+        CALL CHECK_TRUE('compressed image pixel values', &
+         ALL(IMAGEN(1:NX1,1:NX2,8).EQ.F))
 !------------------------------------------------------------------------------
 ! SESCRFITS copying the header of a template file. The template starts
 ! with SIMPLE, BITPIX, NAXIS, NAXIS1 and NAXIS2, followed by the two COMMENT
@@ -197,6 +251,8 @@
 !------------------------------------------------------------------------------
         CALL DELETE_FILE(FILE_CUBE)
         CALL DELETE_FILE(FILE_MEF)
+        CALL DELETE_FILE(FILE_EXT1)
+        CALL DELETE_FILE(FILE_CMP)
         CALL DELETE_FILE(FILE_HDR)
         CALL DELETE_FILE(FILE_OUT)
         CALL DELETE_FILE(FILE_HDRW)

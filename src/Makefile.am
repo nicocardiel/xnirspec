@@ -67,6 +67,7 @@ findmax.f90 \
 findmml.f90 \
 findmmlx.f90 \
 fitpol.f90 \
+fitsinfo.f90 \
 fitswavecal.f90 \
 fmap.f90 \
 fmean0.f90 \
